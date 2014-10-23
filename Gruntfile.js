@@ -55,6 +55,69 @@ module.exports = function (grunt) {
                         'build/embedded/dot-syntax.js'
                     ]
                 }
+            },
+            api: {
+                options: {
+                    mangle: false,
+                    compress: false,
+                    preserveComments: 'some',
+                    beautify: true,
+                    exportAll: true,
+                    report: 'gzip',
+//                    banner: 'target.on("setup", function (evt, exports) {\n',
+//                    footer: '\n});'
+                },
+                files: {
+                    '.tmp/api.js': [
+                        'src/widgets/api/*.js',
+                    ]
+                }
+            },
+            widgets: {
+                options: {
+                    mangle: false,
+                    compress: false,
+                    preserveComments: 'some',
+                    exportAll: true,
+                    beautify: true,
+                    report: 'gzip'
+                },
+                files: {
+                    '.tmp/widgets.js': [
+                        'src/widgets/package.js',
+                        'src/widgets/dispatcher.js',
+                        'src/widgets/bootstrap.js'
+                    ]
+                }
+            },
+            build: {
+                options: {
+                    mangle: false,
+                    compress: false,
+                    preserveComments: 'some',
+                    exportAll: true,
+                    beautify: true,
+                    report: 'gzip',
+                    banner: '(function(){\n',
+                    footer: '\n})();'
+                },
+                files: {
+                    'build/widgets.js': [
+                        '.tmp/widgets.js',
+                        '.tmp/api.js'
+                    ]
+                }
+            },
+            build_min: {
+                options: {
+                    report: 'min',
+                    compress: true
+                },
+                files: {
+                    'build/widgets.min.js': [
+                        'build/widgets.js'
+                    ]
+                }
             }
         },
         replace: {
@@ -69,7 +132,8 @@ module.exports = function (grunt) {
                     { expand: true, flatten: true, src: ['build/*.js'], dest: 'build/' }
                 ]
             }
-        }
+        },
+        clean: [".tmp"]
     });
 
 
@@ -78,6 +142,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-replace');
+    grunt.loadNpmTasks('grunt-contrib-clean');
 
-    grunt.registerTask('default', ['jshint', 'uglify', 'replace']);
+//    grunt.registerTask('default', ['jshint', 'uglify', 'replace']);
+    grunt.registerTask('default', ['uglify', 'replace', 'clean']);
 };

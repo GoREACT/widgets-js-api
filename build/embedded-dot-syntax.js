@@ -21,6 +21,6 @@
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.async = true;
-    script.src = "widgets.js";
+    script.src = "../build/widgets.js";
     init("init on ready record upload playback collaborate list");
 })();

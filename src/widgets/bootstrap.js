@@ -1,71 +1,48 @@
-(function () {
-    'use strict';
+var queue = exports.q || exports;
+var initialized = false;
 
-    var namespace = 'goreact';
-    var target = window[namespace];
-    var settings = window[namespace + 'Settings'];
-    var queue = target.q || target;
-
-    var setup = function () {
-        target.ready = function (callback) {
-            if (typeof callback === 'function') {
-                setTimeout(callback, 1000);
-            }
-        };
-
-        target.update = function (a, b, c) {
-            console.log(a, b, c);
-        };
-
-        target.record = function (options) {
-            console.log('record', options);
-        };
-
-        target.list = function () {
-            console.log('list');
-        };
-    };
-
-    var onInit = function () {
-        setup();
-        for (var i = 0; i < queue.length; i += 1) {
-            var args = Array.prototype.slice.call(queue[i]);
-            var method = args.shift();
-            if (target.hasOwnProperty(method)) {
-                target[method].apply(target, args);
-            }
+// if string syntax, setup as function
+if (exports.hasOwnProperty('q')) { // if string syntax
+    exports = window['@@name'] = function () {
+        var args = Array.prototype.slice.call(arguments);
+        var method = args.shift();
+        if (exports.hasOwnProperty(method)) {
+            exports[method].apply(exports, args);
         }
     };
+}
 
-    if (target.hasOwnProperty('q')) { // if string syntax
-        target = window[namespace] = function () {
-            var args = Array.prototype.slice.call(arguments);
-            var method = args.shift();
-            if (target.hasOwnProperty(method)) {
-                target[method].apply(target, args);
-            }
-        };
-    }
-
-    var initialized = false;
-    target.init = function (settings) {
-        if (initialized) {
-            return;
-        }
-        initialized = true;
-        console.log('settings', settings);
-        onInit();
-    };
+// make the widget a dispatcher
+dispatcher(exports);
 
 
+function setup() {
     for (var i = 0; i < queue.length; i += 1) {
         var args = Array.prototype.slice.call(queue[i]);
         var method = args.shift();
-        if(method === 'init') {
-            if (target.hasOwnProperty(method)) {
-                target[method].apply(target, args);
+        if (method === 'init' || method === 'on') {
+            if (exports.hasOwnProperty(method)) {
+                queue.splice(i, 1);
+                exports[method].apply(exports, args);
             }
         }
     }
+}
 
-})();
+exports.on('init::complete', function () {
+    var len = queue.length;
+    for (var i = 0; i < len; i += 1) {
+        var args = Array.prototype.slice.call(queue[i]);
+        var method = args.shift();
+        if (exports.hasOwnProperty(method)) {
+            console.log('METHOD', method);
+            try {
+                exports[method].apply(exports, args);
+            } catch (e) {
+            }
+        }
+    }
+    queue.length = 0;
+});
+
+setTimeout(setup);
