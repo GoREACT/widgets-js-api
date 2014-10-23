@@ -61,8 +61,6 @@ var dispatcher = function(target, scope, map) {
 
 var queue = exports.q || exports;
 
-var initialized = false;
-
 if (exports.hasOwnProperty("q")) {
     exports = window["goreact"] = function() {
         var args = Array.prototype.slice.call(arguments);

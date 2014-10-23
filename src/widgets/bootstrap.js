@@ -1,5 +1,4 @@
 var queue = exports.q || exports;
-var initialized = false;
 
 // if string syntax, setup as function
 if (exports.hasOwnProperty('q')) { // if string syntax

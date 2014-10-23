@@ -6,7 +6,7 @@ module.exports = function (grunt) {
             files: ['src/**/*.js']
         },
         uglify: {
-            embedded_str: {
+            embedded: {
                 options: {
                     mangle: false,
                     compress: false,
@@ -17,10 +17,13 @@ module.exports = function (grunt) {
                 files: {
                     'build/embedded-str-syntax.js': [
                         'src/embedded/str-syntax.js'
+                    ],
+                    'build/embedded-dot-syntax.js': [
+                        'src/embedded/dot-syntax.js'
                     ]
                 }
             },
-            embedded_str_min: {
+            embedded_min: {
                 options: {
                     report: 'min',
                     compress: true
@@ -28,29 +31,7 @@ module.exports = function (grunt) {
                 files: {
                     'build/embedded-str-syntax.min.js': [
                         'build/embedded/str-syntax.js'
-                    ]
-                }
-            },
-            embedded_dot: {
-                options: {
-                    mangle: false,
-                    compress: false,
-                    preserveComments: 'some',
-                    beautify: true,
-                    report: 'gzip'
-                },
-                files: {
-                    'build/embedded-dot-syntax.js': [
-                        'src/embedded/dot-syntax.js'
-                    ]
-                }
-            },
-            embedded_dot_min: {
-                options: {
-                    report: 'min',
-                    compress: true
-                },
-                files: {
+                    ],
                     'build/embedded-dot-syntax.min.js': [
                         'build/embedded/dot-syntax.js'
                     ]
@@ -63,9 +44,7 @@ module.exports = function (grunt) {
                     preserveComments: 'some',
                     beautify: true,
                     exportAll: true,
-                    report: 'gzip',
-//                    banner: 'target.on("setup", function (evt, exports) {\n',
-//                    footer: '\n});'
+                    report: 'gzip'
                 },
                 files: {
                     '.tmp/api.js': [
