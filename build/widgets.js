@@ -216,8 +216,7 @@
             }
         }
     }
-    exports.on("init::complete", function() {
-        console.log("###INIT###COMPLETE###");
+    exports.on("init::success", function() {
         var len = queue.length;
         for (var i = 0; i < len; i += 1) {
             var args = Array.prototype.slice.call(queue[i]);
@@ -245,12 +244,10 @@
             }
         });
         iframe.on("success", function(event, data) {
-            console.log("init::success", data);
             iframe.close();
             exports.fire("init::success", data);
         });
         iframe.on("error", function(event, data) {
-            console.log("init::error", data);
             iframe.close();
             exports.fire("init::error", data);
         });
@@ -263,29 +260,18 @@
         console.log("playback");
         exports.fire("playback::complete");
     };
-    exports.record = function() {
+    exports.record = function(options) {
+        options = options || {};
         var iframe = interlace.load({
-            container: document.getElementById("containerEl"),
+            container: options.container,
             url: "widgets/recorder.html",
-            "class": "shadow",
-            params: {
-                api_key: "123",
-                signature: "abc123"
-            },
+            params: options.params,
             options: {}
         });
         iframe.on("ready", function() {
-            console.log("iframe ready");
-            exports.fire("init::complete");
-            iframe.send("reveal", {
-                message: "I am your father!"
-            });
-        });
-        iframe.on("shout", function(event, data) {
-            console.log("### FROM CHILD ###", data);
+            exports.fire("record::ready");
         });
         iframe.on("close", function(event, data) {
-            console.log("CLOSE FROM PARENT");
             iframe.close();
         });
         iframe.on("hide", function(event, data) {

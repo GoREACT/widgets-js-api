@@ -29,14 +29,15 @@ function setup() {
     }
 }
 
-exports.on('init::complete', function () {
-    console.log('###INIT###COMPLETE###');
+/**
+ * Fired by init.js if successful, initializes the rest of the queued items
+ */
+exports.on('init::success', function () {
     var len = queue.length;
     for (var i = 0; i < len; i += 1) {
         var args = Array.prototype.slice.call(queue[i]);
         var method = args.shift();
         if (exports.hasOwnProperty(method)) {
-//            console.log('METHOD', method);
             try {
                 exports[method].apply(exports, args);
             } catch (e) {

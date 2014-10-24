@@ -37,6 +37,15 @@
         console.log('INIT::SUCCESS');
     });
 
+    goreact.on('record::ready', function(){
+        console.log('record::ready');
+    });
+
+
+    goreact.record({
+        container: document.getElementById('containerEl')
+    });
+
 
     //    widget.send('dosomething', {});
 
