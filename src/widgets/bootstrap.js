@@ -16,7 +16,8 @@ dispatcher(exports);
 
 
 function setup() {
-    for (var i = 0; i < queue.length; i += 1) {
+    var i = queue.length;
+    while(i--) {
         var args = Array.prototype.slice.call(queue[i]);
         var method = args.shift();
         if (method === 'init' || method === 'on') {
@@ -29,6 +30,7 @@ function setup() {
 }
 
 exports.on('init::complete', function () {
+    console.log('###INIT###COMPLETE###');
     var len = queue.length;
     for (var i = 0; i < len; i += 1) {
         var args = Array.prototype.slice.call(queue[i]);

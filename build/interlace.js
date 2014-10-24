@@ -119,6 +119,24 @@
                 var json = JSON.stringify(data);
                 this.contentWindow.postMessage(json, "*");
             };
+            iframe.show = function() {
+                if (iframe.parentNode.style.display === "none") {
+                    iframe.parentNode.style.display = iframe.$$display;
+                }
+            };
+            iframe.hide = function() {
+                if (!iframe.$$display) {
+                    iframe.$$display = iframe.parentNode.style.display;
+                    iframe.parentNode.style.display = "none";
+                }
+            };
+            iframe.close = function() {
+                if (iframe.parentNode.getAttribute("data-ic")) {
+                    iframe.parentNode.parentNode.removeChild(iframe.parentNode);
+                } else {
+                    iframe.parentNode.removeChild(iframe);
+                }
+            };
             iframe.onload = function() {
                 iframe.removeAttribute("style");
                 if (payload.class) {
@@ -127,9 +145,7 @@
                 iframe.fire("loaded");
             };
             var container = payload.container;
-            if (isElement(container)) {
-                container.setAttribute("data-ic", "container-" + frameId);
-            } else if (typeof container === "object") {
+            if (isElement(container)) {} else if (typeof container === "object") {
                 container = document.createElement("div");
                 container.setAttribute("data-ic", "container-" + frameId);
                 container.setAttribute("style", styleToString(payload.container));

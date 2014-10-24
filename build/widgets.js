@@ -120,6 +120,24 @@
                 var json = JSON.stringify(data);
                 this.contentWindow.postMessage(json, "*");
             };
+            iframe.show = function() {
+                if (iframe.parentNode.style.display === "none") {
+                    iframe.parentNode.style.display = iframe.$$display;
+                }
+            };
+            iframe.hide = function() {
+                if (!iframe.$$display) {
+                    iframe.$$display = iframe.parentNode.style.display;
+                    iframe.parentNode.style.display = "none";
+                }
+            };
+            iframe.close = function() {
+                if (iframe.parentNode.getAttribute("data-ic")) {
+                    iframe.parentNode.parentNode.removeChild(iframe.parentNode);
+                } else {
+                    iframe.parentNode.removeChild(iframe);
+                }
+            };
             iframe.onload = function() {
                 iframe.removeAttribute("style");
                 if (payload.class) {
@@ -128,9 +146,7 @@
                 iframe.fire("loaded");
             };
             var container = payload.container;
-            if (isElement(container)) {
-                container.setAttribute("data-ic", "container-" + frameId);
-            } else if (typeof container === "object") {
+            if (isElement(container)) {} else if (typeof container === "object") {
                 container = document.createElement("div");
                 container.setAttribute("data-ic", "container-" + frameId);
                 container.setAttribute("style", styleToString(payload.container));
@@ -188,7 +204,8 @@
     }
     dispatcher(exports);
     function setup() {
-        for (var i = 0; i < queue.length; i += 1) {
+        var i = queue.length;
+        while (i--) {
             var args = Array.prototype.slice.call(queue[i]);
             var method = args.shift();
             if (method === "init" || method === "on") {
@@ -200,6 +217,7 @@
         }
     }
     exports.on("init::complete", function() {
+        console.log("###INIT###COMPLETE###");
         var len = queue.length;
         for (var i = 0; i < len; i += 1) {
             var args = Array.prototype.slice.call(queue[i]);
@@ -217,9 +235,37 @@
         console.log("collaborate");
         exports.fire("collaborate::complete");
     };
-    exports.init = function() {
-        console.log("init");
+    exports.init = function(settings) {
         var iframe = interlace.load({
+            url: "widgets/success.html",
+            params: settings,
+            options: {
+                width: "0px",
+                height: "0px"
+            }
+        });
+        iframe.on("success", function(event, data) {
+            console.log("init::success", data);
+            iframe.close();
+            exports.fire("init::success", data);
+        });
+        iframe.on("error", function(event, data) {
+            console.log("init::error", data);
+            iframe.close();
+            exports.fire("init::error", data);
+        });
+    };
+    exports.list = function() {
+        console.log("list");
+        exports.fire("list::complete");
+    };
+    exports.playback = function() {
+        console.log("playback");
+        exports.fire("playback::complete");
+    };
+    exports.record = function() {
+        var iframe = interlace.load({
+            container: document.getElementById("containerEl"),
             url: "widgets/recorder.html",
             "class": "shadow",
             params: {
@@ -238,17 +284,17 @@
         iframe.on("shout", function(event, data) {
             console.log("### FROM CHILD ###", data);
         });
-    };
-    exports.list = function() {
-        console.log("list");
-        exports.fire("list::complete");
-    };
-    exports.playback = function() {
-        console.log("playback");
-        exports.fire("playback::complete");
-    };
-    exports.record = function() {
-        exports.fire("record::complete");
+        iframe.on("close", function(event, data) {
+            console.log("CLOSE FROM PARENT");
+            iframe.close();
+        });
+        iframe.on("hide", function(event, data) {
+            iframe.hide();
+        });
+        iframe.on("show", function(event, data) {
+            iframe.show();
+        });
+        return iframe;
     };
     exports.upload = function() {
         console.log("upload");

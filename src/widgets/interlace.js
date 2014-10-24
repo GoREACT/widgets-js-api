@@ -79,6 +79,27 @@ var interlace = (function () {
             this.contentWindow.postMessage(json, '*');
         };
 
+        iframe.show = function () {
+            if(iframe.parentNode.style.display === 'none') {
+                iframe.parentNode.style.display = iframe.$$display;
+            }
+        };
+
+        iframe.hide = function () {
+            if(!iframe.$$display) {
+                iframe.$$display = iframe.parentNode.style.display;
+                iframe.parentNode.style.display = 'none';
+            }
+        };
+
+        iframe.close = function () {
+            if(iframe.parentNode.getAttribute('data-ic')) { // if this id exist, we created it
+                iframe.parentNode.parentNode.removeChild(iframe.parentNode);
+            } else {
+                iframe.parentNode.removeChild(iframe);
+            }
+        };
+
         iframe.onload = function () {
             iframe.removeAttribute('style');
             if (payload.class) {
@@ -90,7 +111,7 @@ var interlace = (function () {
         // Append the iframe to our element.
         var container = payload.container;
         if (isElement(container)) {
-            container.setAttribute('data-ic', 'container-' + frameId);
+//            container.setAttribute('data-ic', 'container-' + frameId);
         } else if (typeof container === 'object') { // container is acting as a set of style options
             container = document.createElement('div');
             container.setAttribute('data-ic', 'container-' + frameId);
@@ -124,7 +145,7 @@ var interlace = (function () {
         data.$$event = event;
         var json = JSON.stringify(data);
 
-        if(interlaceId) {
+        if (interlaceId) {
             parent.postMessage(json, '*')
         }
     };
@@ -140,7 +161,7 @@ var interlace = (function () {
 //        console.log('message received', data);
 
         var iframe = document.getElementById(interlaceId);
-        if(iframe) { // we are the parent
+        if (iframe) { // we are the parent
 //            console.log('### WE ARE THE PARENT ###');
             iframe.fire(interlaceEvent, data);
         } else { // we are the child

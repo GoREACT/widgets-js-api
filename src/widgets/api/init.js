@@ -1,40 +1,24 @@
-exports.init = function () {
-    console.log('init');
+exports.init = function (settings) {
 
-//    var el = document.body;
     var iframe = interlace.load({
-//        container: undefined,
-//        container: document.getElementById('containerEl'),
-//        container: { // null, element, or object
-//            'position': 'absolute',
-//            'top': '50px',
-//            'left': '50px',
-//            'right': '50px',
-//            'bottom': '50px',
-//            'z-index': 99999
-//        },
-        url: 'widgets/recorder.html',
-        class: 'shadow',
-        params: {
-            api_key: '123',
-            signature: 'abc123'
-        },
+        url: 'widgets/success.html',
+        params: settings,
         options: {
-//            width: '100%',
-//            height: '100%'
+            width: '0px',
+            height: '0px'
         }
     });
 
-    iframe.on('ready', function () {
-        console.log('iframe ready');
-
-        exports.fire('init::complete');
-
-        iframe.send('reveal', {'message': 'I am your father!'});
+    iframe.on('success', function (event, data) {
+        console.log('init::success', data);
+        iframe.close();
+        exports.fire('init::success', data);
     });
 
-    iframe.on('shout', function (event, data) {
-        console.log('### FROM CHILD ###', data);
-    })
+    iframe.on('error', function (event, data) {
+        console.log('init::error', data);
+        iframe.close();
+        exports.fire('init::error', data);
+    });
 
 };

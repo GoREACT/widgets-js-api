@@ -3,15 +3,14 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title></title>
-    <style>
-        body {
-            background: #f39c12;
-        }
-    </style>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
 </head>
 <body>
+<div style="padding: 15px">
+    <div id="record_btn" class="btn btn-lg btn-primary">Open Widget</div>
+</div>
 
-<div id="containerEl" style="width: 800px;height: 600px;background: #2c3e50"></div>
+<div id="containerEl" style="width: 640px;height: 480px;margin: 0 auto"></div>
 
 <script src="../build/embedded-dot-syntax.js"></script>
 
@@ -34,19 +33,26 @@
         timestamp: 1413496405
     });
 
-    var widget = goreact.record({
-        container: window.body
+    goreact.on('init::success', function () {
+        console.log('INIT::SUCCESS');
     });
 
-    widget.on('ready', function(){
 
+    //    widget.send('dosomething', {});
+
+    //    goreact.on('record::complete', function(){
+    //        console.log('### record complete ###');
+    //    });
+
+    document.getElementById('record_btn').addEventListener('click', function (evt) {
+        var widget = goreact.record({
+            container: document.getElementById('containerEl')
+        });
+
+        widget.on('ready', function () {
+            console.log('widget is ready');
+        });
     });
-
-    widget.send('dosomething', {});
-
-//    goreact.on('record::complete', function(){
-//        console.log('### record complete ###');
-//    });
 
 </script>
 </body>

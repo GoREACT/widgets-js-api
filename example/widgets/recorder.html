@@ -7,14 +7,14 @@
     <style>
         body {
             /*background-color: transparent*/
-            background-color: #2980b9;
+            background-color: #ecf0f1;
         }
 
         .box {
             position: absolute;
             width: 50px;
             height: 50px;
-            background: #3498db;
+            background: #fff;
         }
 
         .left {
@@ -32,19 +32,53 @@
         .top {
             top: 10px;
         }
+
+        .banner {
+            padding: 15px;
+            text-align: center;
+            background-color: #f39c12;
+            color: white;
+            font-size: 48px;
+            border-bottom: 5px solid white;
+        }
+
+        .footer {
+            position: absolute;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            text-align: center;
+            background-color: #2980b9;
+            color: white;
+            font-size: 36px;
+            border-top: 5px solid white;
+            bottom: 0;
+        }
     </style>
 </head>
 <body>
-<div class="box top left"></div>
-<div class="box top right"></div>
-<div class="box bottom left"></div>
-<div class="box bottom right"></div>
+<div>
+    <div class="banner">Recorder</div>
+    <div class="footer">
+        <div id="close_btn" class="btn btn-lg btn-primary">Close</div>
+    </div>
+    <div class="box top left"></div>
+    <div class="box top right"></div>
+    <div class="box bottom left"></div>
+    <div class="box bottom right"></div>
+</div>
+
 <script src="../../build/interlace.js"></script>
 <script>
     interlace.on('reveal', function (event, data) {
         console.log('### FROM PARENT ###', data);
         interlace.send('shout', { message: 'noooooo!!!!'});
     });
+
+    document.getElementById('close_btn').addEventListener('click', function(){
+        interlace.send('close')
+    });
+
 </script>
 </body>
 </html>
