@@ -6,7 +6,7 @@ module.exports = function (grunt) {
             files: ['src/**/*.js']
         },
         uglify: {
-            embedded: {
+            build_embedded: {
                 options: {
                     mangle: false,
                     compress: false,
@@ -23,7 +23,7 @@ module.exports = function (grunt) {
                     ]
                 }
             },
-            embedded_min: {
+            build_embedded_min: {
                 options: {
                     report: 'min',
                     compress: true
@@ -37,7 +37,7 @@ module.exports = function (grunt) {
                     ]
                 }
             },
-            api: {
+            prep_api: {
                 options: {
                     mangle: false,
                     compress: false,
@@ -52,7 +52,7 @@ module.exports = function (grunt) {
                     ]
                 }
             },
-            widgets: {
+            prep_widgets: {
                 options: {
                     mangle: false,
                     compress: false,
@@ -65,29 +65,44 @@ module.exports = function (grunt) {
                     '.tmp/widgets.js': [
                         'src/widgets/package.js',
                         'src/widgets/dispatcher.js',
+                        'src/widgets/interlace.js',
                         'src/widgets/bootstrap.js'
                     ]
                 }
             },
-            build: {
+            build_widgets: {
                 options: {
                     mangle: false,
                     compress: false,
                     preserveComments: 'some',
                     exportAll: true,
                     beautify: true,
-                    report: 'gzip',
                     banner: '(function(){\n',
                     footer: '\n})();'
                 },
                 files: {
                     'build/widgets.js': [
                         '.tmp/widgets.js',
-                        '.tmp/api.js'
+                        '.tmp/api.js',
+                        'bower_components/pym.js/src/pym.js'
                     ]
                 }
             },
-            build_min: {
+            prettify_build_widgets: {
+                options: {
+                    mangle: false,
+                    compress: false,
+                    preserveComments: 'some',
+                    exportAll: true,
+                    beautify: true
+                },
+                files: {
+                    'build/widgets.js': [ // prettify
+                        'build/widgets.js'
+                    ]
+                }
+            },
+            build_widgets_min: {
                 options: {
                     report: 'min',
                     compress: true
@@ -125,4 +140,5 @@ module.exports = function (grunt) {
 
 //    grunt.registerTask('default', ['jshint', 'uglify', 'replace']);
     grunt.registerTask('default', ['uglify', 'replace', 'clean']);
+//    grunt.registerTask('default', ['uglify', 'replace']);
 };
