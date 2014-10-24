@@ -29,6 +29,14 @@ exports.init = function () {
         console.log('iframe ready');
 
         exports.fire('init::complete');
+
+        setTimeout(function(){
+            iframe.send('whatever', {'message': 'I am your father!'});
+        });
     });
+
+    iframe.on('shout', function (data) {
+        console.log('FROM CHILD', data);
+    })
 
 };

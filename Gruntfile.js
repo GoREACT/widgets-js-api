@@ -6,6 +6,7 @@ module.exports = function (grunt) {
             files: ['src/**/*.js']
         },
         uglify: {
+            // :: embedded-dot-syntax.js & embedded-str-syntax.js ::
             build_embedded: {
                 options: {
                     mangle: false,
@@ -37,6 +38,8 @@ module.exports = function (grunt) {
                     ]
                 }
             },
+
+            // :: widgets.js ::
             prep_api: {
                 options: {
                     mangle: false,
@@ -110,6 +113,50 @@ module.exports = function (grunt) {
                 files: {
                     'build/widgets.min.js': [
                         'build/widgets.js'
+                    ]
+                }
+            },
+
+            // :: interlace.js ::
+            build_interlace: {
+                options: {
+                    mangle: false,
+                    compress: false,
+                    preserveComments: 'some',
+                    exportAll: true,
+                    beautify: true,
+                    banner: '(function(){\n',
+                    footer: '\n window.interlace = interlace;\n})();'
+                },
+                files: {
+                    'build/interlace.js': [
+                        'src/widgets/dispatcher.js',
+                        'src/widgets/interlace.js',
+                    ]
+                }
+            },
+            prettify_interlace: {
+                options: {
+                    mangle: false,
+                    compress: false,
+                    preserveComments: 'some',
+                    exportAll: true,
+                    beautify: true
+                },
+                files: {
+                    'build/interlace.js': [
+                        'build/interlace.js'
+                    ]
+                }
+            },
+            build_interlace_min: {
+                options: {
+                    report: 'min',
+                    compress: true
+                },
+                files: {
+                    'build/interlace.min.js': [
+                        'build/interlace.js'
                     ]
                 }
             }

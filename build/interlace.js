@@ -1,5 +1,4 @@
 (function() {
-    var exports = window["goreact"];
     var dispatcher = function(target, scope, map) {
         var listeners = {};
         function off(event, callback) {
@@ -167,90 +166,5 @@
         });
         return exports;
     }();
-    var queue = exports.q || exports;
-    if (exports.hasOwnProperty("q")) {
-        exports = window["goreact"] = function() {
-            var args = Array.prototype.slice.call(arguments);
-            var method = args.shift();
-            if (exports.hasOwnProperty(method)) {
-                exports[method].apply(exports, args);
-            }
-        };
-    }
-    dispatcher(exports);
-    function setup() {
-        for (var i = 0; i < queue.length; i += 1) {
-            var args = Array.prototype.slice.call(queue[i]);
-            var method = args.shift();
-            if (method === "init" || method === "on") {
-                if (exports.hasOwnProperty(method)) {
-                    queue.splice(i, 1);
-                    exports[method].apply(exports, args);
-                }
-            }
-        }
-    }
-    exports.on("init::complete", function() {
-        var len = queue.length;
-        for (var i = 0; i < len; i += 1) {
-            var args = Array.prototype.slice.call(queue[i]);
-            var method = args.shift();
-            if (exports.hasOwnProperty(method)) {
-                console.log("METHOD", method);
-                try {
-                    exports[method].apply(exports, args);
-                } catch (e) {}
-            }
-        }
-        queue.length = 0;
-    });
-    setTimeout(setup);
-    exports.collaborate = function() {
-        console.log("collaborate");
-        exports.fire("collaborate::complete");
-    };
-    exports.init = function() {
-        console.log("init");
-        var iframe = interlace.load({
-            container: document.getElementById("containerEl"),
-            url: "widgets/recorder.html",
-            "class": "shadow",
-            params: {
-                api_key: "123",
-                signature: "abc123"
-            },
-            options: {
-                width: "100%",
-                height: "100%"
-            }
-        });
-        iframe.on("ready", function() {
-            console.log("iframe ready");
-            exports.fire("init::complete");
-            setTimeout(function() {
-                iframe.send("whatever", {
-                    message: "I am your father!"
-                });
-            });
-        });
-        iframe.on("shout", function(data) {
-            console.log("FROM CHILD", data);
-        });
-    };
-    exports.list = function() {
-        console.log("list");
-        exports.fire("list::complete");
-    };
-    exports.playback = function() {
-        console.log("playback");
-        exports.fire("playback::complete");
-    };
-    exports.record = function() {
-        console.log("record");
-        exports.fire("record::complete");
-    };
-    exports.upload = function() {
-        console.log("upload");
-        exports.fire("upload::complete");
-    };
+    window.interlace = interlace;
 })();

@@ -33,19 +33,19 @@
             top: 10px;
         }
     </style>
-    <!--<script src="js/pym.js"></script>-->
-
 </head>
 <body>
-<!--<div style="height: 100%;">-->
 <div class="box top left"></div>
 <div class="box top right"></div>
 <div class="box bottom left"></div>
 <div class="box bottom right"></div>
-<!--</div>-->
+<script src="../../build/interlace.js"></script>
 <script>
-    //    var pymChild = new pym.Child();
-    //    console.log('what is height', parent.innerHeight);
+    debugger;
+    interlace.on('whatever', function (data) {
+        console.log('###whatever received####', data);
+        interlace.send('shout', { message: 'noooooo!!!!'});
+    });
 </script>
 </body>
 </html>
