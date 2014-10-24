@@ -34,10 +34,16 @@
         timestamp: 1413496405
     });
 
-//    goreact.record({
-//        container: window.body
-//    });
-//
+    var widget = goreact.record({
+        container: window.body
+    });
+
+    widget.on('ready', function(){
+
+    });
+
+    widget.send('dosomething', {});
+
 //    goreact.on('record::complete', function(){
 //        console.log('### record complete ###');
 //    });

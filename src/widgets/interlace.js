@@ -84,7 +84,7 @@ var interlace = (function () {
             if (payload.class) {
                 iframe.setAttribute('class', payload.class);
             }
-            iframe.fire('ready');
+            iframe.fire('loaded');
         };
 
         // Append the iframe to our element.
@@ -149,10 +149,10 @@ var interlace = (function () {
         }
     });
 
-//    var interlaceId = getParam('interlace');
-//    if (interlaceId) { // this file has been loaded into an iframe by interlace
-//        exports.send(parent, 'ready', { message: 'from your child'});
-//    }
+    var interlaceId = getParam('interlace');
+    if (interlaceId) { // this file has been loaded into an iframe by interlace
+        exports.send('ready');
+    }
 
     return exports;
 

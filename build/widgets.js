@@ -125,7 +125,7 @@
                 if (payload.class) {
                     iframe.setAttribute("class", payload.class);
                 }
-                iframe.fire("ready");
+                iframe.fire("loaded");
             };
             var container = payload.container;
             if (isElement(container)) {
@@ -170,6 +170,10 @@
                 exports.fire(interlaceEvent, data);
             }
         });
+        var interlaceId = getParam("interlace");
+        if (interlaceId) {
+            exports.send("ready");
+        }
         return exports;
     }();
     var queue = exports.q || exports;
@@ -216,17 +220,13 @@
     exports.init = function() {
         console.log("init");
         var iframe = interlace.load({
-            container: document.getElementById("containerEl"),
             url: "widgets/recorder.html",
             "class": "shadow",
             params: {
                 api_key: "123",
                 signature: "abc123"
             },
-            options: {
-                width: "100%",
-                height: "100%"
-            }
+            options: {}
         });
         iframe.on("ready", function() {
             console.log("iframe ready");

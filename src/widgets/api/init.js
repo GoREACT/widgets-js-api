@@ -4,7 +4,7 @@ exports.init = function () {
 //    var el = document.body;
     var iframe = interlace.load({
 //        container: undefined,
-        container: document.getElementById('containerEl'),
+//        container: document.getElementById('containerEl'),
 //        container: { // null, element, or object
 //            'position': 'absolute',
 //            'top': '50px',
@@ -20,8 +20,8 @@ exports.init = function () {
             signature: 'abc123'
         },
         options: {
-            width: '100%',
-            height: '100%'
+//            width: '100%',
+//            height: '100%'
         }
     });
 

@@ -124,7 +124,7 @@
                 if (payload.class) {
                     iframe.setAttribute("class", payload.class);
                 }
-                iframe.fire("ready");
+                iframe.fire("loaded");
             };
             var container = payload.container;
             if (isElement(container)) {
@@ -169,6 +169,10 @@
                 exports.fire(interlaceEvent, data);
             }
         });
+        var interlaceId = getParam("interlace");
+        if (interlaceId) {
+            exports.send("ready");
+        }
         return exports;
     }();
     window.interlace = interlace;
