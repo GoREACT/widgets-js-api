@@ -41,9 +41,8 @@
 <div class="box bottom right"></div>
 <script src="../../build/interlace.js"></script>
 <script>
-    debugger;
-    interlace.on('whatever', function (data) {
-        console.log('###whatever received####', data);
+    interlace.on('reveal', function (event, data) {
+        console.log('### FROM PARENT ###', data);
         interlace.send('shout', { message: 'noooooo!!!!'});
     });
 </script>

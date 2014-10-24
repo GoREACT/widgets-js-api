@@ -30,13 +30,11 @@ exports.init = function () {
 
         exports.fire('init::complete');
 
-        setTimeout(function(){
-            iframe.send('whatever', {'message': 'I am your father!'});
-        });
+        iframe.send('reveal', {'message': 'I am your father!'});
     });
 
-    iframe.on('shout', function (data) {
-        console.log('FROM CHILD', data);
+    iframe.on('shout', function (event, data) {
+        console.log('### FROM CHILD ###', data);
     })
 
 };

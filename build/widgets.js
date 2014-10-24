@@ -114,7 +114,11 @@
             iframe.setAttribute("allowtransparency", "true");
             iframe.setAttribute("style", "display:none");
             iframe.send = function(event, data) {
-                exports.send(iframe, event, data);
+                data = data || {};
+                data.$$id = this.id;
+                data.$$event = event;
+                var json = JSON.stringify(data);
+                this.contentWindow.postMessage(json, "*");
             };
             iframe.onload = function() {
                 iframe.removeAttribute("style");
@@ -141,14 +145,16 @@
             dispatcher(iframe);
             return iframe;
         };
-        exports.send = function(target, event, data) {
-            debugger;
+        exports.send = function(event, data) {
+            var target = arguments[2];
+            var interlaceId = getParam("interlace");
             data = data || {};
-            data.$$id = target.id || getParam("interlace");
+            data.$$id = interlaceId;
             data.$$event = event;
             var json = JSON.stringify(data);
-            var targetWindow = target.contentWindow || target;
-            targetWindow.postMessage(json, "*");
+            if (interlaceId) {
+                parent.postMessage(json, "*");
+            }
         };
         dispatcher(exports);
         window.addEventListener("message", function(evt) {
@@ -157,7 +163,6 @@
             var interlaceEvent = data.$$event;
             delete data.$$id;
             delete data.$$event;
-            console.log("message received", data);
             var iframe = document.getElementById(interlaceId);
             if (iframe) {
                 iframe.fire(interlaceEvent, data);
@@ -196,7 +201,6 @@
             var args = Array.prototype.slice.call(queue[i]);
             var method = args.shift();
             if (exports.hasOwnProperty(method)) {
-                console.log("METHOD", method);
                 try {
                     exports[method].apply(exports, args);
                 } catch (e) {}
@@ -227,14 +231,12 @@
         iframe.on("ready", function() {
             console.log("iframe ready");
             exports.fire("init::complete");
-            setTimeout(function() {
-                iframe.send("whatever", {
-                    message: "I am your father!"
-                });
+            iframe.send("reveal", {
+                message: "I am your father!"
             });
         });
-        iframe.on("shout", function(data) {
-            console.log("FROM CHILD", data);
+        iframe.on("shout", function(event, data) {
+            console.log("### FROM CHILD ###", data);
         });
     };
     exports.list = function() {
@@ -246,7 +248,6 @@
         exports.fire("playback::complete");
     };
     exports.record = function() {
-        console.log("record");
         exports.fire("record::complete");
     };
     exports.upload = function() {

@@ -34,7 +34,7 @@ exports.on('init::complete', function () {
         var args = Array.prototype.slice.call(queue[i]);
         var method = args.shift();
         if (exports.hasOwnProperty(method)) {
-            console.log('METHOD', method);
+//            console.log('METHOD', method);
             try {
                 exports[method].apply(exports, args);
             } catch (e) {

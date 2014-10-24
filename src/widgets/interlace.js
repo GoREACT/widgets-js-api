@@ -71,7 +71,12 @@ var interlace = (function () {
         iframe.setAttribute('style', 'display:none');
 
         iframe.send = function (event, data) {
-            exports.send(iframe, event, data);
+            data = data || {};
+            data.$$id = this.id;
+            data.$$event = event;
+            var json = JSON.stringify(data);
+
+            this.contentWindow.postMessage(json, '*');
         };
 
         iframe.onload = function () {
@@ -109,15 +114,19 @@ var interlace = (function () {
         return iframe;
     };
 
-    exports.send = function (target, event, data) {
-        debugger;
+    exports.send = function (event, data) {
+        var target = arguments[2];
+
+        var interlaceId = getParam('interlace');
+
         data = data || {};
-        data.$$id = target.id || getParam('interlace');
+        data.$$id = interlaceId;
         data.$$event = event;
         var json = JSON.stringify(data);
 
-        var targetWindow = target.contentWindow || target;
-        targetWindow.postMessage(json, '*');
+        if(interlaceId) {
+            parent.postMessage(json, '*')
+        }
     };
 
     dispatcher(exports);
@@ -128,12 +137,14 @@ var interlace = (function () {
         var interlaceEvent = data.$$event;
         delete data.$$id;
         delete data.$$event;
-        console.log('message received', data);
+//        console.log('message received', data);
 
         var iframe = document.getElementById(interlaceId);
         if(iframe) { // we are the parent
+//            console.log('### WE ARE THE PARENT ###');
             iframe.fire(interlaceEvent, data);
         } else { // we are the child
+//            console.log('### WE ARE THE CHILD ####');
             exports.fire(interlaceEvent, data);
         }
     });
