@@ -7,7 +7,9 @@ GoREACT's Widget JavaScript API is a lightweight library for interfacing with Go
 
 Paste the following code on to each page of you site you would like to access GoREACT widgets. For single-page applications, only paste it once on the main index page.
 
+```
 	!function(){function a(a){var c=[];c.methods=a.split(" "),c.factory=function(a){return function(){var b=Array.prototype.slice.call(arguments);return b.unshift(a),c.push(b),c}};for(var d=0;d<c.methods.length;d++){var e=c.methods[d];c[e]=c.factory(e)}var f=document.getElementsByTagName("script")[0];f.parentNode.insertBefore(b,f),window["goreact"]=c}var b=document.createElement("script");b.type="text/javascript",b.async=!0,b.src="../build/widgets.js",a("init on destroy record upload playback collaborate list")}();
+```
 
 ######Authorization
 ---
@@ -60,6 +62,7 @@ It will expire the signature at the given time. If not provided, *signature will
 
 #####Example
 
+```
 	<script>
 	goreact.authorize({
         api_key: "9plmvlph",
@@ -73,6 +76,7 @@ It will expire the signature at the given time. If not provided, *signature will
         timestamp: 1413496405
     });
     </script>
+```
 
 ####goreact.record( options )
 
@@ -167,9 +171,11 @@ Dispatched when widget is initialized and ready.
 
 **Example**
 
+```
 	goreact.on('record::ready', function(evt, widget){
 		console.log(evt, widget.id, widget.url)
 	});
+```
 
 **[widget]:destroyed**
 
@@ -177,6 +183,8 @@ Dispatched when widget has been removed from the DOM.
 
 **Example**
 
+```
 	goreact.on('record::destroyed', function(evt, widget){
 		console.log(evt, widget.id, widget.url)
 	});
+```
