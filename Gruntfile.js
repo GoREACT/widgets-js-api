@@ -31,10 +31,10 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'build/embedded-str-syntax.min.js': [
-                        'build/embedded/str-syntax.js'
+                        'src/embedded/str-syntax.js'
                     ],
                     'build/embedded-dot-syntax.min.js': [
-                        'build/embedded/dot-syntax.js'
+                        'src/embedded/dot-syntax.js'
                     ]
                 }
             },
