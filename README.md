@@ -60,6 +60,20 @@ The role of the context
 
 It will expire the signature at the given time. If not provided, *signature will not expire*?
 
+######Events
+---
+
+The following events are dispatched when goreact.authorize() is called.
+
+**authorize::success**
+
+Invoked when the authorization was successful.
+
+**authorize::error**
+
+Invoked when the authorization has failed.
+
+
 #####Example
 
 ```js
@@ -74,6 +88,11 @@ goreact.authorize({
     signature: "5eb63bbbe01eeed093cb22bb8f5acdc3",
     timestamp: 1413496405
 });
+
+goreact.on('authorize::success', function(){...});
+
+goreact.on('authorize::error', function(){...});
+
 ```
 
 ####goreact.record( options )
