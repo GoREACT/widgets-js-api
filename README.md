@@ -9,12 +9,12 @@ Paste the following code on to each page of you site you would like to access Go
 
 	!function(){function a(a){var c=[];c.methods=a.split(" "),c.factory=function(a){return function(){var b=Array.prototype.slice.call(arguments);return b.unshift(a),c.push(b),c}};for(var d=0;d<c.methods.length;d++){var e=c.methods[d];c[e]=c.factory(e)}var f=document.getElementsByTagName("script")[0];f.parentNode.insertBefore(b,f),window["goreact"]=c}var b=document.createElement("script");b.type="text/javascript",b.async=!0,b.src="../build/widgets.js",a("init on destroy record upload playback collaborate list")}();
 
-######Initialization
+######Authorization
 ---
 
-###goreact.init( settings )
+###goreact.authorize( settings )
 
-Used to initialize GoReact and validate user. This function must be called and completed before any other API calls are made.
+Used to authorize GoReact and validate user. This function must be called and completed before any other API calls are made.
 
 ######Required params
 ---
@@ -61,7 +61,7 @@ It will expire the signature at the given time. If not provided, *signature will
 #####Example
 
 	<script>
-	goreact.init({
+	goreact.authorize({
         api_key: "9plmvlph",
         user_id: "5432b03462ccc7ea7bcc2c41",
         context_id: "5432b0923ea55a487d96b076",
@@ -78,26 +78,105 @@ It will expire the signature at the given time. If not provided, *signature will
 
 Loads a recording widget.
 
+**title : String** 
+
+*Optional.* Name of the recording. Will display in widget and show up in the list with title.
+
+**container : &lt;body> / DOM / Style** 
+
+*Optional.* The container indicates where to load the widget. There are three options available:
+
+1. **Default:** &lt;body> tag.
+2. **DOM element:** serves as a container. The element controls the dimensions of the widget. Having the size defined either through width / height or absolute positioning is recommended.
+3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
+
+
 ####goreact.upload( options )
 
 Loads an upload widget.
+
+**title : String** 
+
+*Optional.* Name of the recording. Will display in widget and show up in the list with title.
+
+**container : &lt;body> / DOM / Style** 
+
+*Optional.* The container indicates where to load the widget. There are three options available:
+
+1. **Default:** &lt;body> tag.
+2. **DOM element:** serves as a container. The element controls the dimensions of the widget. Having the size defined either through width / height or absolute positioning is recommended.
+3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
 
 ####goreact.list( options )
 
 Loads a widget listing recorded videos.
 
+**container : &lt;body> / DOM / Style** 
+
+*Optional.* The container indicates where to load the widget. There are three options available:
+
+1. **Default:** &lt;body> tag.
+2. **DOM element:** serves as a container. The element controls the dimensions of the widget. Having the size defined either through width / height or absolute positioning is recommended.
+3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
+
 ####goreact.playback( options )
 
 Loads a playback widget to play a particular session.
+
+**goreact_id : String** 
+
+This ID is used to load the media and its dependencies in the recording widget.
+
+**container : &lt;body> / DOM / Style** 
+
+*Optional.* The container indicates where to load the widget. There are three options available:
+
+1. **Default:** &lt;body> tag.
+2. **DOM element:** serves as a container. The element controls the dimensions of the widget. Having the size defined either through width / height or absolute positioning is recommended.
+3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
 
 ####goreact.collaborate( options )
 
 Loads a widget to invoke reviewing and feedback of a video.
 
-####goreact.destroy( options )
+**goreact_id : String** 
+
+This ID is used to load the media and its dependencies in the recording widget.
+
+**container : &lt;body> / DOM / Style** 
+
+*Optional.* The container indicates where to load the widget. There are three options available:
+
+1. **Default:** &lt;body> tag.
+2. **DOM element:** serves as a container. The element controls the dimensions of the widget. Having the size defined either through width / height or absolute positioning is recommended.
+3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
+
+####goreact.destroy( widgetId )
 
 Unloads a widget by ID.
 
 ####goreact.on( event, handler )
 
 Subscribes to events dispatched by the widgets.
+
+Widgets can dispatch the following events:
+
+**[widget]:ready**
+
+Dispatched when widget is initialized and ready.
+
+**Example**
+
+	goreact.on('record::ready', function(evt, widget){
+		console.log(evt, widget.id, widget.url)
+	});
+
+**[widget]:destroyed**
+
+Dispatched when widget has been removed from the DOM.
+
+**Example**
+
+	goreact.on('record::destroyed', function(evt, widget){
+		console.log(evt, widget.id, widget.url)
+	});
