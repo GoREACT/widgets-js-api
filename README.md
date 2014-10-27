@@ -19,27 +19,27 @@ Used to initialize GoReact and validate user. This function must be called and c
 ######Required params
 ---
 
-**api_key : String **
+**api_key : String**
 
 Key used to interface with GoReact's JavaScript API.
 
-**user_id : Number or String **
+**user_id : Number or String**
 
 The ID of the current authenticated user.
 
-**first_name : String **
+**first_name : String**
 
 The first name of the current authenticated user.
 
-**last_name : String **
+**last_name : String**
 
 The last name of the current authenticated user.
 
-**email : String **
+**email : String**
 
 The email address of the current authenticated user.
 
-**context_id : String **
+**context_id : String**
 
 The id of the context which represents the scope of a given set of videos
 
