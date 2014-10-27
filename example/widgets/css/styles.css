@@ -2,6 +2,13 @@ body {
     background-color: transparent
 }
 
+.animated-2x {
+    -webkit-animation-duration: 0.5s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
 .mac-dialog {
     position: absolute;
     top: 0;
