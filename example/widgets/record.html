@@ -7,28 +7,29 @@
     <link rel="stylesheet" href="css/styles.css"/>
 </head>
 <body>
-<div>
-    <div class="banner">Recorder</div>
-    <div class="footer">
-        <div id="close_btn" class="btn btn-lg btn-primary">Close</div>
+<div class="mac-dialog animated fadeIn">
+    <div class="mac-header">
+        <div class="mac-title">Record</div>
+        <div class="mac-buttons">
+            <div class="mac-button mac-close"></div>
+            <div class="mac-button mac-min"></div>
+            <div class="mac-button mac-max"></div>
+        </div>
     </div>
-    <div class="box top left"></div>
-    <div class="box top right"></div>
-    <div class="box bottom left"></div>
-    <div class="box bottom right"></div>
+    <div class="mac-body">
+        <h1>Record a video</h1>
+
+        <div style="text-align: center;position: absolute;bottom: 15px;right: 15px">
+            <div id="close_btn" class="btn btn-default">Close</div>
+        </div>
+    </div>
 </div>
 
 <script src="../../build/interlace.js"></script>
 <script>
-    interlace.on('reveal', function (event, data) {
-        console.log('### FROM PARENT ###', data);
-        interlace.send('shout', {message: 'noooooo!!!!'});
-    });
-
     document.getElementById('close_btn').addEventListener('click', function () {
         interlace.send('destroy')
     });
-
 </script>
 </body>
 </html>
