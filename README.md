@@ -18,8 +18,7 @@ Paste the following code on to each page of you site you would like to access Go
 
 Used to authorize GoReact and validate user. This function must be called and completed before any other API calls are made.
 
-######Required params
----
+####Required params
 
 **api_key : String**
 
@@ -53,15 +52,13 @@ The name of the context which represents the scope of a given set of videos
 
 The role of the context
 
-######Optional params
----
+####Optional params
 
 **expires : UTC timestamp**
 
 It will expire the signature at the given time. If not provided, *signature will not expire*?
 
-######Events
----
+####Events
 
 The following events are dispatched when goreact.authorize() is called.
 
@@ -74,7 +71,7 @@ Invoked when the authorization was successful.
 Invoked when the authorization has failed.
 
 
-#####Example
+####Example
 
 ```js
 goreact.authorize({
@@ -95,6 +92,7 @@ goreact.on('authorize::error', function(evt, widget) {...});
 ```
 
 ###goreact.record( options )
+---
 
 Loads a recording widget.
 
@@ -112,6 +110,7 @@ Loads a recording widget.
 
 
 ###goreact.upload( options )
+---
 
 Loads an upload widget.
 
@@ -128,6 +127,7 @@ Loads an upload widget.
 3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
 
 ###goreact.list( options )
+---
 
 Loads a widget listing recorded videos.
 
@@ -140,6 +140,7 @@ Loads a widget listing recorded videos.
 3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
 
 ###goreact.playback( options )
+---
 
 Loads a playback widget to play a particular session.
 
@@ -156,6 +157,7 @@ This ID is used to load the media and its dependencies in the recording widget.
 3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
 
 ###goreact.collaborate( options )
+---
 
 Loads a widget to invoke reviewing and feedback of a video.
 
@@ -172,10 +174,12 @@ This ID is used to load the media and its dependencies in the recording widget.
 3. **Style:** Object that sets the style of the container created by GoREACT. This container acts like the default with the exception that you can set the dimensions, or any other property on the container.
 
 ###goreact.destroy( widgetId )
+---
 
 Unloads a widget by ID.
 
 ###goreact.on( event, handler )
+---
 
 Subscribes to events dispatched by the widgets.
 
