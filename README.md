@@ -171,7 +171,7 @@ Dispatched when widget is initialized and ready.
 
 **Example**
 
-```
+```js
 	goreact.on('record::ready', function(evt, widget){
 		console.log(evt, widget.id, widget.url)
 	});
@@ -183,7 +183,7 @@ Dispatched when widget has been removed from the DOM.
 
 **Example**
 
-```
+```javascript
 	goreact.on('record::destroyed', function(evt, widget){
 		console.log(evt, widget.id, widget.url)
 	});
