@@ -1,0 +1,49 @@
+body {
+    /*background-color: transparent*/
+    background-color: #ecf0f1;
+}
+
+.box {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: #fff;
+}
+
+.left {
+    left: 10px;
+}
+
+.right {
+    right: 10px;
+}
+
+.bottom {
+    bottom: 10px;
+}
+
+.top {
+    top: 10px;
+}
+
+.banner {
+    padding: 15px;
+    text-align: center;
+    background-color: #f39c12;
+    color: white;
+    font-size: 48px;
+    border-bottom: 5px solid white;
+}
+
+.footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    text-align: center;
+    background-color: #2980b9;
+    color: white;
+    font-size: 36px;
+    border-top: 5px solid white;
+    bottom: 0;
+}

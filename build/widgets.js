@@ -1,5 +1,13 @@
 (function() {
     var exports = window["goreact"];
+    if (!String.prototype.supplant) {
+        String.prototype.supplant = function(o) {
+            return this.replace(/\{([^{}]*)\}/g, function(a, b) {
+                var r = o[b];
+                return typeof r === "string" || typeof r === "number" ? r : a;
+            });
+        };
+    }
     var dispatcher = function(target, scope, map) {
         var listeners = {};
         function off(event, callback) {
@@ -238,10 +246,35 @@
         queue.length = 0;
     });
     setTimeout(setup);
-    exports.collaborate = function() {
-        console.log("collaborate");
-        exports.fire("collaborate::complete");
-    };
+    (function() {
+        var name = "collaborate";
+        exports[name] = function(options) {
+            options = options || {};
+            var widget = interlace.load({
+                container: options.container,
+                url: "widgets/{name}.html".supplant({
+                    name: name
+                }),
+                params: options.params
+            });
+            widget.type = name;
+            widget.on("destroy", function() {
+                widget.destroy();
+            });
+            widget.on("hide", function() {
+                widget.hide();
+            });
+            widget.on("show", function() {
+                widget.show();
+            });
+            widget.on("ready", function() {
+                exports.fire(name + "::ready", this);
+            });
+            widget.on("destroyed", function() {
+                exports.fire(name + "::destroyed", this);
+            });
+        };
+    })();
     exports.destroy = function(widgetId) {
         var widget = document.getElementById(widgetId);
         if (widget) {
@@ -268,40 +301,120 @@
             exports.fire("init::error", this);
         });
     };
-    exports.list = function() {
-        console.log("list");
-        exports.fire("list::complete");
-    };
-    exports.playback = function() {
-        console.log("playback");
-        exports.fire("playback::complete");
-    };
-    exports.record = function(options) {
-        options = options || {};
-        var widget = interlace.load({
-            container: options.container,
-            url: "widgets/recorder.html",
-            params: options.params
-        });
-        widget.type = "record";
-        widget.on("ready", function() {
-            exports.fire("record::ready", this);
-        });
-        widget.on("destroy", function() {
-            widget.destroy();
-        });
-        widget.on("destroyed", function() {
-            exports.fire("record::destroyed", this);
-        });
-        widget.on("hide", function() {
-            widget.hide();
-        });
-        widget.on("show", function() {
-            widget.show();
-        });
-    };
-    exports.upload = function() {
-        console.log("upload");
-        exports.fire("upload::complete");
-    };
+    (function() {
+        var name = "list";
+        exports[name] = function(options) {
+            options = options || {};
+            var widget = interlace.load({
+                container: options.container,
+                url: "widgets/{name}.html".supplant({
+                    name: name
+                }),
+                params: options.params
+            });
+            widget.type = name;
+            widget.on("destroy", function() {
+                widget.destroy();
+            });
+            widget.on("hide", function() {
+                widget.hide();
+            });
+            widget.on("show", function() {
+                widget.show();
+            });
+            widget.on("ready", function() {
+                exports.fire(name + "::ready", this);
+            });
+            widget.on("destroyed", function() {
+                exports.fire(name + "::destroyed", this);
+            });
+        };
+    })();
+    (function() {
+        var name = "playback";
+        exports[name] = function(options) {
+            options = options || {};
+            var widget = interlace.load({
+                container: options.container,
+                url: "widgets/{name}.html".supplant({
+                    name: name
+                }),
+                params: options.params
+            });
+            widget.type = name;
+            widget.on("destroy", function() {
+                widget.destroy();
+            });
+            widget.on("hide", function() {
+                widget.hide();
+            });
+            widget.on("show", function() {
+                widget.show();
+            });
+            widget.on("ready", function() {
+                exports.fire(name + "::ready", this);
+            });
+            widget.on("destroyed", function() {
+                exports.fire(name + "::destroyed", this);
+            });
+        };
+    })();
+    (function() {
+        var name = "record";
+        exports[name] = function(options) {
+            options = options || {};
+            var widget = interlace.load({
+                container: options.container,
+                url: "widgets/{name}.html".supplant({
+                    name: name
+                }),
+                params: options.params
+            });
+            widget.type = name;
+            widget.on("destroy", function() {
+                widget.destroy();
+            });
+            widget.on("hide", function() {
+                widget.hide();
+            });
+            widget.on("show", function() {
+                widget.show();
+            });
+            widget.on("ready", function() {
+                exports.fire(name + "::ready", this);
+            });
+            widget.on("destroyed", function() {
+                exports.fire(name + "::destroyed", this);
+            });
+        };
+    })();
+    (function() {
+        var name = "upload";
+        exports[name] = function(options) {
+            options = options || {};
+            var widget = interlace.load({
+                container: options.container,
+                url: "widgets/{name}.html".supplant({
+                    name: name
+                }),
+                params: options.params
+            });
+            widget.type = name;
+            widget.on("destroy", function() {
+                widget.destroy();
+            });
+            widget.on("hide", function() {
+                widget.hide();
+            });
+            widget.on("show", function() {
+                widget.show();
+            });
+            widget.on("ready", function() {
+                exports.fire(name + "::ready", this);
+            });
+            widget.on("destroyed", function() {
+                exports.fire(name + "::destroyed", this);
+            });
+        };
+    })();
 })();

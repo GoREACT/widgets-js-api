@@ -1,35 +1,39 @@
-exports.record = function (options) {
+(function () {
+    var name = 'record';
 
-    options = options || {};
+    exports[name] = function (options) {
 
-    var widget = interlace.load({
-        container: options.container,
-        url: 'widgets/recorder.html',
-        params: options.params
-    });
+        options = options || {};
 
-    widget.type = 'record';
+        var widget = interlace.load({
+            container: options.container,
+            url: 'widgets/{name}.html'.supplant({name: name}),
+            params: options.params
+        });
 
-    // :: actions :: //
-    widget.on('destroy', function () {
-        widget.destroy();
-    });
+        widget.type = name;
 
-    widget.on('hide', function () {
-        widget.hide();
-    });
+        // :: actions :: //
+        widget.on('destroy', function () {
+            widget.destroy();
+        });
 
-    widget.on('show', function () {
-        widget.show();
-    });
+        widget.on('hide', function () {
+            widget.hide();
+        });
 
-    // :: reactions :: //
-    widget.on('ready', function () {
-        exports.fire('record::ready', this);
-    });
+        widget.on('show', function () {
+            widget.show();
+        });
 
-    widget.on('destroyed', function () {
-        exports.fire('record::destroyed', this);
-    });
+        // :: reactions :: //
+        widget.on('ready', function () {
+            exports.fire(name + '::ready', this);
+        });
 
-};
+        widget.on('destroyed', function () {
+            exports.fire(name + '::destroyed', this);
+        });
+
+    };
+})();

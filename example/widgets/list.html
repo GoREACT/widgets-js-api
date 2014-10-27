@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/styles.css"/>
+</head>
+<body>
+<div>
+    <div class="banner">List</div>
+    <div class="footer">
+        <div id="close_btn" class="btn btn-lg btn-primary">Close</div>
+    </div>
+    <div class="box top left"></div>
+    <div class="box top right"></div>
+    <div class="box bottom left"></div>
+    <div class="box bottom right"></div>
+</div>
+
+<script src="../../build/interlace.js"></script>
+<script>
+    interlace.on('reveal', function (event, data) {
+        console.log('### FROM PARENT ###', data);
+        interlace.send('shout', {message: 'noooooo!!!!'});
+    });
+
+    document.getElementById('close_btn').addEventListener('click', function () {
+        interlace.send('destroy')
+    });
+
+</script>
+</body>
+</html>

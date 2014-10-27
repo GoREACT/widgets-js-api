@@ -6,8 +6,12 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
 </head>
 <body>
-<div style="padding: 15px">
-    <div id="record_btn" class="btn btn-lg btn-primary">Open Widget</div>
+<div style="padding: 15px;text-align: center">
+    <div id="record_btn" class="btn btn-primary">Record</div>
+    <div id="upload_btn" class="btn btn-primary">Upload</div>
+    <div id="list_btn" class="btn btn-primary">List</div>
+    <div id="playback_btn" class="btn btn-primary">Playback</div>
+    <div id="collaborate_btn" class="btn btn-primary">Collaborate</div>
 </div>
 
 <div id="containerEl" style="width: 640px;height: 480px;margin: 0 auto"></div>
@@ -56,12 +60,40 @@
     //        console.log('### record complete ###');
     //    });
 
-    document.getElementById('record_btn').addEventListener('click', function (evt) {
-//        goreact.destroy('widget-2');
+    var click = function (id, handler) {
+        document.getElementById(id).addEventListener('click', handler);
+    };
+
+    click('record_btn', function (evt) {
         goreact.record({
             container: document.getElementById('containerEl')
         });
     });
+
+    click('upload_btn', function (evt) {
+        goreact.upload({
+            container: document.getElementById('containerEl')
+        });
+    });
+
+    click('list_btn', function (evt) {
+        goreact.list({
+            container: document.getElementById('containerEl')
+        });
+    });
+
+    click('playback_btn', function (evt) {
+        goreact.playback({
+            container: document.getElementById('containerEl')
+        });
+    });
+
+    click('collaborate_btn', function (evt) {
+        goreact.collaborate({
+            container: document.getElementById('containerEl')
+        });
+    });
+
 
 </script>
 </body>
