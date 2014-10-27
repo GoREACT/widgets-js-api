@@ -1,14 +1,14 @@
 var interlace = (function () {
 
     var exports = {};
-    var prefix = 'interlace-';
+    var prefix = 'interlace_';
     var count = 0;
 
     function isElement(o) {
         return (
-                typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
+            typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
             o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string"
-            );
+        );
     }
 
     var hashToParams = function (hash) {
@@ -48,6 +48,10 @@ var interlace = (function () {
         return str;
     };
 
+    exports.prefix = function (value) {
+        prefix = value;
+    };
+
     exports.load = function (payload) {
         var frameId = prefix + (count += 1);
         var iframe = document.createElement('iframe');
@@ -56,6 +60,8 @@ var interlace = (function () {
         params.interlace = frameId;
 
         var url = payload.url + hashToParams(params);
+
+        payload.options = payload.options || {};
 
         // Append the initial width as a querystring parameter, and the fragment id
         iframe.id = frameId;
@@ -80,24 +86,25 @@ var interlace = (function () {
         };
 
         iframe.show = function () {
-            if(iframe.parentNode.style.display === 'none') {
+            if (iframe.parentNode.style.display === 'none') {
                 iframe.parentNode.style.display = iframe.$$display;
             }
         };
 
         iframe.hide = function () {
-            if(!iframe.$$display) {
+            if (!iframe.$$display) {
                 iframe.$$display = iframe.parentNode.style.display;
                 iframe.parentNode.style.display = 'none';
             }
         };
 
-        iframe.close = function () {
-            if(iframe.parentNode.getAttribute('data-ic')) { // if this id exist, we created it
+        iframe.destroy = function () {
+            if (iframe.parentNode.getAttribute('data-ic')) { // if this id exist, we created it
                 iframe.parentNode.parentNode.removeChild(iframe.parentNode);
             } else {
                 iframe.parentNode.removeChild(iframe);
             }
+            iframe.fire('destroyed');
         };
 
         iframe.onload = function () {
@@ -122,6 +129,11 @@ var interlace = (function () {
             container.setAttribute('data-ic', 'container-' + frameId);
             container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
             document.body.appendChild(container);
+        }
+
+        //console.log('container', container.children);
+        if (container.children.length) {
+            container.children[0].destroy();
         }
 
         container.appendChild(iframe);

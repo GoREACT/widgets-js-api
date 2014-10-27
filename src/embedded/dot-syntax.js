@@ -38,5 +38,5 @@
     script.async = true;
     script.src = '@@url';
 
-    init('init on ready record upload playback collaborate list');
+    init('init on destroy record upload playback collaborate list');
 })();

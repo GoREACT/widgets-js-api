@@ -59,7 +59,7 @@
     };
     var interlace = function() {
         var exports = {};
-        var prefix = "interlace-";
+        var prefix = "interlace_";
         var count = 0;
         function isElement(o) {
             return typeof HTMLElement === "object" ? o instanceof HTMLElement : o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
@@ -98,12 +98,16 @@
             }
             return str;
         };
+        exports.prefix = function(value) {
+            prefix = value;
+        };
         exports.load = function(payload) {
             var frameId = prefix + (count += 1);
             var iframe = document.createElement("iframe");
             var params = payload.params || {};
             params.interlace = frameId;
             var url = payload.url + hashToParams(params);
+            payload.options = payload.options || {};
             iframe.id = frameId;
             iframe.src = url;
             iframe.setAttribute("width", typeof payload.options.width === "undefined" ? "100%" : payload.options.width);
@@ -131,12 +135,13 @@
                     iframe.parentNode.style.display = "none";
                 }
             };
-            iframe.close = function() {
+            iframe.destroy = function() {
                 if (iframe.parentNode.getAttribute("data-ic")) {
                     iframe.parentNode.parentNode.removeChild(iframe.parentNode);
                 } else {
                     iframe.parentNode.removeChild(iframe);
                 }
+                iframe.fire("destroyed");
             };
             iframe.onload = function() {
                 iframe.removeAttribute("style");
@@ -156,6 +161,9 @@
                 container.setAttribute("data-ic", "container-" + frameId);
                 container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
                 document.body.appendChild(container);
+            }
+            if (container.children.length) {
+                container.children[0].destroy();
             }
             container.appendChild(iframe);
             dispatcher(iframe);
@@ -234,8 +242,15 @@
         console.log("collaborate");
         exports.fire("collaborate::complete");
     };
+    exports.destroy = function(widgetId) {
+        var widget = document.getElementById(widgetId);
+        if (widget) {
+            widget.destroy();
+        }
+    };
     exports.init = function(settings) {
-        var iframe = interlace.load({
+        interlace.prefix("widget_");
+        var widget = interlace.load({
             url: "widgets/success.html",
             params: settings,
             options: {
@@ -243,13 +258,14 @@
                 height: "0px"
             }
         });
-        iframe.on("success", function(event, data) {
-            iframe.close();
-            exports.fire("init::success", data);
+        widget.type = "init";
+        widget.on("success", function(event, data) {
+            widget.destroy();
+            exports.fire("init::success", this);
         });
-        iframe.on("error", function(event, data) {
-            iframe.close();
-            exports.fire("init::error", data);
+        widget.on("error", function(event, data) {
+            widget.destroy();
+            exports.fire("init::error", this);
         });
     };
     exports.list = function() {
@@ -262,25 +278,27 @@
     };
     exports.record = function(options) {
         options = options || {};
-        var iframe = interlace.load({
+        var widget = interlace.load({
             container: options.container,
             url: "widgets/recorder.html",
-            params: options.params,
-            options: {}
+            params: options.params
         });
-        iframe.on("ready", function() {
-            exports.fire("record::ready");
+        widget.type = "record";
+        widget.on("ready", function() {
+            exports.fire("record::ready", this);
         });
-        iframe.on("close", function(event, data) {
-            iframe.close();
+        widget.on("destroy", function() {
+            widget.destroy();
         });
-        iframe.on("hide", function(event, data) {
-            iframe.hide();
+        widget.on("destroyed", function() {
+            exports.fire("record::destroyed", this);
         });
-        iframe.on("show", function(event, data) {
-            iframe.show();
+        widget.on("hide", function() {
+            widget.hide();
         });
-        return iframe;
+        widget.on("show", function() {
+            widget.show();
+        });
     };
     exports.upload = function() {
         console.log("upload");

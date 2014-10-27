@@ -58,7 +58,7 @@
     };
     var interlace = function() {
         var exports = {};
-        var prefix = "interlace-";
+        var prefix = "interlace_";
         var count = 0;
         function isElement(o) {
             return typeof HTMLElement === "object" ? o instanceof HTMLElement : o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
@@ -97,12 +97,16 @@
             }
             return str;
         };
+        exports.prefix = function(value) {
+            prefix = value;
+        };
         exports.load = function(payload) {
             var frameId = prefix + (count += 1);
             var iframe = document.createElement("iframe");
             var params = payload.params || {};
             params.interlace = frameId;
             var url = payload.url + hashToParams(params);
+            payload.options = payload.options || {};
             iframe.id = frameId;
             iframe.src = url;
             iframe.setAttribute("width", typeof payload.options.width === "undefined" ? "100%" : payload.options.width);
@@ -130,12 +134,13 @@
                     iframe.parentNode.style.display = "none";
                 }
             };
-            iframe.close = function() {
+            iframe.destroy = function() {
                 if (iframe.parentNode.getAttribute("data-ic")) {
                     iframe.parentNode.parentNode.removeChild(iframe.parentNode);
                 } else {
                     iframe.parentNode.removeChild(iframe);
                 }
+                iframe.fire("destroyed");
             };
             iframe.onload = function() {
                 iframe.removeAttribute("style");
@@ -155,6 +160,9 @@
                 container.setAttribute("data-ic", "container-" + frameId);
                 container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
                 document.body.appendChild(container);
+            }
+            if (container.children.length) {
+                container.children[0].destroy();
             }
             container.appendChild(iframe);
             dispatcher(iframe);

@@ -33,14 +33,17 @@
         timestamp: 1413496405
     });
 
-    goreact.on('init::success', function () {
-        console.log('INIT::SUCCESS');
+    goreact.on('init::success', function (evt, widget) {
+        console.log(evt, widget.id, widget.type);
     });
 
-    goreact.on('record::ready', function(){
-        console.log('record::ready');
+    goreact.on('record::ready', function (evt, widget) {
+        console.log(evt, widget.id, widget.type);
     });
 
+    goreact.on('record::destroyed', function (evt, widget) {
+        console.log(evt, widget.id, widget.type);
+    });
 
     goreact.record({
         container: document.getElementById('containerEl')
@@ -54,12 +57,9 @@
     //    });
 
     document.getElementById('record_btn').addEventListener('click', function (evt) {
-        var widget = goreact.record({
+//        goreact.destroy('widget-2');
+        goreact.record({
             container: document.getElementById('containerEl')
-        });
-
-        widget.on('ready', function () {
-            console.log('widget is ready');
         });
     });
 

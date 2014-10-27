@@ -1,6 +1,8 @@
 exports.init = function (settings) {
 
-    var iframe = interlace.load({
+    interlace.prefix('widget_');
+
+    var widget = interlace.load({
         url: 'widgets/success.html',
         params: settings,
         options: {
@@ -9,14 +11,16 @@ exports.init = function (settings) {
         }
     });
 
-    iframe.on('success', function (event, data) {
-        iframe.close();
-        exports.fire('init::success', data);
+    widget.type = 'init';
+
+    widget.on('success', function (event, data) {
+        widget.destroy();
+        exports.fire('init::success', this);
     });
 
-    iframe.on('error', function (event, data) {
-        iframe.close();
-        exports.fire('init::error', data);
+    widget.on('error', function (event, data) {
+        widget.destroy();
+        exports.fire('init::error', this);
     });
 
 };
