@@ -92,7 +92,6 @@ goreact.authorize({
 goreact.on('authorize::success', function(){...});
 
 goreact.on('authorize::error', function(){...});
-
 ```
 
 ####goreact.record( options )
