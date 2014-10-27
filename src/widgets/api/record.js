@@ -8,7 +8,11 @@
         var widget = interlace.load({
             container: options.container,
             url: 'widgets/{name}.html'.supplant({name: name}),
-            params: options.params
+            params: options.params,
+            options: {
+                width: '100%',
+                height: '100%'
+            }
         });
 
         widget.type = name;

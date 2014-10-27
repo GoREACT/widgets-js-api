@@ -4,10 +4,18 @@
     <meta charset="UTF-8">
     <title></title>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//code.ionicframework.com/ionicons/1.5.2/css/ionicons.min.css"/>
     <style>
         body {
-            background: #f0f0f0;
             margin: 0;
+            background: linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
+            linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
+            linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
+            linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
+            linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
+            linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+            background-color: #131313;
+            background-size: 20px 20px;
         }
     </style>
 </head>
@@ -18,14 +26,65 @@
     <div id="list_btn" class="btn btn-primary">List</div>
     <div id="playback_btn" class="btn btn-primary">Playback</div>
     <div id="collaborate_btn" class="btn btn-primary">Collaborate</div>
+
+    <div class="btn-group">
+        <button id="container_btn" type="button" class="btn btn-default active">Container</button>
+        <button id="fs_btn" type="button" class="btn btn-default">Full Screen</button>
+    </div>
 </div>
 
 <div id="containerEl" style="width: 640px;height: 480px;margin: 0 auto"></div>
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="../build/embedded-dot-syntax.js"></script>
 
 <script>
 
+    // references to DOM elements
+    var $containerBtn = $('#container_btn');
+    var $fullScreenBtn = $('#fs_btn');
+    var $recordBtn = $('#record_btn');
+    var $uploadBtn = $('#upload_btn');
+    var $listBtn = $('#list_btn');
+    var $playbackBtn = $('#playback_btn');
+    var $collaborateBtn = $('#collaborate_btn');
+    var $containerEl = $('#containerEl');
+
+    var activeContainer = $containerEl[0];
+
+    $recordBtn.click(function () {
+        goreact.record({container: activeContainer});
+    });
+
+    $uploadBtn.click(function () {
+        goreact.upload({container: activeContainer});
+    });
+
+    $listBtn.click(function () {
+        goreact.list({container: activeContainer});
+    });
+
+    $playbackBtn.click(function () {
+        goreact.list({container: activeContainer});
+    });
+
+    $collaborateBtn.click(function () {
+        goreact.list({container: activeContainer});
+    });
+
+    $containerBtn.click(function () {
+        activeContainer = $containerEl[0];
+        $containerBtn.addClass('active');
+        $fullScreenBtn.removeClass('active');
+    });
+
+    $fullScreenBtn.click(function () {
+        activeContainer = null;
+        $containerBtn.removeClass('active');
+        $fullScreenBtn.addClass('active');
+    });
+
+    // :: goreact setup ::
     goreact.init({
         // TODO: The current logged in user's id
         user_id: "5432b03462ccc7ea7bcc2c41",
@@ -58,48 +117,6 @@
     goreact.record({
         container: document.getElementById('containerEl')
     });
-
-
-    //    widget.send('dosomething', {});
-
-    //    goreact.on('record::complete', function(){
-    //        console.log('### record complete ###');
-    //    });
-
-    var click = function (id, handler) {
-        document.getElementById(id).addEventListener('click', handler);
-    };
-
-    click('record_btn', function (evt) {
-        goreact.record({
-            container: document.getElementById('containerEl')
-        });
-    });
-
-    click('upload_btn', function (evt) {
-        goreact.upload({
-            container: document.getElementById('containerEl')
-        });
-    });
-
-    click('list_btn', function (evt) {
-        goreact.list({
-            container: document.getElementById('containerEl')
-        });
-    });
-
-    click('playback_btn', function (evt) {
-        goreact.playback({
-            container: document.getElementById('containerEl')
-        });
-    });
-
-    click('collaborate_btn', function (evt) {
-        goreact.collaborate({
-            container: document.getElementById('containerEl')
-        });
-    });
-
 
 </script>
 </body>

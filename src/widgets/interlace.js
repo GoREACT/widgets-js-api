@@ -119,15 +119,15 @@ var interlace = (function () {
         var container = payload.container;
         if (isElement(container)) {
 //            container.setAttribute('data-ic', 'container-' + frameId);
+        } else if (!container) { // null or undefined
+            container = document.createElement('div');
+            container.setAttribute('data-ic', 'container-' + frameId);
+            container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
+            document.body.appendChild(container);
         } else if (typeof container === 'object') { // container is acting as a set of style options
             container = document.createElement('div');
             container.setAttribute('data-ic', 'container-' + frameId);
             container.setAttribute('style', styleToString(payload.container));
-            document.body.appendChild(container);
-        } else if (typeof container === 'undefined') { // default element
-            container = document.createElement('div');
-            container.setAttribute('data-ic', 'container-' + frameId);
-            container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
             document.body.appendChild(container);
         }
 

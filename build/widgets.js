@@ -159,15 +159,15 @@
                 iframe.fire("loaded");
             };
             var container = payload.container;
-            if (isElement(container)) {} else if (typeof container === "object") {
-                container = document.createElement("div");
-                container.setAttribute("data-ic", "container-" + frameId);
-                container.setAttribute("style", styleToString(payload.container));
-                document.body.appendChild(container);
-            } else if (typeof container === "undefined") {
+            if (isElement(container)) {} else if (!container) {
                 container = document.createElement("div");
                 container.setAttribute("data-ic", "container-" + frameId);
                 container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
+                document.body.appendChild(container);
+            } else if (typeof container === "object") {
+                container = document.createElement("div");
+                container.setAttribute("data-ic", "container-" + frameId);
+                container.setAttribute("style", styleToString(payload.container));
                 document.body.appendChild(container);
             }
             if (container.children.length) {
@@ -368,7 +368,11 @@
                 url: "widgets/{name}.html".supplant({
                     name: name
                 }),
-                params: options.params
+                params: options.params,
+                options: {
+                    width: "100%",
+                    height: "100%"
+                }
             });
             widget.type = name;
             widget.on("destroy", function() {
