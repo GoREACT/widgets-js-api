@@ -74,6 +74,30 @@ It will expire the signature at the given time. If not provided, *signature will
     });
     </script>
 
-####goreact.init( settings )
+####goreact.record( options )
 
-Used to initialize GoReact and validate user. This function must be called and completed before any other API calls are made.
+Loads a recording widget.
+
+####goreact.upload( options )
+
+Loads an upload widget.
+
+####goreact.list( options )
+
+Loads a widget listing recorded videos.
+
+####goreact.playback( options )
+
+Loads a playback widget to play a particular session.
+
+####goreact.collaborate( options )
+
+Loads a widget to invoke reviewing and feedback of a video.
+
+####goreact.destroy( options )
+
+Unloads a widget by ID.
+
+####goreact.on( event, handler )
+
+Subscribes to events dispatched by the widgets.
