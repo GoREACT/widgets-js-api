@@ -89,9 +89,9 @@ goreact.authorize({
     timestamp: 1413496405
 });
 
-goreact.on('authorize::success', function(){...});
+goreact.on('authorize::success', function(evt, widget) {...});
 
-goreact.on('authorize::error', function(){...});
+goreact.on('authorize::error', function(evt, widget) {...});
 ```
 
 ####goreact.record( options )
