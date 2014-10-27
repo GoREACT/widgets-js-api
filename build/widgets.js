@@ -224,7 +224,7 @@
         while (i--) {
             var args = Array.prototype.slice.call(queue[i]);
             var method = args.shift();
-            if (method === "init" || method === "on") {
+            if (method === "authorize" || method === "on") {
                 if (exports.hasOwnProperty(method)) {
                     queue.splice(i, 1);
                     exports[method].apply(exports, args);
@@ -232,7 +232,7 @@
             }
         }
     }
-    exports.on("init::success", function() {
+    exports.on("authorize::success", function() {
         var len = queue.length;
         for (var i = 0; i < len; i += 1) {
             var args = Array.prototype.slice.call(queue[i]);
@@ -246,6 +246,31 @@
         queue.length = 0;
     });
     setTimeout(setup);
+    exports.authorize = function(settings, signature) {
+        interlace.prefix("widget_");
+        var clone = function(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        };
+        var params = clone(settings);
+        params.signature = signature;
+        var widget = interlace.load({
+            url: "widgets/success.html",
+            params: params,
+            options: {
+                width: "0px",
+                height: "0px"
+            }
+        });
+        widget.type = "authorize";
+        widget.on("success", function(event, data) {
+            widget.destroy();
+            exports.fire("authorize::success", this);
+        });
+        widget.on("error", function(event, data) {
+            widget.destroy();
+            exports.fire("authorize::error", this);
+        });
+    };
     (function() {
         var name = "collaborate";
         exports[name] = function(options) {
@@ -280,26 +305,6 @@
         if (widget) {
             widget.destroy();
         }
-    };
-    exports.init = function(settings) {
-        interlace.prefix("widget_");
-        var widget = interlace.load({
-            url: "widgets/success.html",
-            params: settings,
-            options: {
-                width: "0px",
-                height: "0px"
-            }
-        });
-        widget.type = "init";
-        widget.on("success", function(event, data) {
-            widget.destroy();
-            exports.fire("init::success", this);
-        });
-        widget.on("error", function(event, data) {
-            widget.destroy();
-            exports.fire("init::error", this);
-        });
     };
     (function() {
         var name = "list";
@@ -368,11 +373,7 @@
                 url: "widgets/{name}.html".supplant({
                     name: name
                 }),
-                params: options.params,
-                options: {
-                    width: "100%",
-                    height: "100%"
-                }
+                params: options.params
             });
             widget.type = name;
             widget.on("destroy", function() {

@@ -22,5 +22,5 @@
     script.type = "text/javascript";
     script.async = true;
     script.src = "../build/widgets.js";
-    init("init on destroy record upload playback collaborate list");
+    init("authorize on destroy record upload playback collaborate list");
 })();

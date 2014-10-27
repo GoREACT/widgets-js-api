@@ -1,26 +1,33 @@
-exports.init = function (settings) {
+exports.authorize = function (settings, signature) {
 
     interlace.prefix('widget_');
 
+    var clone = function (obj) {
+        return JSON.parse(JSON.stringify(obj));
+    };
+
+    var params = clone(settings);
+    params.signature = signature;
+
     var widget = interlace.load({
         url: 'widgets/success.html',
-        params: settings,
+        params: params,
         options: {
             width: '0px',
             height: '0px'
         }
     });
 
-    widget.type = 'init';
+    widget.type = 'authorize';
 
     widget.on('success', function (event, data) {
         widget.destroy();
-        exports.fire('init::success', this);
+        exports.fire('authorize::success', this);
     });
 
     widget.on('error', function (event, data) {
         widget.destroy();
-        exports.fire('init::error', this);
+        exports.fire('authorize::error', this);
     });
 
 };

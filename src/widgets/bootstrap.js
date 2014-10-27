@@ -20,7 +20,7 @@ function setup() {
     while(i--) {
         var args = Array.prototype.slice.call(queue[i]);
         var method = args.shift();
-        if (method === 'init' || method === 'on') {
+        if (method === 'authorize' || method === 'on') {
             if (exports.hasOwnProperty(method)) {
                 queue.splice(i, 1);
                 exports[method].apply(exports, args);
@@ -32,7 +32,7 @@ function setup() {
 /**
  * Fired by init.js if successful, initializes the rest of the queued items
  */
-exports.on('init::success', function () {
+exports.on('authorize::success', function () {
     var len = queue.length;
     for (var i = 0; i < len; i += 1) {
         var args = Array.prototype.slice.call(queue[i]);
