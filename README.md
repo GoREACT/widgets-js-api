@@ -6,10 +6,9 @@ GoReact's Widget JavaScript API is a lightweight library for interfacing with Go
 
 	!function(){function a(a){var c=[];c.methods=a.split(" "),c.factory=function(a){return function(){var b=Array.prototype.slice.call(arguments);return b.unshift(a),c.push(b),c}};for(var d=0;d<c.methods.length;d++){var e=c.methods[d];c[e]=c.factory(e)}var f=document.getElementsByTagName("script")[0];f.parentNode.insertBefore(b,f),window["goreact"]=c}var b=document.createElement("script");b.type="text/javascript",b.async=!0,b.src="widgets-dot.js",a("init ready record upload playback collaborate list")}();
 
-##Initialization
----
+###Initialization
 
-###goreact.init( settings )
+####goreact.init( settings )
 
 Used to initialize GoReact and validate user. This function must be called and completed before any other API calls are made.
 
