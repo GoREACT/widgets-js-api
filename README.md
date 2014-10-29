@@ -16,7 +16,7 @@ Add the following line to each page of your site you would like to access GoREAC
 
 The following links will serve as documenation for each section.
 
-[Widget API](https://github.com/GoREACT/widgets-js-api/wiki/Client-API)
+[Widget API](https://github.com/GoREACT/widgets-js-api/wiki/Widgets-API)
 
 [Generating Signatures](https://github.com/GoREACT/widgets-js-api/wiki/Generating-Signatures)
 
