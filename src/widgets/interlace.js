@@ -6,6 +6,10 @@ var interlace = (function () {
 
     var bodyOverflow = '';
 
+    var preventDefault = function (e) {
+        e.preventDefault();
+    };
+
     function isElement(o) {
         return (
             typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
@@ -102,6 +106,8 @@ var interlace = (function () {
 
         iframe.destroy = function () {
             document.body.style.overflow = bodyOverflow;
+            document.body.removeEventListener('touchstart', preventDefault);
+            document.body.removeEventListener('touchmove', preventDefault);
             if (iframe.parentNode.getAttribute('data-ic')) { // if this id exist, we created it
                 iframe.parentNode.parentNode.removeChild(iframe.parentNode);
             } else {
@@ -124,14 +130,18 @@ var interlace = (function () {
         } else if (!container) { // null or undefined
             container = document.createElement('div');
             container.setAttribute('data-ic', 'container-' + frameId);
-            container.setAttribute('style', 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999');
+            container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
             document.body.style.overflow = 'hidden';
+            document.body.addEventListener('touchstart', preventDefault);
+            document.body.addEventListener('touchmove', preventDefault);
             document.body.appendChild(container);
         } else if (typeof container === 'object') { // container is acting as a set of style options
             container = document.createElement('div');
             container.setAttribute('data-ic', 'container-' + frameId);
             container.setAttribute('style', styleToString(payload.container));
             document.body.style.overflow = 'hidden';
+            document.body.addEventListener('touchstart', preventDefault);
+            document.body.addEventListener('touchmove', preventDefault);
             document.body.appendChild(container);
         }
 
