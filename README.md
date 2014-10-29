@@ -12,6 +12,10 @@ Add the following line to each page of your site you would like to access GoREAC
 <script src="https://rawgit.com/GoREACT/widgets-js-api/master/build/embedded-dot-syntax.min.js"></script>
 ```
 
+#####Examples
+
+[http://goreact.github.io/widgets-js-api](http://goreact.github.io/widgets-js-api/)
+
 #####Documentation
 
 The following links will serve as documenation for each section.
