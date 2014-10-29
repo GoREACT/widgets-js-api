@@ -6,7 +6,8 @@
         options = options || {};
         var widget = interlace.load({
             container: options.container,
-            url: 'widgets/{name}.html'.supplant({name: name}),
+            //url: 'widgets/{name}.html'.supplant({name: name}),
+            url: 'https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html'.supplant({name: name}),
             params: options.params
         });
 

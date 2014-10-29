@@ -1,5 +1,7 @@
 exports.authorize = function (settings, signature) {
 
+    var name = 'success';
+
     interlace.prefix('widget_');
 
     var clone = function (obj) {
@@ -10,7 +12,8 @@ exports.authorize = function (settings, signature) {
     params.signature = signature;
 
     var widget = interlace.load({
-        url: 'widgets/success.html',
+        //url: 'widgets/success.html',
+        url: 'https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html'.supplant({name: name}),
         params: params,
         options: {
             width: '0px',

@@ -247,6 +247,7 @@
     });
     setTimeout(setup);
     exports.authorize = function(settings, signature) {
+        var name = "success";
         interlace.prefix("widget_");
         var clone = function(obj) {
             return JSON.parse(JSON.stringify(obj));
@@ -254,7 +255,9 @@
         var params = clone(settings);
         params.signature = signature;
         var widget = interlace.load({
-            url: "widgets/success.html",
+            url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
+                name: name
+            }),
             params: params,
             options: {
                 width: "0px",
@@ -277,7 +280,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
+                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
@@ -312,7 +315,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
+                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
@@ -341,7 +344,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
+                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
@@ -370,7 +373,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
+                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
@@ -399,7 +402,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
+                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
