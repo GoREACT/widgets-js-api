@@ -60,6 +60,7 @@
         var exports = {};
         var prefix = "interlace_";
         var count = 0;
+        var bodyOverflow = "";
         function isElement(o) {
             return typeof HTMLElement === "object" ? o instanceof HTMLElement : o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
         }
@@ -135,6 +136,7 @@
                 }
             };
             iframe.destroy = function() {
+                document.body.style.overflow = bodyOverflow;
                 if (iframe.parentNode.getAttribute("data-ic")) {
                     iframe.parentNode.parentNode.removeChild(iframe.parentNode);
                 } else {
@@ -153,12 +155,14 @@
             if (isElement(container)) {} else if (!container) {
                 container = document.createElement("div");
                 container.setAttribute("data-ic", "container-" + frameId);
-                container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
+                container.setAttribute("style", "position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999");
+                document.body.style.overflow = "hidden";
                 document.body.appendChild(container);
             } else if (typeof container === "object") {
                 container = document.createElement("div");
                 container.setAttribute("data-ic", "container-" + frameId);
                 container.setAttribute("style", styleToString(payload.container));
+                document.body.style.overflow = "hidden";
                 document.body.appendChild(container);
             }
             if (container.children.length) {

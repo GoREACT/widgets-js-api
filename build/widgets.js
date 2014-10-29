@@ -69,6 +69,7 @@
         var exports = {};
         var prefix = "interlace_";
         var count = 0;
+        var bodyOverflow = "";
         function isElement(o) {
             return typeof HTMLElement === "object" ? o instanceof HTMLElement : o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
         }
@@ -144,6 +145,7 @@
                 }
             };
             iframe.destroy = function() {
+                document.body.style.overflow = bodyOverflow;
                 if (iframe.parentNode.getAttribute("data-ic")) {
                     iframe.parentNode.parentNode.removeChild(iframe.parentNode);
                 } else {
@@ -162,12 +164,14 @@
             if (isElement(container)) {} else if (!container) {
                 container = document.createElement("div");
                 container.setAttribute("data-ic", "container-" + frameId);
-                container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
+                container.setAttribute("style", "position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999");
+                document.body.style.overflow = "hidden";
                 document.body.appendChild(container);
             } else if (typeof container === "object") {
                 container = document.createElement("div");
                 container.setAttribute("data-ic", "container-" + frameId);
                 container.setAttribute("style", styleToString(payload.container));
+                document.body.style.overflow = "hidden";
                 document.body.appendChild(container);
             }
             if (container.children.length) {
@@ -248,6 +252,7 @@
     setTimeout(setup);
     exports.authorize = function(settings, signature) {
         var name = "success";
+        var widgetsUrl = "";
         interlace.prefix("widget_");
         var clone = function(obj) {
             return JSON.parse(JSON.stringify(obj));
@@ -255,7 +260,7 @@
         var params = clone(settings);
         params.signature = signature;
         var widget = interlace.load({
-            url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
+            url: widgetsUrl + "widgets/{name}.html".supplant({
                 name: name
             }),
             params: params,
@@ -276,11 +281,12 @@
     };
     (function() {
         var name = "collaborate";
+        var widgetsUrl = "";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
+                url: widgetsUrl + "widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
@@ -311,11 +317,12 @@
     };
     (function() {
         var name = "list";
+        var widgetsUrl = "";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
+                url: widgetsUrl + "widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
@@ -340,11 +347,12 @@
     })();
     (function() {
         var name = "playback";
+        var widgetsUrl = "";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
+                url: widgetsUrl + "widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
@@ -369,11 +377,12 @@
     })();
     (function() {
         var name = "record";
+        var widgetsUrl = "";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
+                url: widgetsUrl + "widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params
@@ -398,11 +407,12 @@
     })();
     (function() {
         var name = "upload";
+        var widgetsUrl = "";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "https://rawgit.com/GoREACT/widgets-js-api/master/example/widgets/{name}.html".supplant({
+                url: widgetsUrl + "widgets/{name}.html".supplant({
                     name: name
                 }),
                 params: options.params

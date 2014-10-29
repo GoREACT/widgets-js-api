@@ -4,6 +4,8 @@ var interlace = (function () {
     var prefix = 'interlace_';
     var count = 0;
 
+    var bodyOverflow = '';
+
     function isElement(o) {
         return (
             typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
@@ -99,6 +101,7 @@ var interlace = (function () {
         };
 
         iframe.destroy = function () {
+            document.body.style.overflow = bodyOverflow;
             if (iframe.parentNode.getAttribute('data-ic')) { // if this id exist, we created it
                 iframe.parentNode.parentNode.removeChild(iframe.parentNode);
             } else {
@@ -118,16 +121,17 @@ var interlace = (function () {
         // Append the iframe to our element.
         var container = payload.container;
         if (isElement(container)) {
-//            container.setAttribute('data-ic', 'container-' + frameId);
         } else if (!container) { // null or undefined
             container = document.createElement('div');
             container.setAttribute('data-ic', 'container-' + frameId);
-            container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
+            container.setAttribute('style', 'position:fixed;top:0;left:0;width:100%;height:100%;z-index:99999');
+            document.body.style.overflow = 'hidden';
             document.body.appendChild(container);
         } else if (typeof container === 'object') { // container is acting as a set of style options
             container = document.createElement('div');
             container.setAttribute('data-ic', 'container-' + frameId);
             container.setAttribute('style', styleToString(payload.container));
+            document.body.style.overflow = 'hidden';
             document.body.appendChild(container);
         }
 
