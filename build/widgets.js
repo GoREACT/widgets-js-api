@@ -265,7 +265,7 @@
     setTimeout(setup);
     exports.authorize = function(settings, signature) {
         var name = "success";
-        var widgetsUrl = "";
+        var widgetsUrl = "https://rawgit.com/GoREACT/widgets-js-api/master/example/";
         interlace.prefix("widget_");
         var clone = function(obj) {
             return JSON.parse(JSON.stringify(obj));
@@ -294,7 +294,7 @@
     };
     (function() {
         var name = "collaborate";
-        var widgetsUrl = "";
+        var widgetsUrl = "https://rawgit.com/GoREACT/widgets-js-api/master/example/";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
@@ -330,7 +330,7 @@
     };
     (function() {
         var name = "list";
-        var widgetsUrl = "";
+        var widgetsUrl = "https://rawgit.com/GoREACT/widgets-js-api/master/example/";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
@@ -360,7 +360,7 @@
     })();
     (function() {
         var name = "playback";
-        var widgetsUrl = "";
+        var widgetsUrl = "https://rawgit.com/GoREACT/widgets-js-api/master/example/";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
@@ -390,7 +390,7 @@
     })();
     (function() {
         var name = "record";
-        var widgetsUrl = "";
+        var widgetsUrl = "https://rawgit.com/GoREACT/widgets-js-api/master/example/";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
@@ -420,7 +420,7 @@
     })();
     (function() {
         var name = "upload";
-        var widgetsUrl = "";
+        var widgetsUrl = "https://rawgit.com/GoREACT/widgets-js-api/master/example/";
         exports[name] = function(options) {
             options = options || {};
             var widget = interlace.load({
