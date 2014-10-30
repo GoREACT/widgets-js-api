@@ -108,7 +108,7 @@ var interlace = (function () {
             document.body.style.overflow = bodyOverflow;
             document.body.removeEventListener('touchstart', preventDefault);
             document.body.removeEventListener('touchmove', preventDefault);
-            if (iframe.parentNode.getAttribute('data-ic')) { // if this id exist, we created it
+            if (iframe.parentNode.getAttribute('data-interlace-auto')) { // if this id exist, we created it
                 iframe.parentNode.parentNode.removeChild(iframe.parentNode);
             } else {
                 iframe.parentNode.removeChild(iframe);
@@ -127,9 +127,11 @@ var interlace = (function () {
         // Append the iframe to our element.
         var container = payload.container;
         if (isElement(container)) {
+            //container.innerHTML = '';
+            container.setAttribute('data-interlace-custom', 'container-' + frameId);
         } else if (!container) { // null or undefined
             container = document.createElement('div');
-            container.setAttribute('data-ic', 'container-' + frameId);
+            container.setAttribute('data-interlace-auto', 'container-' + frameId);
             container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
             document.body.style.overflow = 'hidden';
             document.body.addEventListener('touchstart', preventDefault);
@@ -137,7 +139,7 @@ var interlace = (function () {
             document.body.appendChild(container);
         } else if (typeof container === 'object') { // container is acting as a set of style options
             container = document.createElement('div');
-            container.setAttribute('data-ic', 'container-' + frameId);
+            container.setAttribute('data-interlace-auto', 'container-' + frameId);
             container.setAttribute('style', styleToString(payload.container));
             document.body.style.overflow = 'hidden';
             document.body.addEventListener('touchstart', preventDefault);
@@ -145,9 +147,14 @@ var interlace = (function () {
             document.body.appendChild(container);
         }
 
-        //console.log('container', container.children);
-        if (container.children.length) {
-            container.children[0].destroy();
+        //if (container.children.length) {
+        //container.children[0].destroy();
+        //}
+        var iframes = container.querySelectorAll('[data-interlace-custom]');
+        var i = iframes.length;
+        while (i) {
+            i -= 1;
+            iframes[i].parentNode.removeChild(iframes[i]);
         }
 
         container.appendChild(iframe);
