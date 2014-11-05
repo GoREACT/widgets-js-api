@@ -1,13 +1,12 @@
 (function () {
     var name = 'playback';
-    var widgetsUrl = '@@widgetsUrl';
 
     exports[name] = function (options) {
-
         options = options || {};
+
         var widget = interlace.load({
             container: options.container,
-            url: widgetsUrl + 'widgets/{name}.html'.supplant({name: name}),
+            url: exports.baseUrl + '/v1/playback',
             params: options.params
         });
 

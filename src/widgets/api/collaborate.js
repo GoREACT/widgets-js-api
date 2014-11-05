@@ -1,14 +1,19 @@
 (function () {
     var name = 'collaborate';
-    var widgetsUrl = '@@widgetsUrl';
 
     exports[name] = function (options) {
-
         options = options || {};
+
+        var params = {
+            goreact_id: options.goreact_id
+        };
+
+        var mode = options.mode || "view";
+
         var widget = interlace.load({
             container: options.container,
-            url: widgetsUrl + 'widgets/{name}.html'.supplant({name: name}),
-            params: options.params
+            url: exports.baseUrl + '/v1/session/' + mode,
+            params: params
         });
 
         widget.type = name;
