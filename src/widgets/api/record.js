@@ -35,15 +35,19 @@
         });
 
         widget.on('recordStart', function () {
-            exports.fire(name + '::recordStart', this);
+            exports.fire(name + '::start', this);
         });
 
         widget.on('recordStarted', function () {
-            exports.fire(name + '::recordStarted', this);
+            exports.fire(name + '::started', this);
+        });
+
+        widget.on('recordStop', function () {
+            exports.fire(name + '::stop', this);
         });
 
         widget.on('recordStopped', function () {
-            exports.fire(name + '::recordStopped', this);
+            exports.fire(name + '::stopped', this);
         });
 
         widget.on('recordKeep', function () {
@@ -52,10 +56,6 @@
 
         widget.on('recordDiscard', function () {
             exports.fire(name + '::discard', this);
-        });
-
-        widget.on('recordStop', function () {
-            exports.fire(name + '::recordStop', this);
         });
 
     };
