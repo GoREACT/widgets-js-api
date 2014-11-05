@@ -4,6 +4,12 @@ var interlace = (function () {
     var prefix = 'interlace_';
     var count = 0;
 
+    var bodyOverflow = '';
+
+    var preventDefault = function (e) {
+        e.preventDefault();
+    };
+
     function isElement(o) {
         return (
             typeof HTMLElement === "object" ? o instanceof HTMLElement : //DOM2
@@ -99,7 +105,10 @@ var interlace = (function () {
         };
 
         iframe.destroy = function () {
-            if (iframe.parentNode.getAttribute('data-ic')) { // if this id exist, we created it
+            document.body.style.overflow = bodyOverflow;
+            document.body.removeEventListener('touchstart', preventDefault);
+            document.body.removeEventListener('touchmove', preventDefault);
+            if (iframe.parentNode.getAttribute('data-interlace')) { // if this id exist, we created it
                 iframe.parentNode.parentNode.removeChild(iframe.parentNode);
             } else {
                 iframe.parentNode.removeChild(iframe);
@@ -115,25 +124,35 @@ var interlace = (function () {
             iframe.fire('loaded');
         };
 
+        iframe.setAttribute('data-interlace-frame', frameId);
+
         // Append the iframe to our element.
         var container = payload.container;
         if (isElement(container)) {
-//            container.setAttribute('data-ic', 'container-' + frameId);
+            //container.innerHTML = '';
         } else if (!container) { // null or undefined
             container = document.createElement('div');
-            container.setAttribute('data-ic', 'container-' + frameId);
+            container.setAttribute('data-interlace', 'container-' + frameId);
             container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
+            document.body.style.overflow = 'hidden';
+            document.body.addEventListener('touchstart', preventDefault);
+            document.body.addEventListener('touchmove', preventDefault);
             document.body.appendChild(container);
         } else if (typeof container === 'object') { // container is acting as a set of style options
             container = document.createElement('div');
-            container.setAttribute('data-ic', 'container-' + frameId);
+            container.setAttribute('data-interlace', 'container-' + frameId);
             container.setAttribute('style', styleToString(payload.container));
+            document.body.style.overflow = 'hidden';
+            document.body.addEventListener('touchstart', preventDefault);
+            document.body.addEventListener('touchmove', preventDefault);
             document.body.appendChild(container);
         }
 
-        //console.log('container', container.children);
-        if (container.children.length) {
-            container.children[0].destroy();
+        var iframes = container.querySelectorAll('[data-interlace-frame]');
+        var i = iframes.length;
+        while (i) {
+            i -= 1;
+            iframes[i].parentNode.removeChild(iframes[i]);
         }
 
         container.appendChild(iframe);
