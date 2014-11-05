@@ -47,11 +47,11 @@
         });
 
         widget.on('recordKeep', function () {
-            exports.fire(name + '::recordKeep', this);
+            exports.fire(name + '::keep', this);
         });
 
         widget.on('recordDiscard', function () {
-            exports.fire(name + '::recordDiscard', this);
+            exports.fire(name + '::discard', this);
         });
 
         widget.on('recordStop', function () {
