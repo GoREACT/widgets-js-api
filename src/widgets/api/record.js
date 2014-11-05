@@ -2,12 +2,11 @@
     var name = 'record';
 
     exports[name] = function (options) {
-
         options = options || {};
 
         var widget = interlace.load({
             container: options.container,
-            url: 'widgets/{name}.html'.supplant({name: name}),
+            url: exports.baseUrl + '/v1/record',
             params: options.params
         });
 

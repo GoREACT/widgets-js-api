@@ -2,11 +2,11 @@
     var name = 'upload';
 
     exports[name] = function (options) {
-
         options = options || {};
+
         var widget = interlace.load({
             container: options.container,
-            url: 'widgets/{name}.html'.supplant({name: name}),
+            url: exports.baseUrl + '/v1/upload',
             params: options.params
         });
 

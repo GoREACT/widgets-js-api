@@ -253,8 +253,13 @@
         };
         var params = clone(settings);
         params.signature = signature;
+        if (settings.api_key && settings.api_key.indexOf("prod") === 0) {
+            exports.baseUrl = "https://goreact.com";
+        } else {
+            exports.baseUrl = "https://dev.goreact.com";
+        }
         var widget = interlace.load({
-            url: "widgets/success.html",
+            url: exports.baseUrl + "/v1/auth",
             params: params,
             options: {
                 width: "0px",
@@ -264,23 +269,25 @@
         widget.type = "authorize";
         widget.on("success", function(event, data) {
             widget.destroy();
-            exports.fire("authorize::success", this);
+            exports.fire("authorize::success", this, data);
         });
         widget.on("error", function(event, data) {
             widget.destroy();
-            exports.fire("authorize::error", this);
+            exports.fire("authorize::error", this, data);
         });
     };
     (function() {
         var name = "collaborate";
         exports[name] = function(options) {
             options = options || {};
+            var params = {
+                goreact_id: options.goreact_id
+            };
+            var mode = options.mode || "view";
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
-                    name: name
-                }),
-                params: options.params
+                url: exports.baseUrl + "/v1/session/" + mode,
+                params: params
             });
             widget.type = name;
             widget.on("destroy", function() {
@@ -312,9 +319,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
-                    name: name
-                }),
+                url: exports.baseUrl + "/v1/list",
                 params: options.params
             });
             widget.type = name;
@@ -341,9 +346,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
-                    name: name
-                }),
+                url: exports.baseUrl + "/v1/playback",
                 params: options.params
             });
             widget.type = name;
@@ -370,9 +373,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
-                    name: name
-                }),
+                url: exports.baseUrl + "/v1/record",
                 params: options.params
             });
             widget.type = name;
@@ -399,9 +400,7 @@
             options = options || {};
             var widget = interlace.load({
                 container: options.container,
-                url: "widgets/{name}.html".supplant({
-                    name: name
-                }),
+                url: exports.baseUrl + "/v1/upload",
                 params: options.params
             });
             widget.type = name;

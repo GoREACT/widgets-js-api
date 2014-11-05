@@ -22,7 +22,7 @@
 <div style="padding: 15px;text-align: center">
     <div id="record_btn" class="btn btn-primary">Record</div>
     <div id="upload_btn" class="btn btn-primary">Upload</div>
-    <div id="list_btn" class="btn btn-primary">List</div>
+    <!--<div id="list_btn" class="btn btn-primary">List</div>-->
     <div id="playback_btn" class="btn btn-primary">Playback</div>
     <div id="collaborate_btn" class="btn btn-primary">Collaborate</div>
 
@@ -68,7 +68,10 @@
     });
 
     $collaborateBtn.click(function () {
-        goreact.list({container: activeContainer});
+        goreact.collaborate({
+            goreact_id: 4824,
+            container: activeContainer
+        });
     });
 
     $containerBtn.click(function () {

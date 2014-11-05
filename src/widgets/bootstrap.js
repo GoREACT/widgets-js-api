@@ -14,7 +14,6 @@ if (exports.hasOwnProperty('q')) { // if string syntax
 // make the widget a dispatcher
 dispatcher(exports);
 
-
 function setup() {
     var i = queue.length;
     while(i--) {

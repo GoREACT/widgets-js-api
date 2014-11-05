@@ -1,5 +1,4 @@
 exports.authorize = function (settings, signature) {
-
     interlace.prefix('widget_');
 
     var clone = function (obj) {
@@ -9,8 +8,15 @@ exports.authorize = function (settings, signature) {
     var params = clone(settings);
     params.signature = signature;
 
+    // determine environment
+    if(settings.api_key && settings.api_key.indexOf("prod") === 0) {
+        exports.baseUrl = "https://goreact.com";
+    } else {
+        exports.baseUrl = "https://dev.goreact.com";// TODO: change to sandbox
+    }
+
     var widget = interlace.load({
-        url: 'widgets/success.html',
+        url: exports.baseUrl + '/v1/auth',
         params: params,
         options: {
             width: '0px',
@@ -22,12 +28,12 @@ exports.authorize = function (settings, signature) {
 
     widget.on('success', function (event, data) {
         widget.destroy();
-        exports.fire('authorize::success', this);
+        exports.fire('authorize::success', this, data);
     });
 
     widget.on('error', function (event, data) {
         widget.destroy();
-        exports.fire('authorize::error', this);
+        exports.fire('authorize::error', this, data);
     });
 
 };

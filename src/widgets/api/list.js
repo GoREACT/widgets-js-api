@@ -2,11 +2,11 @@
     var name = 'list';
 
     exports[name] = function (options) {
-
         options = options || {};
+
         var widget = interlace.load({
             container: options.container,
-            url: 'widgets/{name}.html'.supplant({name: name}),
+            url: exports.baseUrl + '/v1/list',
             params: options.params
         });
 
