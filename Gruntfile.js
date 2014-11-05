@@ -51,7 +51,7 @@ module.exports = function (grunt) {
                 },
                 files: {
                     '.tmp/api.js': [
-                        'src/widgets/api/*.js',
+                        'src/widgets/api/*.js'
                     ]
                 }
             },
@@ -132,7 +132,7 @@ module.exports = function (grunt) {
                 files: {
                     'build/interlace.js': [
                         'src/widgets/dispatcher.js',
-                        'src/widgets/interlace.js',
+                        'src/widgets/interlace.js'
                     ]
                 }
             },
@@ -167,8 +167,7 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         { match: 'name', replacement: '<%= pkg.name %>' },
-                        { match: 'widgetsUrl', replacement: '<%= pkg.config.widgetsUrl %>' },
-                        { match: 'url', replacement: '<%= pkg.config.apiUrl %>' },
+                        { match: 'url', replacement: '<%= pkg.config.url %>' }
                     ]
                 },
                 files: [

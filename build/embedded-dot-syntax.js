@@ -21,6 +21,6 @@
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.async = true;
-    script.src = "//localhost/build/widgets.js";
+    script.src = "../build/widgets.js";
     init("authorize on destroy record upload playback collaborate list");
 })();
