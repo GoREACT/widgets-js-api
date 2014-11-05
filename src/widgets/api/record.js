@@ -34,5 +34,29 @@
             exports.fire(name + '::destroyed', this);
         });
 
+        widget.on('recordStart', function () {
+            exports.fire(name + '::recordStart', this);
+        });
+
+        widget.on('recordStarted', function () {
+            exports.fire(name + '::recordStarted', this);
+        });
+
+        widget.on('recordStopped', function () {
+            exports.fire(name + '::recordStopped', this);
+        });
+
+        widget.on('recordKeep', function () {
+            exports.fire(name + '::recordKeep', this);
+        });
+
+        widget.on('recordDiscard', function () {
+            exports.fire(name + '::recordDiscard', this);
+        });
+
+        widget.on('recordStop', function () {
+            exports.fire(name + '::recordStop', this);
+        });
+
     };
 })();
