@@ -167,7 +167,8 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         { match: 'name', replacement: '<%= pkg.name %>' },
-                        { match: 'url', replacement: '<%= pkg.config.url %>' }
+                        { match: 'url', replacement: '<%= pkg.config.apiUrl %>' },
+                        { match: 'widgetsUrl', replacement: '<%= pkg.config.widgetsUrl %>' }
                     ]
                 },
                 files: [
