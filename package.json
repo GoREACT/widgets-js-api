@@ -2,7 +2,7 @@
   "name": "goreact",
   "description": "GoReact widget is used to initialize and load other service libraries asynchronously",
   "config": {
-    "url": "https://rawgit.com/GoREACT/widgets-js-api/master/build/widgets.min.js"
+    "url": "https://rawgit.com/GoREACT/widgets-js-api/master/build/widgets.min.js?c=1"
   },
   "dependencies": {},
   "devDependencies": {
