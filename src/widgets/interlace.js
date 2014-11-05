@@ -83,10 +83,11 @@ var interlace = (function () {
         iframe.setAttribute('style', 'display:none');
 
         iframe.send = function (event, data) {
-            data = data || {};
-            data.$$id = this.id;
-            data.$$event = event;
-            var json = JSON.stringify(data);
+            var payload = {};
+            payload.id = this.id;
+            payload.event = event;
+            payload.data = data;
+            var json = JSON.stringify(payload);
 
             this.contentWindow.postMessage(json, '*');
         };
