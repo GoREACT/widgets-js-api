@@ -79,6 +79,9 @@
         var hashToParams = function(hash) {
             var search = hash ? "?" : "";
             for (var k in hash) {
+                if (!hash[k]) {
+                    hash[k] = "";
+                }
                 if (hash[k].isArray) {
                     for (var i = 0; i < hash[k].length; i++) {
                         search += search === "?" ? "" : "&";
@@ -130,10 +133,11 @@
             iframe.setAttribute("allowtransparency", "true");
             iframe.setAttribute("style", "display:none");
             iframe.send = function(event, data) {
-                data = data || {};
-                data.$$id = this.id;
-                data.$$event = event;
-                var json = JSON.stringify(data);
+                var payload = {};
+                payload.id = this.id;
+                payload.event = event;
+                payload.data = data;
+                var json = JSON.stringify(payload);
                 this.contentWindow.postMessage(json, "*");
             };
             iframe.show = function() {
@@ -195,28 +199,24 @@
             return iframe;
         };
         exports.send = function(event, data) {
-            var target = arguments[2];
             var interlaceId = getParam("interlace");
-            data = data || {};
-            data.$$id = interlaceId;
-            data.$$event = event;
-            var json = JSON.stringify(data);
+            var payload = {};
+            payload.id = interlaceId;
+            payload.event = event;
+            payload.data = data;
+            var json = JSON.stringify(payload);
             if (interlaceId) {
                 parent.postMessage(json, "*");
             }
         };
         dispatcher(exports);
         window.addEventListener("message", function(evt) {
-            var data = JSON.parse(evt.data);
-            var interlaceId = data.$$id;
-            var interlaceEvent = data.$$event;
-            delete data.$$id;
-            delete data.$$event;
-            var iframe = document.getElementById(interlaceId);
+            var payload = JSON.parse(evt.data);
+            var iframe = document.getElementById(payload.id);
             if (iframe) {
-                iframe.fire(interlaceEvent, data);
+                iframe.fire(payload.event, payload.data);
             } else {
-                exports.fire(interlaceEvent, data);
+                exports.fire(payload.event, payload.data);
             }
         });
         var interlaceId = getParam("interlace");
@@ -270,10 +270,10 @@
         };
         var params = clone(settings);
         params.signature = signature;
-        if (settings.api_key && settings.api_key.indexOf("prod") === 0) {
-            exports.baseUrl = "https://goreact.com";
+        if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
+            exports.baseUrl = "//192.168.33.10";
         } else {
-            exports.baseUrl = "https://dev.goreact.com";
+            exports.baseUrl = "//goreact.com";
         }
         var widget = interlace.load({
             url: exports.baseUrl + "/v1/auth",
@@ -300,10 +300,9 @@
             var params = {
                 goreact_id: options.goreact_id
             };
-            var mode = options.mode || "view";
             var widget = interlace.load({
                 container: options.container,
-                url: exports.baseUrl + "/v1/session/" + mode,
+                url: exports.baseUrl + "/v1/session",
                 params: params
             });
             widget.type = name;
@@ -334,9 +333,10 @@
         var name = "list";
         exports[name] = function(options) {
             options = options || {};
+            return "Not supported yet";
             var widget = interlace.load({
                 container: options.container,
-                url: exports.baseUrl + "/v1/list",
+                url: exports.baseUrl + "@@listUri",
                 params: options.params
             });
             widget.type = name;
@@ -361,10 +361,13 @@
         var name = "playback";
         exports[name] = function(options) {
             options = options || {};
+            var params = {
+                goreact_id: options.goreact_id
+            };
             var widget = interlace.load({
                 container: options.container,
                 url: exports.baseUrl + "/v1/playback",
-                params: options.params
+                params: params
             });
             widget.type = name;
             widget.on("destroy", function() {
@@ -381,6 +384,24 @@
             });
             widget.on("destroyed", function() {
                 exports.fire(name + "::destroyed", this);
+            });
+            widget.on("playbackReady", function() {
+                exports.fire(name + "::ready", this);
+            });
+            widget.on("playbackOnPlay", function() {
+                exports.fire(name + "::play", this);
+            });
+            widget.on("playbackOnPause", function() {
+                exports.fire(name + "::pause", this);
+            });
+            widget.on("playbackOnSeek", function() {
+                exports.fire(name + "::seek", this);
+            });
+            widget.on("playbackOnBuffer", function() {
+                exports.fire(name + "::buffer", this);
+            });
+            widget.on("playbackOnError", function() {
+                exports.fire(name + "::error", this);
             });
         };
     })();
@@ -403,29 +424,44 @@
             widget.on("show", function() {
                 widget.show();
             });
-            widget.on("ready", function() {
-                exports.fire(name + "::ready", this);
-            });
             widget.on("destroyed", function() {
                 exports.fire(name + "::destroyed", this);
             });
-            widget.on("recordStart", function() {
-                exports.fire(name + "::start", this);
+            widget.on("recordReady", function(evt, data) {
+                exports.fire(name + "::ready", this, data);
             });
-            widget.on("recordStarted", function() {
-                exports.fire(name + "::started", this);
+            widget.on("recordStart", function(evt, data) {
+                exports.fire(name + "::start", this, data);
             });
-            widget.on("recordStop", function() {
-                exports.fire(name + "::stop", this);
+            widget.on("recordStarted", function(evt, data) {
+                exports.fire(name + "::started", this, data);
             });
-            widget.on("recordStopped", function() {
-                exports.fire(name + "::stopped", this);
+            widget.on("recordStop", function(evt, data) {
+                exports.fire(name + "::stop", this, data);
             });
-            widget.on("recordKeep", function() {
-                exports.fire(name + "::keep", this);
+            widget.on("recordStopped", function(evt, data) {
+                exports.fire(name + "::stopped", this, data);
             });
-            widget.on("recordDiscard", function() {
-                exports.fire(name + "::discard", this);
+            widget.on("recordPost", function(evt, data) {
+                exports.fire(name + "::post", this, data);
+            });
+            widget.on("recordPostSuccess", function(evt, data) {
+                exports.fire(name + "::postSuccess", this, data);
+            });
+            widget.on("recordPostError", function(evt, data) {
+                exports.fire(name + "::postError", this, data);
+            });
+            widget.on("recordDiscard", function(evt, data) {
+                exports.fire(name + "::discard", this, data);
+            });
+            widget.on("recordDiscardSuccess", function(evt, data) {
+                exports.fire(name + "::discardSuccess", this, data);
+            });
+            widget.on("recordDiscardError", function(evt, data) {
+                exports.fire(name + "::discardError", this, data);
+            });
+            widget.on("recordTimeout", function(evt, data) {
+                exports.fire(name + "::timeout", this, data);
             });
         };
     })();

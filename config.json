@@ -1,0 +1,11 @@
+{
+    "widgetsUrl" : "//localhost/build/widgets.js",
+    "sandboxUrl": "//192.168.33.10",
+    "prodUrl": "//goreact.com",
+    "authUri": "/v1/auth",
+    "recordUri": "/v1/record",
+    "uploadUri": "/v1/upload",
+    "playbackUri": "/v1/playback",
+    "listUri": "/v1/list",
+    "collaborateUri": "/v1/session"
+}

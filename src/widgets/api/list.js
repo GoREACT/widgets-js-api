@@ -4,9 +4,11 @@
     exports[name] = function (options) {
         options = options || {};
 
+        return "Not supported yet";
+
         var widget = interlace.load({
             container: options.container,
-            url: exports.baseUrl + '/v1/list',
+            url: exports.baseUrl + '@@listUri',
             params: options.params
         });
 

@@ -70,6 +70,9 @@
         var hashToParams = function(hash) {
             var search = hash ? "?" : "";
             for (var k in hash) {
+                if (!hash[k]) {
+                    hash[k] = "";
+                }
                 if (hash[k].isArray) {
                     for (var i = 0; i < hash[k].length; i++) {
                         search += search === "?" ? "" : "&";
@@ -121,10 +124,11 @@
             iframe.setAttribute("allowtransparency", "true");
             iframe.setAttribute("style", "display:none");
             iframe.send = function(event, data) {
-                data = data || {};
-                data.$$id = this.id;
-                data.$$event = event;
-                var json = JSON.stringify(data);
+                var payload = {};
+                payload.id = this.id;
+                payload.event = event;
+                payload.data = data;
+                var json = JSON.stringify(payload);
                 this.contentWindow.postMessage(json, "*");
             };
             iframe.show = function() {
@@ -186,28 +190,24 @@
             return iframe;
         };
         exports.send = function(event, data) {
-            var target = arguments[2];
             var interlaceId = getParam("interlace");
-            data = data || {};
-            data.$$id = interlaceId;
-            data.$$event = event;
-            var json = JSON.stringify(data);
+            var payload = {};
+            payload.id = interlaceId;
+            payload.event = event;
+            payload.data = data;
+            var json = JSON.stringify(payload);
             if (interlaceId) {
                 parent.postMessage(json, "*");
             }
         };
         dispatcher(exports);
         window.addEventListener("message", function(evt) {
-            var data = JSON.parse(evt.data);
-            var interlaceId = data.$$id;
-            var interlaceEvent = data.$$event;
-            delete data.$$id;
-            delete data.$$event;
-            var iframe = document.getElementById(interlaceId);
+            var payload = JSON.parse(evt.data);
+            var iframe = document.getElementById(payload.id);
             if (iframe) {
-                iframe.fire(interlaceEvent, data);
+                iframe.fire(payload.event, payload.data);
             } else {
-                exports.fire(interlaceEvent, data);
+                exports.fire(payload.event, payload.data);
             }
         });
         var interlaceId = getParam("interlace");

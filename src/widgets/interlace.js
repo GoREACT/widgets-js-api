@@ -20,6 +20,9 @@ var interlace = (function () {
     var hashToParams = function (hash) {
         var search = hash ? '?' : '';
         for (var k in hash) {
+            if(!hash[k]) {
+                hash[k] = "";
+            }
             if (hash[k].isArray) {
                 for (var i = 0; i < hash[k].length; i++) {
                     search += search === '?' ? '' : '&';

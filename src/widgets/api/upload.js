@@ -6,7 +6,7 @@
 
         var widget = interlace.load({
             container: options.container,
-            url: exports.baseUrl + '/v1/upload',
+            url: exports.baseUrl + '@@uploadUri',
             params: options.params
         });
 

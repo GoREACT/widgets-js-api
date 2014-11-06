@@ -6,7 +6,7 @@
 
         var widget = interlace.load({
             container: options.container,
-            url: exports.baseUrl + '/v1/record',
+            url: exports.baseUrl + '@@recordUri',
             params: options.params
         });
 
@@ -25,37 +25,56 @@
             widget.show();
         });
 
-        // :: reactions :: //
-        widget.on('ready', function () {
-            exports.fire(name + '::ready', this);
-        });
-
         widget.on('destroyed', function () {
             exports.fire(name + '::destroyed', this);
         });
 
-        widget.on('recordStart', function () {
-            exports.fire(name + '::start', this);
+        widget.on('recordReady', function (evt, data) {
+            exports.fire(name + '::ready', this, data);
         });
 
-        widget.on('recordStarted', function () {
-            exports.fire(name + '::started', this);
+        widget.on('recordStart', function (evt, data) {
+            exports.fire(name + '::start', this, data);
         });
 
-        widget.on('recordStop', function () {
-            exports.fire(name + '::stop', this);
+        widget.on('recordStarted', function (evt, data) {
+            exports.fire(name + '::started', this, data);
         });
 
-        widget.on('recordStopped', function () {
-            exports.fire(name + '::stopped', this);
+        widget.on('recordStop', function (evt, data) {
+            exports.fire(name + '::stop', this, data);
         });
 
-        widget.on('recordKeep', function () {
-            exports.fire(name + '::keep', this);
+        widget.on('recordStopped', function (evt, data) {
+            exports.fire(name + '::stopped', this, data);
         });
 
-        widget.on('recordDiscard', function () {
-            exports.fire(name + '::discard', this);
+        widget.on('recordPost', function (evt, data) {
+            exports.fire(name + '::post', this, data);
+        });
+
+        widget.on('recordPostSuccess', function (evt, data) {
+            exports.fire(name + '::postSuccess', this, data);
+        });
+
+        widget.on('recordPostError', function (evt, data) {
+            exports.fire(name + '::postError', this, data);
+        });
+
+        widget.on('recordDiscard', function (evt, data) {
+            exports.fire(name + '::discard', this, data);
+        });
+
+        widget.on('recordDiscardSuccess', function (evt, data) {
+            exports.fire(name + '::discardSuccess', this, data);
+        });
+
+        widget.on('recordDiscardError', function (evt, data) {
+            exports.fire(name + '::discardError', this, data);
+        });
+
+        widget.on('recordTimeout', function (evt, data) {
+            exports.fire(name + '::timeout', this, data);
         });
 
     };

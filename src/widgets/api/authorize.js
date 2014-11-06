@@ -9,14 +9,14 @@ exports.authorize = function (settings, signature) {
     params.signature = signature;
 
     // determine environment
-    if(settings.api_key && settings.api_key.indexOf("prod") === 0) {
-        exports.baseUrl = "https://goreact.com";
+    if(settings.api_key && settings.api_key.indexOf("sb") === 0) {
+        exports.baseUrl = "@@sandboxUrl";
     } else {
-        exports.baseUrl = "https://dev.goreact.com";// TODO: change to sandbox
+        exports.baseUrl = "@@prodUrl";
     }
 
     var widget = interlace.load({
-        url: exports.baseUrl + '/v1/auth',
+        url: exports.baseUrl + "@@authUri",
         params: params,
         options: {
             width: '0px',

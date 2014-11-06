@@ -1,6 +1,7 @@
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        config: grunt.file.readJSON('config.json'),
         jshint: {
             // define the files to lint
             files: ['src/**/*.js']
@@ -167,8 +168,14 @@ module.exports = function (grunt) {
                 options: {
                     patterns: [
                         { match: 'name', replacement: '<%= pkg.name %>' },
-                        { match: 'url', replacement: '<%= pkg.config.apiUrl %>' },
-                        { match: 'widgetsUrl', replacement: '<%= pkg.config.widgetsUrl %>' }
+                        { match: 'widgetsUrl', replacement: '<%= config.widgetsUrl %>' },
+                        { match: 'sandboxUrl', replacement: '<%= config.sandboxUrl %>' },
+                        { match: 'prodUrl', replacement: '<%= config.prodUrl %>' },
+                        { match: 'authUri', replacement: '<%= config.authUri %>' },
+                        { match: 'recordUri', replacement: '<%= config.recordUri %>' },
+                        { match: 'uploadUri', replacement: '<%= config.uploadUri %>' },
+                        { match: 'playbackUri', replacement: '<%= config.playbackUri %>' },
+                        { match: 'collaborateUri', replacement: '<%= config.collaborateUri %>' }
                     ]
                 },
                 files: [

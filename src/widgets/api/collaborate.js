@@ -8,11 +8,9 @@
             goreact_id: options.goreact_id
         };
 
-        var mode = options.mode || "view";
-
         var widget = interlace.load({
             container: options.container,
-            url: exports.baseUrl + '/v1/session/' + mode,
+            url: exports.baseUrl + '@@collaborateUri',
             params: params
         });
 
