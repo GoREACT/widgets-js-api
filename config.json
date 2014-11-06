@@ -1,6 +1,6 @@
 {
-    "widgetsUrl" : "//localhost/build/widgets.js",
-    "sandboxUrl": "//192.168.33.10",
+    "widgetsUrl" : "https://rawgit.com/GoREACT/widgets-js-api/master/build/widgets.min.js",
+    "sandboxUrl": "//sandbox.goreact.com",
     "prodUrl": "//goreact.com",
     "authUri": "/v1/auth",
     "recordUri": "/v1/record",

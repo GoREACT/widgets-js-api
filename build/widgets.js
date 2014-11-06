@@ -271,7 +271,7 @@
         var params = clone(settings);
         params.signature = signature;
         if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
-            exports.baseUrl = "//192.168.33.10";
+            exports.baseUrl = "//sandbox.goreact.com";
         } else {
             exports.baseUrl = "//goreact.com";
         }
