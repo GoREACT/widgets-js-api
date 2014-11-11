@@ -1,11 +1,7 @@
 exports.authorize = function (settings, signature) {
     interlace.prefix('widget_');
 
-    var clone = function (obj) {
-        return JSON.parse(JSON.stringify(obj));
-    };
-
-    var params = clone(settings);
+    var params = utils.clone(settings);
     params.signature = signature;
 
     // determine environment

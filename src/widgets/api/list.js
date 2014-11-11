@@ -2,14 +2,17 @@
     var name = 'list';
 
     exports[name] = function (options) {
-        options = options || {};
-
         return "Not supported yet";
 
+        options = options || {};
+
+        var container = options.container;
+        delete options.container;
+
         var widget = interlace.load({
-            container: options.container,
+            container: container,
             url: exports.baseUrl + '@@listUri',
-            params: options.params
+            params: utils.clone(options)
         });
 
         widget.type = name;

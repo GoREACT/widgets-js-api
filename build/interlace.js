@@ -67,23 +67,15 @@
         function isElement(o) {
             return typeof HTMLElement === "object" ? o instanceof HTMLElement : o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
         }
-        var hashToParams = function(hash) {
-            var search = hash ? "?" : "";
-            for (var k in hash) {
-                if (!hash[k]) {
-                    hash[k] = "";
-                }
-                if (hash[k].isArray) {
-                    for (var i = 0; i < hash[k].length; i++) {
-                        search += search === "?" ? "" : "&";
-                        search += encodeURIComponent(k) + "=" + encodeURIComponent(hash[k][i]);
-                    }
-                } else {
-                    search += search === "?" ? "" : "&";
-                    search += encodeURIComponent(k) + "=" + encodeURIComponent(hash[k]);
+        var serialize = function(obj, prefix) {
+            var str = [];
+            for (var p in obj) {
+                if (obj.hasOwnProperty(p)) {
+                    var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                    str.push(typeof v == "object" ? serialize(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
                 }
             }
-            return search;
+            return str.join("&");
         };
         var getParam = function(name, from) {
             from = from || window.location.search;
@@ -112,7 +104,8 @@
             var iframe = document.createElement("iframe");
             var params = payload.params || {};
             params.interlace = frameId;
-            var url = payload.url + hashToParams(params);
+            var queryParams = serialize(params);
+            var url = payload.url + (queryParams ? "?" : "") + queryParams;
             payload.options = payload.options || {};
             iframe.id = frameId;
             iframe.src = url;

@@ -17,24 +17,37 @@ var interlace = (function () {
         );
     }
 
-    var hashToParams = function (hash) {
-        var search = hash ? '?' : '';
-        for (var k in hash) {
-            if(!hash[k]) {
-                hash[k] = "";
-            }
-            if (hash[k].isArray) {
-                for (var i = 0; i < hash[k].length; i++) {
-                    search += search === '?' ? '' : '&';
-                    search += encodeURIComponent(k) + '=' + encodeURIComponent(hash[k][i]);
-                }
-            } else {
-                search += search === '?' ? '' : '&';
-                search += encodeURIComponent(k) + '=' + encodeURIComponent(hash[k]);
+    var serialize = function(obj, prefix) {
+        var str = [];
+        for(var p in obj) {
+            if (obj.hasOwnProperty(p)) {
+                var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                str.push(typeof v == "object" ?
+                    serialize(v, k) :
+                    encodeURIComponent(k) + "=" + encodeURIComponent(v));
             }
         }
-        return search;
+        return str.join("&");
     };
+
+//    var hashToParams = function (hash) {
+//        var search = hash ? '?' : '';
+//        for (var k in hash) {
+//            if(!hash[k]) {
+//                hash[k] = "";
+//            }
+//            if (hash[k].isArray) {
+//                for (var i = 0; i < hash[k].length; i++) {
+//                    search += search === '?' ? '' : '&';
+//                    search += encodeURIComponent(k) + '=' + encodeURIComponent(hash[k][i]);
+//                }
+//            } else {
+//                search += search === '?' ? '' : '&';
+//                search += encodeURIComponent(k) + '=' + encodeURIComponent(hash[k]);
+//            }
+//        }
+//        return search;
+//    };
 
     var getParam = function (name, from) {
         from = from || window.location.search;
@@ -68,7 +81,8 @@ var interlace = (function () {
         var params = payload.params || {};
         params.interlace = frameId;
 
-        var url = payload.url + hashToParams(params);
+        var queryParams = serialize(params);
+        var url = payload.url + (queryParams ? "?" : "") + queryParams;
 
         payload.options = payload.options || {};
 

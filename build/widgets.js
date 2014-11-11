@@ -1,5 +1,12 @@
 (function() {
     var exports = window["goreact"];
+    var utils = function() {
+        var exports = {};
+        exports.clone = function(obj) {
+            return JSON.parse(JSON.stringify(obj));
+        };
+        return exports;
+    }();
     if (!String.prototype.supplant) {
         String.prototype.supplant = function(o) {
             return this.replace(/\{([^{}]*)\}/g, function(a, b) {
@@ -76,23 +83,15 @@
         function isElement(o) {
             return typeof HTMLElement === "object" ? o instanceof HTMLElement : o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
         }
-        var hashToParams = function(hash) {
-            var search = hash ? "?" : "";
-            for (var k in hash) {
-                if (!hash[k]) {
-                    hash[k] = "";
-                }
-                if (hash[k].isArray) {
-                    for (var i = 0; i < hash[k].length; i++) {
-                        search += search === "?" ? "" : "&";
-                        search += encodeURIComponent(k) + "=" + encodeURIComponent(hash[k][i]);
-                    }
-                } else {
-                    search += search === "?" ? "" : "&";
-                    search += encodeURIComponent(k) + "=" + encodeURIComponent(hash[k]);
+        var serialize = function(obj, prefix) {
+            var str = [];
+            for (var p in obj) {
+                if (obj.hasOwnProperty(p)) {
+                    var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                    str.push(typeof v == "object" ? serialize(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
                 }
             }
-            return search;
+            return str.join("&");
         };
         var getParam = function(name, from) {
             from = from || window.location.search;
@@ -121,7 +120,8 @@
             var iframe = document.createElement("iframe");
             var params = payload.params || {};
             params.interlace = frameId;
-            var url = payload.url + hashToParams(params);
+            var queryParams = serialize(params);
+            var url = payload.url + (queryParams ? "?" : "") + queryParams;
             payload.options = payload.options || {};
             iframe.id = frameId;
             iframe.src = url;
@@ -265,10 +265,7 @@
     setTimeout(setup);
     exports.authorize = function(settings, signature) {
         interlace.prefix("widget_");
-        var clone = function(obj) {
-            return JSON.parse(JSON.stringify(obj));
-        };
-        var params = clone(settings);
+        var params = utils.clone(settings);
         params.signature = signature;
         if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
             exports.baseUrl = "//sandbox.goreact.com";
@@ -297,13 +294,12 @@
         var name = "collaborate";
         exports[name] = function(options) {
             options = options || {};
-            var params = {
-                goreact_id: options.goreact_id
-            };
+            var container = options.container;
+            delete options.container;
             var widget = interlace.load({
-                container: options.container,
+                container: container,
                 url: exports.baseUrl + "/v1/session",
-                params: params
+                params: utils.clone(options)
             });
             widget.type = name;
             widget.on("destroy", function() {
@@ -332,12 +328,14 @@
     (function() {
         var name = "list";
         exports[name] = function(options) {
-            options = options || {};
             return "Not supported yet";
+            options = options || {};
+            var container = options.container;
+            delete options.container;
             var widget = interlace.load({
-                container: options.container,
+                container: container,
                 url: exports.baseUrl + "@@listUri",
-                params: options.params
+                params: utils.clone(options)
             });
             widget.type = name;
             widget.on("destroy", function() {
@@ -361,13 +359,12 @@
         var name = "playback";
         exports[name] = function(options) {
             options = options || {};
-            var params = {
-                goreact_id: options.goreact_id
-            };
+            var container = options.container;
+            delete options.container;
             var widget = interlace.load({
-                container: options.container,
+                container: container,
                 url: exports.baseUrl + "/v1/playback",
-                params: params
+                params: utils.clone(options)
             });
             widget.type = name;
             widget.on("destroy", function() {
@@ -409,10 +406,12 @@
         var name = "record";
         exports[name] = function(options) {
             options = options || {};
+            var container = options.container;
+            delete options.container;
             var widget = interlace.load({
-                container: options.container,
+                container: container,
                 url: exports.baseUrl + "/v1/record",
-                params: options.params
+                params: utils.clone(options)
             });
             widget.type = name;
             widget.on("destroy", function() {
@@ -469,10 +468,12 @@
         var name = "upload";
         exports[name] = function(options) {
             options = options || {};
+            var container = options.container;
+            delete options.container;
             var widget = interlace.load({
-                container: options.container,
+                container: container,
                 url: exports.baseUrl + "/v1/upload",
-                params: options.params
+                params: utils.clone(options)
             });
             widget.type = name;
             widget.on("destroy", function() {

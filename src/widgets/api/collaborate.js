@@ -4,14 +4,13 @@
     exports[name] = function (options) {
         options = options || {};
 
-        var params = {
-            goreact_id: options.goreact_id
-        };
+        var container = options.container;
+        delete options.container;
 
         var widget = interlace.load({
-            container: options.container,
+            container: container,
             url: exports.baseUrl + '@@collaborateUri',
-            params: params
+            params: utils.clone(options)
         });
 
         widget.type = name;
@@ -38,5 +37,5 @@
             exports.fire(name + '::destroyed', this);
         });
 
-    };
+    }
 })();
