@@ -75,7 +75,7 @@
                     str.push(typeof v == "object" ? serialize(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
                 }
             }
-            return str.join("&");
+            return str.join("&").replace(/%20/g, "+");
         };
         var getParam = function(name, from) {
             from = from || window.location.search;

@@ -27,7 +27,7 @@ var interlace = (function () {
                     encodeURIComponent(k) + "=" + encodeURIComponent(v));
             }
         }
-        return str.join("&");
+        return str.join("&").replace(/%20/g, "+");
     };
 
 //    var hashToParams = function (hash) {
