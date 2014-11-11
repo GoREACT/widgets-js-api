@@ -7,6 +7,8 @@ exports.authorize = function (settings, signature) {
     // determine environment
     if(settings.api_key && settings.api_key.indexOf("sb") === 0) {
         exports.baseUrl = "@@sandboxUrl";
+    } else if(settings.api_key && settings.api_key.indexOf("dev") === 0) {
+        exports.baseUrl = "@@devUrl";
     } else {
         exports.baseUrl = "@@prodUrl";
     }

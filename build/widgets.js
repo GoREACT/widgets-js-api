@@ -269,6 +269,8 @@
         params.signature = signature;
         if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
             exports.baseUrl = "//sandbox.goreact.com";
+        } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
+            exports.baseUrl = "//dev.goreact.com";
         } else {
             exports.baseUrl = "//goreact.com";
         }

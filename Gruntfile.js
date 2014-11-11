@@ -171,6 +171,7 @@ module.exports = function (grunt) {
                         { match: 'name', replacement: '<%= pkg.name %>' },
                         { match: 'widgetsUrl', replacement: '<%= config.widgetsUrl %>' },
                         { match: 'sandboxUrl', replacement: '<%= config.sandboxUrl %>' },
+                        { match: 'devUrl', replacement: '<%= config.devUrl %>' },
                         { match: 'prodUrl', replacement: '<%= config.prodUrl %>' },
                         { match: 'authUri', replacement: '<%= config.authUri %>' },
                         { match: 'recordUri', replacement: '<%= config.recordUri %>' },
