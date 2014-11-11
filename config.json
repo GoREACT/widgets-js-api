@@ -1,5 +1,5 @@
 {
-    "widgetsUrl" : "https://rawgit.com/GoREACT/widgets-js-api/master/build/widgets.min.js",
+    "widgetsUrl" : "https://rawgit.com/GoREACT/widgets-js-api/master/build/widgets.js",
     "sandboxUrl": "//sandbox.goreact.com",
     "prodUrl": "//goreact.com",
     "authUri": "/v1/auth",
