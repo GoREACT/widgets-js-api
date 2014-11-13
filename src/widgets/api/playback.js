@@ -57,7 +57,7 @@
         });
 
         widget.on('playbackOnError', function () {
-            exports.fire(name + '::error', this);
+            exports.fire(name + '::playError', this);
         });
 
     };
