@@ -39,5 +39,8 @@
             exports.fire(name + '::destroyed', this);
         });
 
+        widget.on('error', function (evt, data) {
+            exports.fire(name + '::error', this, data);
+        });
     };
 })();

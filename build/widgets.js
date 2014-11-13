@@ -313,11 +313,14 @@
             widget.on("show", function() {
                 widget.show();
             });
-            widget.on("ready", function() {
-                exports.fire(name + "::ready", this);
-            });
             widget.on("destroyed", function() {
                 exports.fire(name + "::destroyed", this);
+            });
+            widget.on("error", function(evt, data) {
+                exports.fire(name + "::error", this, data);
+            });
+            widget.on("sessionReady", function() {
+                exports.fire(name + "::ready", this);
             });
         };
     })();
@@ -355,6 +358,9 @@
             widget.on("destroyed", function() {
                 exports.fire(name + "::destroyed", this);
             });
+            widget.on("error", function(evt, data) {
+                exports.fire(name + "::error", this, data);
+            });
         };
     })();
     (function() {
@@ -378,8 +384,8 @@
             widget.on("show", function() {
                 widget.show();
             });
-            widget.on("ready", function() {
-                exports.fire(name + "::ready", this);
+            widget.on("error", function(evt, data) {
+                exports.fire(name + "::error", this, data);
             });
             widget.on("destroyed", function() {
                 exports.fire(name + "::destroyed", this);
@@ -424,6 +430,9 @@
             });
             widget.on("show", function() {
                 widget.show();
+            });
+            widget.on("error", function(evt, data) {
+                exports.fire(name + "::error", this, data);
             });
             widget.on("destroyed", function() {
                 exports.fire(name + "::destroyed", this);
@@ -487,8 +496,11 @@
             widget.on("show", function() {
                 widget.show();
             });
-            widget.on("destroyed", function() {
-                exports.fire(name + "::destroyed", this);
+            widget.on("error", function(evt, data) {
+                exports.fire(name + "::error", this, data);
+            });
+            widget.on("destroyed", function(evt, data) {
+                exports.fire(name + "::destroyed", this, data);
             });
             widget.on("uploadReady", function(evt, data) {
                 exports.fire(name + "::ready", this, data);

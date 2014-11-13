@@ -28,8 +28,12 @@
             widget.show();
         });
 
-        widget.on('destroyed', function () {
-            exports.fire(name + '::destroyed', this);
+        widget.on('error', function (evt, data) {
+            exports.fire(name + '::error', this, data);
+        });
+
+        widget.on('destroyed', function (evt, data) {
+            exports.fire(name + '::destroyed', this, data);
         });
 
         widget.on('uploadReady', function (evt, data) {

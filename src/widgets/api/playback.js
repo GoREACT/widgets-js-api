@@ -28,9 +28,8 @@
             widget.show();
         });
 
-        // :: reactions :: //
-        widget.on('ready', function () {
-            exports.fire(name + '::ready', this);
+        widget.on('error', function (evt, data) {
+            exports.fire(name + '::error', this, data);
         });
 
         widget.on('destroyed', function () {

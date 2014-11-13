@@ -29,13 +29,17 @@
         });
 
         // :: reactions :: //
-        widget.on('ready', function () {
-            exports.fire(name + '::ready', this);
-        });
 
         widget.on('destroyed', function () {
             exports.fire(name + '::destroyed', this);
         });
 
+        widget.on('error', function (evt, data) {
+            exports.fire(name + '::error', this, data);
+        });
+
+        widget.on('sessionReady', function () {
+            exports.fire(name + '::ready', this);
+        });
     }
 })();

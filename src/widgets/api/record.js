@@ -28,6 +28,10 @@
             widget.show();
         });
 
+        widget.on('error', function (evt, data) {
+            exports.fire(name + '::error', this, data);
+        });
+
         widget.on('destroyed', function () {
             exports.fire(name + '::destroyed', this);
         });
