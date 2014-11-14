@@ -1,8 +1,8 @@
 {
     "widgetsUrl" : "https://rawgit.com/GoREACT/widgets-js-api/master/build/widgets.js",
-    "devUrl": "//dev.goreact.com",
-    "sandboxUrl": "//sandbox.goreact.com",
-    "prodUrl": "//goreact.com",
+    "devUrl": "https://dev.goreact.com",
+    "sandboxUrl": "https://sandbox.goreact.com",
+    "prodUrl": "https://goreact.com",
     "authUri": "/v1/auth",
     "recordUri": "/v1/record",
     "uploadUri": "/v1/upload",

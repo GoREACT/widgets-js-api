@@ -268,11 +268,11 @@
         var params = utils.clone(settings);
         params.signature = signature;
         if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
-            exports.baseUrl = "//sandbox.goreact.com";
+            exports.baseUrl = "https://sandbox.goreact.com";
         } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
-            exports.baseUrl = "//dev.goreact.com";
+            exports.baseUrl = "https://dev.goreact.com";
         } else {
-            exports.baseUrl = "//goreact.com";
+            exports.baseUrl = "https://goreact.com";
         }
         var widget = interlace.load({
             url: exports.baseUrl + "/v1/auth",
