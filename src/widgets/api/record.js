@@ -13,6 +13,12 @@
             params: utils.clone(options)
         });
 
+        // set parent element height if not set (minimum width)
+        var minHeight = 340;
+        if(widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
+            widget.parentNode.style.height = minHeight + "px";
+        }
+
         widget.type = name;
 
         // :: actions :: //

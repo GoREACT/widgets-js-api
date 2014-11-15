@@ -303,6 +303,10 @@
                 url: exports.baseUrl + "/v1/session",
                 params: utils.clone(options)
             });
+            var minHeight = 340;
+            if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
+                widget.parentNode.style.height = minHeight + "px";
+            }
             widget.type = name;
             widget.on("destroy", function() {
                 widget.destroy();
@@ -374,6 +378,10 @@
                 url: exports.baseUrl + "/v1/playback",
                 params: utils.clone(options)
             });
+            var minHeight = 340;
+            if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
+                widget.parentNode.style.height = minHeight + "px";
+            }
             widget.type = name;
             widget.on("destroy", function() {
                 widget.destroy();
@@ -421,6 +429,10 @@
                 url: exports.baseUrl + "/v1/record",
                 params: utils.clone(options)
             });
+            var minHeight = 340;
+            if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
+                widget.parentNode.style.height = minHeight + "px";
+            }
             widget.type = name;
             widget.on("destroy", function() {
                 widget.destroy();
@@ -486,6 +498,10 @@
                 url: exports.baseUrl + "/v1/upload",
                 params: utils.clone(options)
             });
+            var minHeight = 340;
+            if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
+                widget.parentNode.style.height = minHeight + "px";
+            }
             widget.type = name;
             widget.on("destroy", function() {
                 widget.destroy();
