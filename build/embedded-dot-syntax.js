@@ -22,5 +22,5 @@
     script.type = "text/javascript";
     script.async = true;
     script.src = "https://rawgit.com/GoREACT/widgets-js-api/master/build/widgets.js";
-    init("authorize on destroy record upload playback collaborate list");
+    init("authorize on off destroy record upload playback collaborate list");
 })();
