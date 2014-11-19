@@ -42,5 +42,7 @@
         widget.on('error', function (evt, data) {
             exports.fire(name + '::error', this, data);
         });
+
+        return widget.id;
     };
 })();

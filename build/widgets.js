@@ -238,10 +238,11 @@
     dispatcher(exports);
     function setup() {
         var i = queue.length;
+        queue.reverse();
         while (i--) {
             var args = Array.prototype.slice.call(queue[i]);
             var method = args.shift();
-            if (method === "authorize" || method === "on") {
+            if (method === "authorize" || method === "on" || method === "off") {
                 if (exports.hasOwnProperty(method)) {
                     queue.splice(i, 1);
                     exports[method].apply(exports, args);
@@ -263,37 +264,41 @@
         queue.length = 0;
     });
     setTimeout(setup);
-    exports.authorize = function(settings, signature) {
-        interlace.prefix("widget_");
-        var params = utils.clone(settings);
-        params.signature = signature;
-        if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
-            exports.baseUrl = "https://sandbox.goreact.com";
-        } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
-            exports.baseUrl = "https://dev.goreact.com";
-        } else {
-            exports.baseUrl = "https://goreact.com";
-        }
-        var widget = interlace.load({
-            url: exports.baseUrl + "/v1/auth",
-            params: params,
-            options: {
-                width: "0px",
-                height: "0px"
+    (function() {
+        var name = "authorize";
+        exports.baseUrl = "https://goreact.com";
+        exports[name] = function(settings, signature) {
+            interlace.prefix("widget_");
+            var params = utils.clone(settings);
+            params.signature = signature;
+            if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
+                exports.baseUrl = "https://sandbox.goreact.com";
+            } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
+                exports.baseUrl = "https://dev.goreact.com";
             }
-        });
-        widget.type = "authorize";
-        widget.on("success", function(event, data) {
-            widget.destroy();
-            exports.fire("authorize::success", this, data);
-        });
-        widget.on("error", function(event, data) {
-            widget.destroy();
-            exports.fire("authorize::error", this, data);
-        });
-    };
+            var widget = interlace.load({
+                url: exports.baseUrl + "/v1/auth",
+                params: params,
+                options: {
+                    width: "0px",
+                    height: "0px"
+                }
+            });
+            widget.type = "authorize";
+            widget.on("success", function(event, data) {
+                widget.destroy();
+                exports.fire("authorize::success", this, data);
+            });
+            widget.on("error", function(event, data) {
+                widget.destroy();
+                exports.fire("authorize::error", this, data);
+            });
+            return widget.id;
+        };
+    })();
     (function() {
         var name = "collaborate";
+        var minHeight = 340;
         exports[name] = function(options) {
             options = options || {};
             var container = options.container;
@@ -303,7 +308,6 @@
                 url: exports.baseUrl + "/v1/session",
                 params: utils.clone(options)
             });
-            var minHeight = 340;
             if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
                 widget.parentNode.style.height = minHeight + "px";
             }
@@ -326,12 +330,13 @@
             widget.on("sessionReady", function() {
                 exports.fire(name + "::ready", this);
             });
+            return widget.id;
         };
     })();
     exports.destroy = function(widgetId) {
         var widget = document.getElementById(widgetId);
         if (widget) {
-            widget.destroy();
+            widget.fire("destroy");
         }
     };
     (function() {
@@ -365,10 +370,12 @@
             widget.on("error", function(evt, data) {
                 exports.fire(name + "::error", this, data);
             });
+            return widget.id;
         };
     })();
     (function() {
         var name = "playback";
+        var minHeight = 340;
         exports[name] = function(options) {
             options = options || {};
             var container = options.container;
@@ -378,7 +385,6 @@
                 url: exports.baseUrl + "/v1/playback",
                 params: utils.clone(options)
             });
-            var minHeight = 340;
             if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
                 widget.parentNode.style.height = minHeight + "px";
             }
@@ -416,10 +422,12 @@
             widget.on("playbackOnError", function() {
                 exports.fire(name + "::playError", this);
             });
+            return widget.id;
         };
     })();
     (function() {
         var name = "record";
+        var minHeight = 340;
         exports[name] = function(options) {
             options = options || {};
             var container = options.container;
@@ -429,7 +437,6 @@
                 url: exports.baseUrl + "/v1/record",
                 params: utils.clone(options)
             });
-            var minHeight = 340;
             if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
                 widget.parentNode.style.height = minHeight + "px";
             }
@@ -485,10 +492,12 @@
             widget.on("recordTimeout", function(evt, data) {
                 exports.fire(name + "::timeout", this, data);
             });
+            return widget.id;
         };
     })();
     (function() {
         var name = "upload";
+        var minHeight = 340;
         exports[name] = function(options) {
             options = options || {};
             var container = options.container;
@@ -498,7 +507,6 @@
                 url: exports.baseUrl + "/v1/upload",
                 params: utils.clone(options)
             });
-            var minHeight = 340;
             if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
                 widget.parentNode.style.height = minHeight + "px";
             }
@@ -554,6 +562,7 @@
             widget.on("uploadPostError", function(evt, data) {
                 exports.fire(name + "::postError", this, data);
             });
+            return widget.id;
         };
     })();
 })();

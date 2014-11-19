@@ -1,37 +1,44 @@
-exports.authorize = function (settings, signature) {
-    interlace.prefix('widget_');
+(function () {
+    var name = 'authorize';
 
-    var params = utils.clone(settings);
-    params.signature = signature;
+    // default base url set to use production
+    exports.baseUrl = "@@prodUrl";
 
-    // determine environment
-    if(settings.api_key && settings.api_key.indexOf("sb") === 0) {
-        exports.baseUrl = "@@sandboxUrl";
-    } else if(settings.api_key && settings.api_key.indexOf("dev") === 0) {
-        exports.baseUrl = "@@devUrl";
-    } else {
-        exports.baseUrl = "@@prodUrl";
-    }
+    exports[name] = function (settings, signature) {
+        interlace.prefix('widget_');
 
-    var widget = interlace.load({
-        url: exports.baseUrl + "@@authUri",
-        params: params,
-        options: {
-            width: '0px',
-            height: '0px'
+        var params = utils.clone(settings);
+        params.signature = signature;
+
+        // determine environment
+        if(settings.api_key && settings.api_key.indexOf("sb") === 0) {
+            exports.baseUrl = "@@sandboxUrl";
+        } else if(settings.api_key && settings.api_key.indexOf("dev") === 0) {
+            exports.baseUrl = "@@devUrl";
         }
-    });
 
-    widget.type = 'authorize';
+        var widget = interlace.load({
+            url: exports.baseUrl + "@@authUri",
+            params: params,
+            options: {
+                width: '0px',
+                height: '0px'
+            }
+        });
 
-    widget.on('success', function (event, data) {
-        widget.destroy();
-        exports.fire('authorize::success', this, data);
-    });
+        widget.type = 'authorize';
 
-    widget.on('error', function (event, data) {
-        widget.destroy();
-        exports.fire('authorize::error', this, data);
-    });
+        widget.on('success', function (event, data) {
+            widget.destroy();
+            exports.fire('authorize::success', this, data);
+        });
 
-};
+        widget.on('error', function (event, data) {
+            widget.destroy();
+            exports.fire('authorize::error', this, data);
+        });
+
+        return widget.id;
+    };
+
+})();

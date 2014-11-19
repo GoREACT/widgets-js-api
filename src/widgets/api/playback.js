@@ -1,5 +1,6 @@
 (function () {
     var name = 'playback';
+    var minHeight = 340;
 
     exports[name] = function (options) {
         options = options || {};
@@ -13,8 +14,7 @@
             params: utils.clone(options)
         });
 
-        // set parent element height if not set (minimum width)
-        var minHeight = 340;
+        // set parent element height if not set (enforce minimum height)
         if(widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
             widget.parentNode.style.height = minHeight + "px";
         }
@@ -66,5 +66,6 @@
             exports.fire(name + '::playError', this);
         });
 
+        return widget.id;
     };
 })();

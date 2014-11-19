@@ -16,10 +16,13 @@ dispatcher(exports);
 
 function setup() {
     var i = queue.length;
+    // reverse the queue to ensure that we iterate
+    // through the queue in the order each item got added
+    queue.reverse();
     while(i--) {
         var args = Array.prototype.slice.call(queue[i]);
         var method = args.shift();
-        if (method === 'authorize' || method === 'on') {
+        if (method === 'authorize' || method === 'on' || method === 'off') {
             if (exports.hasOwnProperty(method)) {
                 queue.splice(i, 1);
                 exports[method].apply(exports, args);
