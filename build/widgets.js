@@ -303,10 +303,12 @@
             options = options || {};
             var container = options.container;
             delete options.container;
+            var params = utils.clone(options);
+            params.mode = "collaborate";
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "/v1/session",
-                params: utils.clone(options)
+                params: params
             });
             if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
                 widget.parentNode.style.height = minHeight + "px";

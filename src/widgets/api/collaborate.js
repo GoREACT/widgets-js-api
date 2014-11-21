@@ -8,10 +8,13 @@
         var container = options.container;
         delete options.container;
 
+        var params = utils.clone(options);
+        params.mode = "collaborate";
+
         var widget = interlace.load({
             container: container,
             url: exports.baseUrl + '@@collaborateUri',
-            params: utils.clone(options)
+            params:params
         });
 
         // set parent element height if not set (enforce minimum height)
