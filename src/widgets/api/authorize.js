@@ -26,6 +26,9 @@
             }
         });
 
+        // hide container
+        widget.parentNode.style.display = "none";
+
         widget.type = 'authorize';
 
         widget.on('success', function (event, data) {
