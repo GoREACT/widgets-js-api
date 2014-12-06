@@ -9,7 +9,7 @@
         delete options.container;
 
         var params = utils.clone(options);
-        utils.extend(params, authData);
+        utils.extend(params, persist);
 
         var widget = interlace.load({
             container: container,

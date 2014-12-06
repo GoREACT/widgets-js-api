@@ -69,7 +69,7 @@ module.exports = function (grunt) {
                     '.tmp/widgets.js': [
                         'src/widgets/package.js',
                         'src/widgets/utils.js',
-                        'src/widgets/auth-data.js',
+                        'src/widgets/persist.js',
                         'src/widgets/polyfill.js',
                         'src/widgets/dispatcher.js',
                         'src/widgets/interlace.js',

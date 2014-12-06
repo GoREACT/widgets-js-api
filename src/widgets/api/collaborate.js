@@ -9,7 +9,7 @@
         delete options.container;
 
         var params = utils.clone(options);
-        utils.extend(params, authData);
+        utils.extend(params, persist);
         params.mode = "collaborate";
 
         var widget = interlace.load({

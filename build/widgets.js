@@ -72,7 +72,7 @@
         }
         return exports;
     }();
-    var authData = {};
+    var persist = {};
     if (!String.prototype.supplant) {
         String.prototype.supplant = function(o) {
             return this.replace(/\{([^{}]*)\}/g, function(a, b) {
@@ -353,20 +353,18 @@
             widget.parentNode.removeAttribute("style");
             widget.type = "authorize";
             widget.on("success", function(event, data) {
-                setAuthData(data);
+                setPersistentData(data);
                 widget.destroy();
                 exports.fire("authorize::success", this, data);
             });
             widget.on("error", function(event, data) {
-                setAuthData(data);
+                setPersistentData(data);
                 widget.destroy();
                 exports.fire("authorize::error", this, data);
             });
-            function setAuthData(data) {
-                if (utils.isObject(data)) {
-                    delete data.code;
-                    delete data.message;
-                    utils.extend(authData, data);
+            function setPersistentData(data) {
+                if (utils.isObject(data) && data.persist) {
+                    utils.extend(persist, data.persist);
                 }
             }
             return widget.id;
@@ -380,7 +378,7 @@
             var container = options.container;
             delete options.container;
             var params = utils.clone(options);
-            utils.extend(params, authData);
+            utils.extend(params, persist);
             params.mode = "collaborate";
             var widget = interlace.load({
                 container: container,
@@ -426,7 +424,7 @@
             var container = options.container;
             delete options.container;
             var params = utils.clone(options);
-            utils.extend(params, authData);
+            utils.extend(params, persist);
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "@@listUri",
@@ -462,7 +460,7 @@
             var container = options.container;
             delete options.container;
             var params = utils.clone(options);
-            utils.extend(params, authData);
+            utils.extend(params, persist);
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "/v1/playback",
@@ -516,7 +514,7 @@
             var container = options.container;
             delete options.container;
             var params = utils.clone(options);
-            utils.extend(params, authData);
+            utils.extend(params, persist);
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "/v1/record",
@@ -588,7 +586,7 @@
             var container = options.container;
             delete options.container;
             var params = utils.clone(options);
-            utils.extend(params, authData);
+            utils.extend(params, persist);
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "/v1/upload",
