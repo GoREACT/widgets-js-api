@@ -26,8 +26,8 @@
             }
         });
 
-        // hide container
-        widget.parentNode.style.display = "none";
+        // remove parent container styles
+        widget.parentNode.removeAttribute("style");
 
         widget.type = 'authorize';
 

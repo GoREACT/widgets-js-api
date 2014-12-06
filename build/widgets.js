@@ -284,7 +284,7 @@
                     height: "0px"
                 }
             });
-            widget.parentNode.style.display = "none";
+            widget.parentNode.removeAttribute("style");
             widget.type = "authorize";
             widget.on("success", function(event, data) {
                 widget.destroy();
