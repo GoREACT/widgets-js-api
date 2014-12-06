@@ -2,11 +2,77 @@
     var exports = window["goreact"];
     var utils = function() {
         var exports = {};
-        exports.clone = function(obj) {
+        exports.clone = clone;
+        exports.extend = extend;
+        exports.forEach = forEach;
+        exports.isFunction = isFunction;
+        exports.isObject = isObject;
+        exports.isArray = isArray;
+        exports.isString = isString;
+        function clone(obj) {
             return JSON.parse(JSON.stringify(obj));
-        };
+        }
+        function extend(dst) {
+            forEach(arguments, function(obj) {
+                if (obj !== dst) {
+                    forEach(obj, function(value, key) {
+                        dst[key] = value;
+                    });
+                }
+            });
+            return dst;
+        }
+        function forEach(obj, iterator, context) {
+            var key;
+            if (obj) {
+                if (isFunction(obj)) {
+                    for (key in obj) {
+                        if (key != "prototype" && key != "length" && key != "name" && (!obj.hasOwnProperty || obj.hasOwnProperty(key))) {
+                            iterator.call(context, obj[key], key);
+                        }
+                    }
+                } else if (obj.forEach && obj.forEach !== forEach) {
+                    obj.forEach(iterator, context);
+                } else if (isArrayLike(obj)) {
+                    for (key = 0; key < obj.length; key++) iterator.call(context, obj[key], key);
+                } else {
+                    for (key in obj) {
+                        if (obj.hasOwnProperty(key)) {
+                            iterator.call(context, obj[key], key);
+                        }
+                    }
+                }
+            }
+            return obj;
+        }
+        function isString(value) {
+            return typeof value === "string";
+        }
+        function isArray(value) {
+            return toString.call(value) === "[object Array]";
+        }
+        function isArrayLike(obj) {
+            if (obj == null || isWindow(obj)) {
+                return false;
+            }
+            var length = obj.length;
+            if (obj.nodeType === 1 && length) {
+                return true;
+            }
+            return isString(obj) || isArray(obj) || length === 0 || typeof length === "number" && length > 0 && length - 1 in obj;
+        }
+        function isFunction(value) {
+            return typeof value === "function";
+        }
+        function isObject(value) {
+            return value != null && typeof value === "object";
+        }
+        function isWindow(obj) {
+            return obj && obj.document && obj.location && obj.alert && obj.setInterval;
+        }
         return exports;
     }();
+    var authData = {};
     if (!String.prototype.supplant) {
         String.prototype.supplant = function(o) {
             return this.replace(/\{([^{}]*)\}/g, function(a, b) {
@@ -271,7 +337,6 @@
             interlace.prefix("widget_");
             var params = utils.clone(settings);
             params.signature = signature;
-            params.referrer = document.location.href;
             if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
                 exports.baseUrl = "https://sandbox.goreact.com";
             } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
@@ -288,13 +353,22 @@
             widget.parentNode.removeAttribute("style");
             widget.type = "authorize";
             widget.on("success", function(event, data) {
+                setAuthData(data);
                 widget.destroy();
                 exports.fire("authorize::success", this, data);
             });
             widget.on("error", function(event, data) {
+                setAuthData(data);
                 widget.destroy();
                 exports.fire("authorize::error", this, data);
             });
+            function setAuthData(data) {
+                if (utils.isObject(data)) {
+                    delete data.code;
+                    delete data.message;
+                    utils.extend(authData, data);
+                }
+            }
             return widget.id;
         };
     })();
@@ -306,6 +380,7 @@
             var container = options.container;
             delete options.container;
             var params = utils.clone(options);
+            utils.extend(params, authData);
             params.mode = "collaborate";
             var widget = interlace.load({
                 container: container,
@@ -350,10 +425,12 @@
             options = options || {};
             var container = options.container;
             delete options.container;
+            var params = utils.clone(options);
+            utils.extend(params, authData);
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "@@listUri",
-                params: utils.clone(options)
+                params: params
             });
             widget.type = name;
             widget.on("destroy", function() {
@@ -384,10 +461,12 @@
             options = options || {};
             var container = options.container;
             delete options.container;
+            var params = utils.clone(options);
+            utils.extend(params, authData);
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "/v1/playback",
-                params: utils.clone(options)
+                params: params
             });
             if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
                 widget.parentNode.style.height = minHeight + "px";
@@ -436,10 +515,12 @@
             options = options || {};
             var container = options.container;
             delete options.container;
+            var params = utils.clone(options);
+            utils.extend(params, authData);
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "/v1/record",
-                params: utils.clone(options)
+                params: params
             });
             if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
                 widget.parentNode.style.height = minHeight + "px";
@@ -506,10 +587,12 @@
             options = options || {};
             var container = options.container;
             delete options.container;
+            var params = utils.clone(options);
+            utils.extend(params, authData);
             var widget = interlace.load({
                 container: container,
                 url: exports.baseUrl + "/v1/upload",
-                params: utils.clone(options)
+                params: params
             });
             if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
                 widget.parentNode.style.height = minHeight + "px";

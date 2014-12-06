@@ -9,10 +9,13 @@
         var container = options.container;
         delete options.container;
 
+        var params = utils.clone(options);
+        utils.extend(params, authData);
+
         var widget = interlace.load({
             container: container,
             url: exports.baseUrl + '@@listUri',
-            params: utils.clone(options)
+            params: params
         });
 
         widget.type = name;

@@ -9,7 +9,6 @@
 
         var params = utils.clone(settings);
         params.signature = signature;
-        params.referrer = document.location.href;
 
         // determine environment
         if(settings.api_key && settings.api_key.indexOf("sb") === 0) {
@@ -33,14 +32,29 @@
         widget.type = 'authorize';
 
         widget.on('success', function (event, data) {
+            setAuthData(data);
             widget.destroy();
             exports.fire('authorize::success', this, data);
         });
 
         widget.on('error', function (event, data) {
+            setAuthData(data);
             widget.destroy();
             exports.fire('authorize::error', this, data);
         });
+
+        /**
+         * Set auth data
+         *
+         * @param data
+         */
+        function setAuthData (data) {
+            if(utils.isObject(data)) {
+                delete data.code;
+                delete data.message;
+                utils.extend(authData, data);// set auth data
+            }
+        }
 
         return widget.id;
     };
