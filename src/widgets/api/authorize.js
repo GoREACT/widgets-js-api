@@ -50,7 +50,9 @@
          */
         function setTransientData (data) {
             if(utils.isObject(data) && data.transient) {
-                utils.extend(transient, data.transient);// set auth data
+                utils.extend(transient, {
+                    transient: data.transient
+                });
             }
         }
 

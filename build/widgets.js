@@ -364,7 +364,9 @@
             });
             function setTransientData(data) {
                 if (utils.isObject(data) && data.transient) {
-                    utils.extend(transient, data.transient);
+                    utils.extend(transient, {
+                        "transient": data.transient
+                    });
                 }
             }
             return widget.id;
