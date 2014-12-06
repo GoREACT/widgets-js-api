@@ -271,6 +271,7 @@
             interlace.prefix("widget_");
             var params = utils.clone(settings);
             params.signature = signature;
+            params.referrer = document.location.href;
             if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
                 exports.baseUrl = "https://sandbox.goreact.com";
             } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {

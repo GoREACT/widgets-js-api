@@ -9,6 +9,7 @@
 
         var params = utils.clone(settings);
         params.signature = signature;
+        params.referrer = document.location.href;
 
         // determine environment
         if(settings.api_key && settings.api_key.indexOf("sb") === 0) {
