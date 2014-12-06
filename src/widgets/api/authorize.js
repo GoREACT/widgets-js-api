@@ -32,25 +32,25 @@
         widget.type = 'authorize';
 
         widget.on('success', function (event, data) {
-            setPersistentData(data);
+            setTransientData(data);
             widget.destroy();
             exports.fire('authorize::success', this, data);
         });
 
         widget.on('error', function (event, data) {
-            setPersistentData(data);
+            setTransientData(data);
             widget.destroy();
             exports.fire('authorize::error', this, data);
         });
 
         /**
-         * Set persistent data
+         * Set transient data
          *
          * @param data
          */
-        function setPersistentData (data) {
-            if(utils.isObject(data) && data.persist) {
-                utils.extend(persist, data.persist);// set auth data
+        function setTransientData (data) {
+            if(utils.isObject(data) && data.transient) {
+                utils.extend(transient, data.transient);// set auth data
             }
         }
 
