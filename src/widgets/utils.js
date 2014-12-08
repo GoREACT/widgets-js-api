@@ -1,5 +1,6 @@
 var utils = (function() {
     var exports = {};
+    var toString = Object.prototype.toString;
 
     exports.clone = clone;
     exports.extend = extend;

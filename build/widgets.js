@@ -2,6 +2,7 @@
     var exports = window["goreact"];
     var utils = function() {
         var exports = {};
+        var toString = Object.prototype.toString;
         exports.clone = clone;
         exports.extend = extend;
         exports.forEach = forEach;
@@ -367,6 +368,7 @@
                     utils.extend(transient, {
                         "transient": data.transient
                     });
+                    delete data.transient;
                 }
             }
             return widget.id;

@@ -53,6 +53,7 @@
                 utils.extend(transient, {
                     transient: data.transient
                 });
+                delete data.transient;
             }
         }
 
