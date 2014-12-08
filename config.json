@@ -1,5 +1,5 @@
 {
-    "widgetsUrl" : "https://d3gw3t0696ua5r.cloudfront.net/widgets/v1/widgets.min.js",
+    "widgetsUrl" : "https://rawgit.com/GoREACT/widgets-js-api/develop/build/widgets.js",
     "devUrl": "https://dev.goreact.com",
     "sandboxUrl": "https://sandbox.goreact.com",
     "prodUrl": "https://goreact.com",

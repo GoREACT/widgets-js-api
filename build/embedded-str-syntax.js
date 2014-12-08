@@ -14,7 +14,7 @@
         var s = d.createElement("script");
         s.type = "text/javascript";
         s.async = true;
-        s.src = "https://d3gw3t0696ua5r.cloudfront.net/widgets/v1/widgets.min.js";
+        s.src = "https://rawgit.com/GoREACT/widgets-js-api/develop/build/widgets.js";
         var x = d.getElementsByTagName("script")[0];
         x.parentNode.insertBefore(s, x);
     }

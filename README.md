@@ -9,7 +9,7 @@ Add the following line to each page of your site you would like to access GoREAC
 **Note:** *While in development use this link. When this goes into production a new link will be provided.*
 
 ```html
-<script src="https://rawgit.com/GoREACT/widgets-js-api/master/build/embedded-dot-syntax.min.js"></script>
+<script src="https://rawgit.com/GoREACT/widgets-js-api/develop/build/embedded-dot-syntax.js"></script>
 ```
 
 #####Examples
