@@ -1,6 +1,5 @@
 (function () {
     var name = 'record';
-    var minHeight = 340;
 
     exports[name] = function (options) {
         options = options || {};
@@ -16,11 +15,6 @@
             url: exports.baseUrl + '@@recordUri',
             params: params
         });
-
-        // set parent element height if not set (enforce minimum height)
-        if(widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
-            widget.parentNode.style.height = minHeight + "px";
-        }
 
         widget.type = name;
 
