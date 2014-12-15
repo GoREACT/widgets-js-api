@@ -21,6 +21,6 @@
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.async = true;
-    script.src = "https://rawgit.com/GoREACT/widgets-js-api/develop/build/widgets.js";
+    script.src = "https://d3gw3t0696ua5r.cloudfront.net/widgets/v1/widgets.min.js";
     init("authorize on off destroy record upload playback collaborate list");
 })();
