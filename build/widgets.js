@@ -376,7 +376,6 @@
     })();
     (function() {
         var name = "collaborate";
-        var minHeight = 340;
         exports[name] = function(options) {
             options = options || {};
             var container = options.container;
@@ -389,9 +388,6 @@
                 url: exports.baseUrl + "/v1/session",
                 params: params
             });
-            if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
-                widget.parentNode.style.height = minHeight + "px";
-            }
             widget.type = name;
             widget.on("destroy", function() {
                 widget.destroy();
@@ -458,7 +454,6 @@
     })();
     (function() {
         var name = "playback";
-        var minHeight = 340;
         exports[name] = function(options) {
             options = options || {};
             var container = options.container;
@@ -470,9 +465,6 @@
                 url: exports.baseUrl + "/v1/playback",
                 params: params
             });
-            if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
-                widget.parentNode.style.height = minHeight + "px";
-            }
             widget.type = name;
             widget.on("destroy", function() {
                 widget.destroy();
@@ -512,7 +504,6 @@
     })();
     (function() {
         var name = "record";
-        var minHeight = 340;
         exports[name] = function(options) {
             options = options || {};
             var container = options.container;
@@ -524,9 +515,6 @@
                 url: exports.baseUrl + "/v1/record",
                 params: params
             });
-            if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
-                widget.parentNode.style.height = minHeight + "px";
-            }
             widget.type = name;
             widget.on("destroy", function() {
                 widget.destroy();
@@ -584,7 +572,6 @@
     })();
     (function() {
         var name = "upload";
-        var minHeight = 340;
         exports[name] = function(options) {
             options = options || {};
             var container = options.container;
@@ -596,9 +583,6 @@
                 url: exports.baseUrl + "/v1/upload",
                 params: params
             });
-            if (widget.parentNode && widget.parentNode.getBoundingClientRect().height < minHeight) {
-                widget.parentNode.style.height = minHeight + "px";
-            }
             widget.type = name;
             widget.on("destroy", function() {
                 widget.destroy();
