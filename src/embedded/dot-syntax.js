@@ -1,4 +1,25 @@
 (function () {
+    var widgetsUrl = '@@widgetsUrl',
+        baseUrl = '';
+
+    // check for widgets debug
+    if((typeof window.goreactDebug === "object")) {
+        if(window.goreactDebug.widgetsUrl) {
+            widgetsUrl = window.goreactDebug.widgetsUrl;
+        }
+        if(window.goreactDebug.baseUrl) {
+            baseUrl = window.goreactDebug.baseUrl;
+        }
+    }
+
+    // Create an async script element for analytics.js based on your API key.
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.async = true;
+    script.src = widgetsUrl;
+
+    init('authorize on off destroy record upload playback collaborate list');
+
     function init(functions) {
 
         var service = [];
@@ -30,13 +51,6 @@
         firstScript.parentNode.insertBefore(script, firstScript);
 
         window['@@name'] = service;
+        window['@@name'].baseUrl = baseUrl;
     }
-
-    // Create an async script element for analytics.js based on your API key.
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.src = '@@widgetsUrl';
-
-    init('authorize on off destroy record upload playback collaborate list');
 })();
