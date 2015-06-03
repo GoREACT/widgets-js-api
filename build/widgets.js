@@ -341,15 +341,19 @@
     setTimeout(setup);
     (function() {
         var name = "authorize";
-        exports.baseUrl = "https://goreact.com";
+        if (!exports.baseUrl) {
+            exports.baseUrl = "https://goreact.com";
+        }
         exports[name] = function(settings, signature) {
             interlace.prefix("widget_");
             var params = utils.clone(settings);
             params.signature = signature;
-            if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
-                exports.baseUrl = "https://sandbox.goreact.com";
-            } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
-                exports.baseUrl = "https://dev.goreact.com";
+            if (!exports.baseUrl) {
+                if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
+                    exports.baseUrl = "https://sandbox.goreact.com";
+                } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
+                    exports.baseUrl = "https://dev.goreact.com";
+                }
             }
             var widget = interlace.load({
                 url: exports.baseUrl + "/v1/auth",
