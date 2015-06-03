@@ -3,6 +3,7 @@
     var utils = function() {
         var exports = {};
         var toString = Object.prototype.toString;
+        var msie = isMSIE();
         exports.clone = clone;
         exports.extend = extend;
         exports.forEach = forEach;
@@ -10,6 +11,10 @@
         exports.isObject = isObject;
         exports.isArray = isArray;
         exports.isString = isString;
+        exports.lowercase = lowercase;
+        exports.isElement = isElement;
+        exports.serialize = serialize;
+        exports.createHttpBackend = createHttpBackend;
         function clone(obj) {
             return JSON.parse(JSON.stringify(obj));
         }
@@ -68,8 +73,106 @@
         function isObject(value) {
             return value != null && typeof value === "object";
         }
+        function isDefined(value) {
+            return typeof value !== "undefined";
+        }
         function isWindow(obj) {
             return obj && obj.document && obj.location && obj.alert && obj.setInterval;
+        }
+        function lowercase(string) {
+            return isString(string) ? string.toLowerCase() : string;
+        }
+        function int(str) {
+            return parseInt(str, 10);
+        }
+        function isElement(o) {
+            return typeof HTMLElement === "object" ? o instanceof HTMLElement : o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
+        }
+        function serialize(obj, prefix) {
+            var str = [];
+            for (var p in obj) {
+                if (obj.hasOwnProperty(p)) {
+                    var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                    str.push(typeof v == "object" ? serialize(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
+                }
+            }
+            return str.join("&").replace(/%20/g, "+");
+        }
+        function isMSIE() {
+            var msie = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10);
+            if (isNaN(msie)) {
+                msie = int((/trident\/.*; rv:(\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10);
+            }
+            return msie;
+        }
+        function createXhr(method) {
+            if (msie <= 8 && (!method.match(/^(get|post|head|put|delete|options)$/i) || !window.XMLHttpRequest)) {
+                return new window.ActiveXObject("Microsoft.XMLHTTP");
+            } else if (window.XMLHttpRequest) {
+                return new window.XMLHttpRequest();
+            }
+            throw new Error("noxhr", "This browser does not support XMLHttpRequest.");
+        }
+        function urlResolve(url, base) {
+            var href = url;
+            var urlParsingNode = document.createElement("a");
+            if (msie) {
+                urlParsingNode.setAttribute("href", href);
+                href = urlParsingNode.href;
+            }
+            urlParsingNode.setAttribute("href", href);
+            return {
+                href: urlParsingNode.href,
+                protocol: urlParsingNode.protocol ? urlParsingNode.protocol.replace(/:$/, "") : "",
+                host: urlParsingNode.host,
+                search: urlParsingNode.search ? urlParsingNode.search.replace(/^\?/, "") : "",
+                hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, "") : "",
+                hostname: urlParsingNode.hostname,
+                port: urlParsingNode.port,
+                pathname: urlParsingNode.pathname.charAt(0) === "/" ? urlParsingNode.pathname : "/" + urlParsingNode.pathname
+            };
+        }
+        function createHttpBackend(method, url, post, callback, headers, withCredentials, responseType) {
+            var ABORTED = -1;
+            var status;
+            var xhr = createXhr(method);
+            xhr.open(method, url, true);
+            forEach(headers, function(value, key) {
+                if (isDefined(value)) {
+                    xhr.setRequestHeader(key, value);
+                }
+            });
+            xhr.onreadystatechange = function() {
+                if (xhr && xhr.readyState == 4) {
+                    var responseHeaders = null, response = null;
+                    if (status !== ABORTED) {
+                        responseHeaders = xhr.getAllResponseHeaders();
+                        response = "response" in xhr ? xhr.response : xhr.responseText;
+                    }
+                    completeRequest(callback, status || xhr.status, response, responseHeaders, xhr.statusText || "");
+                }
+            };
+            if (withCredentials) {
+                xhr.withCredentials = true;
+            }
+            if (responseType) {
+                try {
+                    xhr.responseType = responseType;
+                } catch (e) {
+                    if (responseType !== "json") {
+                        throw e;
+                    }
+                }
+            }
+            xhr.send(post || null);
+            function completeRequest(callback, status, response, headersString, statusText) {
+                if (status === 0) {
+                    status = response ? 200 : urlResolve(url).protocol == "file" ? 404 : 0;
+                }
+                status = status === 1223 ? 204 : status;
+                statusText = statusText || "";
+                callback(status, response, headersString, statusText);
+            }
         }
         return exports;
     }();
@@ -141,36 +244,9 @@
     };
     var interlace = function() {
         var exports = {};
-        var prefix = "interlace_";
+        var prefix = "widget_";
         var count = 0;
-        var bodyOverflow = "";
-        var preventDefault = function(e) {
-            e.preventDefault();
-        };
-        function isElement(o) {
-            return typeof HTMLElement === "object" ? o instanceof HTMLElement : o && typeof o === "object" && o !== null && o.nodeType === 1 && typeof o.nodeName === "string";
-        }
-        var serialize = function(obj, prefix) {
-            var str = [];
-            for (var p in obj) {
-                if (obj.hasOwnProperty(p)) {
-                    var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
-                    str.push(typeof v == "object" ? serialize(v, k) : encodeURIComponent(k) + "=" + encodeURIComponent(v));
-                }
-            }
-            return str.join("&").replace(/%20/g, "+");
-        };
-        var getParam = function(name, from) {
-            from = from || window.location.search;
-            var regexS = "[?&]" + name + "=([^&#]*)";
-            var regex = new RegExp(regexS);
-            var results = regex.exec(from);
-            if (results === null) {
-                return "";
-            }
-            return decodeURIComponent(results[1].replace(/\+/g, " "));
-        };
-        var styleToString = function(obj) {
+        function styleToString(obj) {
             var str = "";
             for (var e in obj) {
                 if (obj.hasOwnProperty(e)) {
@@ -178,118 +254,50 @@
                 }
             }
             return str;
-        };
-        exports.prefix = function(value) {
-            prefix = value;
-        };
+        }
         exports.load = function(payload) {
-            var frameId = prefix + (count += 1);
-            var iframe = document.createElement("iframe");
-            var params = payload.params || {};
-            params.interlace = frameId;
-            var queryParams = serialize(params);
-            var url = payload.url + (queryParams ? "?" : "") + queryParams;
-            payload.options = payload.options || {};
-            iframe.id = frameId;
-            iframe.src = url;
-            iframe.setAttribute("width", typeof payload.options.width === "undefined" ? "100%" : payload.options.width);
-            iframe.setAttribute("height", typeof payload.options.height === "undefined" ? "100%" : payload.options.height);
-            iframe.setAttribute("scrolling", "no");
-            iframe.setAttribute("marginheight", "0");
-            iframe.setAttribute("frameborder", "0");
-            iframe.setAttribute("allowtransparency", "true");
-            iframe.setAttribute("style", "display:none");
-            iframe.send = function(event, data) {
-                var payload = {};
-                payload.id = this.id;
-                payload.event = event;
-                payload.data = data;
-                var json = JSON.stringify(payload);
-                this.contentWindow.postMessage(json, "*");
-            };
-            iframe.show = function() {
-                if (iframe.parentNode.style.display === "none") {
-                    iframe.parentNode.style.display = iframe.$$display;
+            var widget = document.createElement("div"), params = payload.params || {}, url = payload.url + (payload.url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params), display = "";
+            console.log(payload);
+            widget.id = prefix + (count += 1);
+            widget.show = function() {
+                if (widget.parentNode.style.display === "none") {
+                    widget.parentNode.style.display = display;
                 }
             };
-            iframe.hide = function() {
-                if (!iframe.$$display) {
-                    iframe.$$display = iframe.parentNode.style.display;
-                    iframe.parentNode.style.display = "none";
+            widget.hide = function() {
+                if (!display) {
+                    display = widget.parentNode.style.display;
+                    widget.parentNode.style.display = "none";
                 }
             };
-            iframe.destroy = function() {
-                document.body.style.overflow = bodyOverflow;
-                document.body.removeEventListener("touchstart", preventDefault);
-                document.body.removeEventListener("touchmove", preventDefault);
-                if (iframe.parentNode.getAttribute("data-interlace")) {
-                    iframe.parentNode.parentNode.removeChild(iframe.parentNode);
-                } else {
-                    iframe.parentNode.removeChild(iframe);
-                }
-                iframe.fire("destroyed");
+            widget.destroy = function() {
+                widget.parentNode.removeChild(widget);
+                widget.fire("destroyed");
             };
-            iframe.onload = function() {
-                iframe.removeAttribute("style");
-                if (payload.class) {
-                    iframe.setAttribute("class", payload.class);
-                }
-                iframe.fire("loaded");
-            };
-            iframe.setAttribute("data-interlace-frame", frameId);
             var container = payload.container;
-            if (isElement(container)) {} else if (!container) {
-                container = document.createElement("div");
-                container.setAttribute("data-interlace", "container-" + frameId);
-                container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
-                document.body.style.overflow = "hidden";
-                document.body.addEventListener("touchstart", preventDefault);
-                document.body.addEventListener("touchmove", preventDefault);
-                document.body.appendChild(container);
-            } else if (typeof container === "object") {
-                container = document.createElement("div");
-                container.setAttribute("data-interlace", "container-" + frameId);
-                container.setAttribute("style", styleToString(payload.container));
-                document.body.style.overflow = "hidden";
-                document.body.addEventListener("touchstart", preventDefault);
-                document.body.addEventListener("touchmove", preventDefault);
-                document.body.appendChild(container);
+            if (!utils.isElement(container)) {
+                if (!container) {
+                    container = document.createElement("div");
+                    container.setAttribute("data-widget", "container-" + widget.id);
+                    container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
+                    document.body.appendChild(container);
+                } else if (typeof container === "object") {
+                    container = document.createElement("div");
+                    container.setAttribute("data-widget", "container-" + widget.id);
+                    container.setAttribute("style", styleToString(payload.container));
+                    document.body.appendChild(container);
+                }
             }
-            var iframes = container.querySelectorAll("[data-interlace-frame]");
-            var i = iframes.length;
-            while (i) {
-                i -= 1;
-                iframes[i].parentNode.removeChild(iframes[i]);
-            }
-            container.appendChild(iframe);
-            dispatcher(iframe);
-            return iframe;
-        };
-        exports.send = function(event, data) {
-            var interlaceId = getParam("interlace");
-            var payload = {};
-            payload.id = interlaceId;
-            payload.event = event;
-            payload.data = data;
-            var json = JSON.stringify(payload);
-            if (interlaceId) {
-                parent.postMessage(json, "*");
-            }
+            container.appendChild(widget);
+            dispatcher(widget);
+            console.log("widget", widget);
+            utils.createHttpBackend("GET", url, {}, function(html) {
+                console.log("html", html);
+                widget.fire("loaded");
+            });
+            return widget;
         };
         dispatcher(exports);
-        window.addEventListener("message", function(evt) {
-            var payload = JSON.parse(evt.data);
-            var iframe = document.getElementById(payload.id);
-            if (iframe) {
-                iframe.fire(payload.event, payload.data);
-            } else {
-                exports.fire(payload.event, payload.data);
-            }
-        });
-        var interlaceId = getParam("interlace");
-        if (interlaceId) {
-            exports.send("ready");
-        }
         return exports;
     }();
     var queue = exports.q || exports;
