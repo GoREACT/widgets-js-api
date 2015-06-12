@@ -7,13 +7,7 @@
     <style>
         body {
             margin: 0;
-            background: linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px,
-            linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px,
-            linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px,
-            linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px,
-            linear-gradient(90deg, #1b1b1b 10px, transparent 10px),
-            linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
-            background-color: #131313;
+            background-color: #ffffff;
             background-size: 20px 20px;
         }
     </style>
@@ -35,7 +29,10 @@
 <div id="containerEl" style="width: 640px;height: 480px;margin: 0 auto"></div>
 
 <script>
-    window.gore
+    window.goreactConfig = {
+        baseUrl: "https://192.168.33.10",
+        widgetsUrl: "../build/widgets.js"
+    };
 </script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -68,7 +65,7 @@
     });
 
     $playbackBtn.click(function () {
-        goreact.list({container: activeContainer});
+        goreact.playback({container: activeContainer});
     });
 
     $collaborateBtn.click(function () {
@@ -94,7 +91,7 @@
     var signature = '5eb63bbbe01eeed093cb22bb8f5acdc3';
     var expires = 1413496405;
     var settings = {
-        api_key: "9plmvlph",
+        api_key: "690b717d-935a-40f2-afec-283752dddb33",
         user_id: "5432b03462ccc7ea7bcc2c41",
         first_name: "John",
         last_name: "Smith",
@@ -106,20 +103,20 @@
     };
     goreact.authorize(settings, signature);
 
-    goreact.record({
+    var recordWidget = goreact.record({
         title: 'My Recording',
         container: $containerEl[0]
     });
 
-    goreact.on('authorize::success', function (evt, widget) {
+    recordWidget.on('success', function (evt, widget) {
         console.log(evt, widget.id, widget.type);
     });
 
-    goreact.on('record::ready', function (evt, widget) {
+    recordWidget.on('ready', function (evt, widget) {
         console.log(evt, widget.id, widget.type);
     });
 
-    goreact.on('record::destroyed', function (evt, widget) {
+    recordWidget.on('destroyed', function (evt, widget) {
         console.log(evt, widget.id, widget.type);
     });
 

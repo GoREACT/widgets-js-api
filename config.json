@@ -1,12 +1,12 @@
 {
-    "widgetsUrl" : "https://d3gw3t0696ua5r.cloudfront.net/widgets/v1/widgets.min.js",
+    "widgetsUrl" : "https://d3gw3t0696ua5r.cloudfront.net/widgets/v2/widgets.min.js",
     "devUrl": "https://dev.goreact.com",
     "sandboxUrl": "https://sandbox.goreact.com",
     "prodUrl": "https://goreact.com",
-    "authUri": "/v1/auth",
-    "recordUri": "/v1/record",
-    "uploadUri": "/v1/upload",
-    "playbackUri": "/v1/playback",
-    "listUri": "/v1/list",
-    "collaborateUri": "/v1/session"
+    "authUri": "/v2/widgets/auth",
+    "recordUri": "/v2/widgets/record",
+    "uploadUri": "/v2/widgets/upload",
+    "playbackUri": "/v2/widgets/playback",
+    "listUri": "/v2/widgets/list",
+    "collaborateUri": "/v2/widgets/session"
 }

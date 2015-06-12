@@ -66,7 +66,7 @@ module.exports = function (grunt) {
                         'src/widgets/transient.js',
                         'src/widgets/polyfill.js',
                         'src/widgets/dispatcher.js',
-                        'src/widgets/interlace.js',
+                        'src/widgets/factory.js',
                         'src/widgets/bootstrap.js'
                     ]
                 }
@@ -78,8 +78,8 @@ module.exports = function (grunt) {
                     preserveComments: 'some',
                     exportAll: true,
                     beautify: true,
-                    banner: '(function(){\n',
-                    footer: '\n})();'
+                    banner: '(function(window, undefined){\n',
+                    footer: '\n}).bind(window)(window);'
                 },
                 files: {
                     'build/widgets.js': [
@@ -115,6 +115,17 @@ module.exports = function (grunt) {
                 }
             }
         },
+        cssmin: {
+            options: {
+                shorthandCompacting: false,
+                roundingPrecision: -1
+            },
+            target: {
+                files: {
+                    '.tmp/loading.css': ['src/styles/loading.css']
+                }
+            }
+        },
         replace: {
             embedded: {
                 options: {
@@ -128,7 +139,10 @@ module.exports = function (grunt) {
                         { match: 'recordUri', replacement: '<%= config.recordUri %>' },
                         { match: 'uploadUri', replacement: '<%= config.uploadUri %>' },
                         { match: 'playbackUri', replacement: '<%= config.playbackUri %>' },
-                        { match: 'collaborateUri', replacement: '<%= config.collaborateUri %>' }
+                        { match: 'reviewUri', replacement: '<%= config.reviewUri %>' },
+                        { match: 'loadingStyle', replacement: function() {
+                            return grunt.file.read('.tmp/loading.css');
+                        } }
                     ]
                 },
                 files: [
@@ -142,12 +156,11 @@ module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-replace');
     grunt.loadNpmTasks('grunt-contrib-clean');
 
-//    grunt.registerTask('default', ['jshint', 'uglify', 'replace']);
-    grunt.registerTask('default', ['uglify', 'replace', 'clean']);
-//    grunt.registerTask('default', ['uglify', 'replace']);
+    grunt.registerTask('default', ['jshint', 'cssmin', 'uglify', 'replace', 'clean']);
 };

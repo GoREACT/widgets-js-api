@@ -1,4 +1,4 @@
-(function() {
+(function(window, undefined) {
     var exports = window["goreact"];
     var utils = function() {
         var exports = {};
@@ -10,11 +10,16 @@
         exports.isFunction = isFunction;
         exports.isObject = isObject;
         exports.isArray = isArray;
+        exports.isArrayLike = isArrayLike;
         exports.isString = isString;
+        exports.isDefined = isDefined;
+        exports.isWindow = isWindow;
+        exports.int = int;
         exports.lowercase = lowercase;
         exports.isElement = isElement;
         exports.serialize = serialize;
-        exports.createHttpBackend = createHttpBackend;
+        exports.styleToString = styleToString;
+        exports.sendRequest = createHttpBackend;
         function clone(obj) {
             return JSON.parse(JSON.stringify(obj));
         }
@@ -58,7 +63,7 @@
             return toString.call(value) === "[object Array]";
         }
         function isArrayLike(obj) {
-            if (obj == null || isWindow(obj)) {
+            if (obj === null || isWindow(obj)) {
                 return false;
             }
             var length = obj.length;
@@ -71,7 +76,7 @@
             return typeof value === "function";
         }
         function isObject(value) {
-            return value != null && typeof value === "object";
+            return value !== null && typeof value === "object";
         }
         function isDefined(value) {
             return typeof value !== "undefined";
@@ -97,6 +102,15 @@
                 }
             }
             return str.join("&").replace(/%20/g, "+");
+        }
+        function styleToString(obj) {
+            var str = "";
+            for (var e in obj) {
+                if (obj.hasOwnProperty(e)) {
+                    str += e + ":" + obj[e] + ";";
+                }
+            }
+            return str;
         }
         function isMSIE() {
             var msie = int((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10);
@@ -242,33 +256,42 @@
             target.fire = dispatch;
         }
     };
-    var interlace = function() {
+    var factory = function() {
         var exports = {};
         var prefix = "widget_";
+        var className = "widget-container";
         var count = 0;
-        function styleToString(obj) {
-            var str = "";
-            for (var e in obj) {
-                if (obj.hasOwnProperty(e)) {
-                    str += e + ":" + obj[e] + ";";
-                }
-            }
-            return str;
-        }
         exports.load = function(payload) {
             var widget = document.createElement("div"), params = payload.params || {}, url = payload.url + (payload.url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params), display = "";
-            console.log(payload);
             widget.id = prefix + (count += 1);
+            widget.className = className;
+            widget.style.position = "relative";
+            widget.style.width = "100%";
+            widget.style.height = "100%";
+            var loadingStyle = document.createElement("style");
+            loadingStyle.type = "text/css";
+            loadingStyle.innerHTML = ".widget-container .load{position:absolute;width:600px;height:36px;left:50%;top:40%;margin-left:-300px;overflow:visible;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:default;z-index:9999}.widget-container .load div{position:absolute;width:20px;height:36px;opacity:0;font-family:Helvetica,Arial,sans-serif;animation:move 2s linear infinite;-o-animation:move 2s linear infinite;-moz-animation:move 2s linear infinite;-webkit-animation:move 2s linear infinite;transform:rotate(180deg);-o-transform:rotate(180deg);-moz-transform:rotate(180deg);-webkit-transform:rotate(180deg);color:#aaa}.widget-container .load div:nth-child(2){animation-delay:.2s;-o-animation-delay:.2s;-moz-animation-delay:.2s;-webkit-animation-delay:.2s}.widget-container .load div:nth-child(3){animation-delay:.4s;-o-animation-delay:.4s;-webkit-animation-delay:.4s}.widget-container .load div:nth-child(4){animation-delay:.6s;-o-animation-delay:.6s;-moz-animation-delay:.6s;-webkit-animation-delay:.6s}.widget-container .load div:nth-child(5){animation-delay:.8s;-o-animation-delay:.8s;-moz-animation-delay:.8s;-webkit-animation-delay:.8s}.widget-container .load div:nth-child(6){animation-delay:1s;-o-animation-delay:1s;-moz-animation-delay:1s;-webkit-animation-delay:1s}.widget-container .load div:nth-child(7){animation-delay:1.2s;-o-animation-delay:1.2s;-moz-animation-delay:1.2s;-webkit-animation-delay:1.2s}@keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);-webkit-transform:rotate(-180deg);-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-moz-keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-webkit-keyframes move{0%{left:0;opacity:0}35%{left:41%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-o-keyframes move{0%{left:0;opacity:0}35%{left:41%;-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}";
+            widget.appendChild(loadingStyle);
+            var loadingDiv = document.createElement("div");
+            loadingDiv.className = "load";
+            utils.forEach([ "G", "N", "I", "D", "A", "O", "L" ], function(letter) {
+                var letterDiv = document.createElement("div");
+                letterDiv.innerText = letter;
+                loadingDiv.appendChild(letterDiv);
+            });
+            widget.appendChild(loadingDiv);
             widget.show = function() {
                 if (widget.parentNode.style.display === "none") {
                     widget.parentNode.style.display = display;
                 }
+                widget.fire("shown");
             };
             widget.hide = function() {
                 if (!display) {
                     display = widget.parentNode.style.display;
                     widget.parentNode.style.display = "none";
                 }
+                widget.fire("hidden");
             };
             widget.destroy = function() {
                 widget.parentNode.removeChild(widget);
@@ -284,15 +307,46 @@
                 } else if (typeof container === "object") {
                     container = document.createElement("div");
                     container.setAttribute("data-widget", "container-" + widget.id);
-                    container.setAttribute("style", styleToString(payload.container));
+                    container.setAttribute("style", utils.styleToString(payload.container));
                     document.body.appendChild(container);
                 }
             }
+            while (container.firstChild) {
+                var w = container.firstChild;
+                w.destroy();
+            }
             container.appendChild(widget);
             dispatcher(widget);
-            console.log("widget", widget);
-            utils.createHttpBackend("GET", url, {}, function(html) {
-                console.log("html", html);
+            widget.on("ready", function() {
+                loadingDiv.style.display = "none";
+            });
+            widget.on("destroyed", function() {
+                widget.off();
+            });
+            utils.sendRequest("GET", url, {}, function(status, html) {
+                var tElement = document.createElement("div");
+                tElement.innerHTML = html;
+                var clonedScripts = [];
+                var scripts = tElement.getElementsByTagName("script");
+                var i = scripts.length;
+                while (i--) {
+                    var script = document.createElement("script");
+                    var props = [ "type", "src", "text" ];
+                    for (var k = 0; k < props.length; k++) {
+                        var prop = props[k];
+                        if (scripts[i][prop]) {
+                            script[prop] = scripts[i][prop];
+                        }
+                    }
+                    clonedScripts.push(script);
+                    scripts[i].parentNode.removeChild(scripts[i]);
+                }
+                for (i = 0; i < tElement.children.length; i++) {
+                    widget.appendChild(tElement.children[i]);
+                }
+                for (i = 0; i < clonedScripts.length; i++) {
+                    widget.lastChild.appendChild(clonedScripts[i]);
+                }
                 widget.fire("loaded");
             });
             return widget;
@@ -339,315 +393,75 @@
         queue.length = 0;
     });
     setTimeout(setup);
-    (function() {
-        var name = "authorize";
-        if (!exports.baseUrl) {
-            exports.baseUrl = "https://goreact.com";
+    exports.authorize = function(settings, signature) {
+        var params = utils.clone(settings);
+        params.signature = signature;
+        if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
+            exports.config.baseUrl = "https://sandbox.goreact.com";
+        } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
+            exports.config.baseUrl = "https://dev.goreact.com";
         }
-        exports[name] = function(settings, signature) {
-            interlace.prefix("widget_");
-            var params = utils.clone(settings);
-            params.signature = signature;
-            if (!exports.baseUrl) {
-                if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
-                    exports.baseUrl = "https://sandbox.goreact.com";
-                } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
-                    exports.baseUrl = "https://dev.goreact.com";
+        var url = exports.config.baseUrl + "/v2/widgets/auth";
+        url = url + (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
+        utils.sendRequest("GET", url + "?", {}, function(status, response) {
+            if (response) {
+                setTransientData(response);
+                if (status === 200) {
+                    exports.fire("authorize::success", this, response.message);
+                } else {
+                    exports.fire("authorize::error", this, response.message);
                 }
+            } else {
+                exports.fire("authorize::error", this, "");
             }
-            var widget = interlace.load({
-                url: exports.baseUrl + "/v1/auth",
-                params: params,
-                options: {
-                    width: "0px",
-                    height: "0px"
-                }
-            });
-            widget.parentNode.removeAttribute("style");
-            widget.type = "authorize";
-            widget.on("success", function(event, data) {
-                setTransientData(data);
-                widget.destroy();
-                exports.fire("authorize::success", this, data);
-            });
-            widget.on("error", function(event, data) {
-                setTransientData(data);
-                widget.destroy();
-                exports.fire("authorize::error", this, data);
-            });
-            function setTransientData(data) {
-                if (utils.isObject(data) && data.transient) {
-                    utils.extend(transient, {
-                        "transient": data.transient
-                    });
-                    delete data.transient;
-                }
+        }, {}, false, "json");
+        function setTransientData(data) {
+            if (utils.isObject(data) && data.transient) {
+                utils.extend(transient, {
+                    "transient": data.transient
+                });
+                delete data.transient;
             }
-            return widget.id;
-        };
-    })();
-    (function() {
-        var name = "collaborate";
-        exports[name] = function(options) {
-            options = options || {};
-            var container = options.container;
-            delete options.container;
-            var params = utils.clone(options);
-            utils.extend(params, transient);
-            params.mode = "collaborate";
-            var widget = interlace.load({
-                container: container,
-                url: exports.baseUrl + "/v1/session",
-                params: params
-            });
-            widget.type = name;
-            widget.on("destroy", function() {
-                widget.destroy();
-            });
-            widget.on("hide", function() {
-                widget.hide();
-            });
-            widget.on("show", function() {
-                widget.show();
-            });
-            widget.on("destroyed", function() {
-                exports.fire(name + "::destroyed", this);
-            });
-            widget.on("error", function(evt, data) {
-                exports.fire(name + "::error", this, data);
-            });
-            widget.on("sessionReady", function() {
-                exports.fire(name + "::ready", this);
-            });
-            return widget.id;
-        };
-    })();
+        }
+    };
     exports.destroy = function(widgetId) {
         var widget = document.getElementById(widgetId);
         if (widget) {
-            widget.fire("destroy");
+            widget.destroy();
         }
     };
     (function() {
-        var name = "list";
-        exports[name] = function(options) {
-            return "Not supported yet";
-            options = options || {};
-            var container = options.container;
-            delete options.container;
-            var params = utils.clone(options);
-            utils.extend(params, transient);
-            var widget = interlace.load({
-                container: container,
-                url: exports.baseUrl + "@@listUri",
-                params: params
-            });
-            widget.type = name;
-            widget.on("destroy", function() {
-                widget.destroy();
-            });
-            widget.on("hide", function() {
-                widget.hide();
-            });
-            widget.on("show", function() {
-                widget.show();
-            });
-            widget.on("ready", function() {
-                exports.fire(name + "::ready", this);
-            });
-            widget.on("destroyed", function() {
-                exports.fire(name + "::destroyed", this);
-            });
-            widget.on("error", function(evt, data) {
-                exports.fire(name + "::error", this, data);
-            });
-            return widget.id;
+        "use strict";
+        var api = {
+            upload: "/v2/widgets/upload",
+            record: "/v2/widgets/record",
+            list: "@@listUri",
+            playback: "/v2/widgets/playback",
+            review: ""
         };
+        utils.forEach(api, function(uri, method) {
+            exports[method] = function(options) {
+                options = options || {};
+                var params = utils.clone(options);
+                utils.extend(params, transient);
+                params.mode = "collaborate";
+                var widget = factory.load({
+                    container: options.container,
+                    url: exports.config.baseUrl + uri,
+                    params: params
+                });
+                widget.type = method;
+                widget.on("hide", function() {
+                    widget.hide();
+                });
+                widget.on("show", function() {
+                    widget.show();
+                });
+                widget.on("destroy", function() {
+                    widget.destroy();
+                });
+                return widget.id;
+            };
+        });
     })();
-    (function() {
-        var name = "playback";
-        exports[name] = function(options) {
-            options = options || {};
-            var container = options.container;
-            delete options.container;
-            var params = utils.clone(options);
-            utils.extend(params, transient);
-            var widget = interlace.load({
-                container: container,
-                url: exports.baseUrl + "/v1/playback",
-                params: params
-            });
-            widget.type = name;
-            widget.on("destroy", function() {
-                widget.destroy();
-            });
-            widget.on("hide", function() {
-                widget.hide();
-            });
-            widget.on("show", function() {
-                widget.show();
-            });
-            widget.on("error", function(evt, data) {
-                exports.fire(name + "::error", this, data);
-            });
-            widget.on("destroyed", function() {
-                exports.fire(name + "::destroyed", this);
-            });
-            widget.on("playbackReady", function() {
-                exports.fire(name + "::ready", this);
-            });
-            widget.on("playbackOnPlay", function() {
-                exports.fire(name + "::play", this);
-            });
-            widget.on("playbackOnPause", function() {
-                exports.fire(name + "::pause", this);
-            });
-            widget.on("playbackOnSeek", function() {
-                exports.fire(name + "::seek", this);
-            });
-            widget.on("playbackOnBuffer", function() {
-                exports.fire(name + "::buffer", this);
-            });
-            widget.on("playbackOnError", function() {
-                exports.fire(name + "::playError", this);
-            });
-            return widget.id;
-        };
-    })();
-    (function() {
-        var name = "record";
-        exports[name] = function(options) {
-            options = options || {};
-            var container = options.container;
-            delete options.container;
-            var params = utils.clone(options);
-            utils.extend(params, transient);
-            var widget = interlace.load({
-                container: container,
-                url: exports.baseUrl + "/v1/record",
-                params: params
-            });
-            widget.type = name;
-            widget.on("destroy", function() {
-                widget.destroy();
-            });
-            widget.on("hide", function() {
-                widget.hide();
-            });
-            widget.on("show", function() {
-                widget.show();
-            });
-            widget.on("error", function(evt, data) {
-                exports.fire(name + "::error", this, data);
-            });
-            widget.on("destroyed", function() {
-                exports.fire(name + "::destroyed", this);
-            });
-            widget.on("recordReady", function(evt, data) {
-                exports.fire(name + "::ready", this, data);
-            });
-            widget.on("recordStart", function(evt, data) {
-                exports.fire(name + "::start", this, data);
-            });
-            widget.on("recordStarted", function(evt, data) {
-                exports.fire(name + "::started", this, data);
-            });
-            widget.on("recordStop", function(evt, data) {
-                exports.fire(name + "::stop", this, data);
-            });
-            widget.on("recordStopped", function(evt, data) {
-                exports.fire(name + "::stopped", this, data);
-            });
-            widget.on("recordPost", function(evt, data) {
-                exports.fire(name + "::post", this, data);
-            });
-            widget.on("recordPostSuccess", function(evt, data) {
-                exports.fire(name + "::postSuccess", this, data);
-            });
-            widget.on("recordPostError", function(evt, data) {
-                exports.fire(name + "::postError", this, data);
-            });
-            widget.on("recordDiscard", function(evt, data) {
-                exports.fire(name + "::discard", this, data);
-            });
-            widget.on("recordDiscardSuccess", function(evt, data) {
-                exports.fire(name + "::discardSuccess", this, data);
-            });
-            widget.on("recordDiscardError", function(evt, data) {
-                exports.fire(name + "::discardError", this, data);
-            });
-            widget.on("recordTimeout", function(evt, data) {
-                exports.fire(name + "::timeout", this, data);
-            });
-            return widget.id;
-        };
-    })();
-    (function() {
-        var name = "upload";
-        exports[name] = function(options) {
-            options = options || {};
-            var container = options.container;
-            delete options.container;
-            var params = utils.clone(options);
-            utils.extend(params, transient);
-            var widget = interlace.load({
-                container: container,
-                url: exports.baseUrl + "/v1/upload",
-                params: params
-            });
-            widget.type = name;
-            widget.on("destroy", function() {
-                widget.destroy();
-            });
-            widget.on("hide", function() {
-                widget.hide();
-            });
-            widget.on("show", function() {
-                widget.show();
-            });
-            widget.on("error", function(evt, data) {
-                exports.fire(name + "::error", this, data);
-            });
-            widget.on("destroyed", function(evt, data) {
-                exports.fire(name + "::destroyed", this, data);
-            });
-            widget.on("uploadReady", function(evt, data) {
-                exports.fire(name + "::ready", this, data);
-            });
-            widget.on("uploadActive", function(evt, data) {
-                exports.fire(name + "::active", this, data);
-            });
-            widget.on("uploadFileAdded", function(evt, data) {
-                exports.fire(name + "::fileAdded", this, data);
-            });
-            widget.on("uploadStart", function(evt, data) {
-                exports.fire(name + "::start", this, data);
-            });
-            widget.on("uploadStop", function(evt, data) {
-                exports.fire(name + "::stop", this, data);
-            });
-            widget.on("uploadSubmit", function(evt, data) {
-                exports.fire(name + "::submit", this, data);
-            });
-            widget.on("uploadUserAborted", function(evt, data) {
-                exports.fire(name + "::userAborted", this, data);
-            });
-            widget.on("uploadSuccess", function(evt, data) {
-                exports.fire(name + "::success", this, data);
-            });
-            widget.on("uploadFailed", function(evt, data) {
-                exports.fire(name + "::failed", this, data);
-            });
-            widget.on("uploadPost", function(evt, data) {
-                exports.fire(name + "::post", this, data);
-            });
-            widget.on("uploadPostSuccess", function(evt, data) {
-                exports.fire(name + "::postSuccess", this, data);
-            });
-            widget.on("uploadPostError", function(evt, data) {
-                exports.fire(name + "::postError", this, data);
-            });
-            return widget.id;
-        };
-    })();
-})();
+}).bind(window)(window);

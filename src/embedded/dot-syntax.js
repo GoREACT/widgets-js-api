@@ -1,24 +1,12 @@
-(function () {
-    var widgetsUrl = '@@widgetsUrl',
-        baseUrl = '';
+(function (window, undefined) {
 
-    // check for widgets debug
-    if((typeof window.goreactDebug === "object")) {
-        if(window.goreactDebug.widgetsUrl) {
-            widgetsUrl = window.goreactDebug.widgetsUrl;
-        }
-        if(window.goreactDebug.baseUrl) {
-            baseUrl = window.goreactDebug.baseUrl;
-        }
-    }
+    var config = (typeof window.goreactConfig === "object") ? window.goreactConfig : {};
 
-    // Create an async script element for analytics.js based on your API key.
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.async = true;
-    script.src = widgetsUrl;
+    // Setup base and widgets urls
+    config.baseUrl = config.baseUrl ? config.baseUrl : '@@prodUrl';
+    config.widgetsUrl = config.widgetsUrl ? config.widgetsUrl : '@@widgetsUrl';
 
-    init('authorize on off destroy record upload playback collaborate list');
+    init('authorize on off destroy record upload playback review list');
 
     function init(functions) {
 
@@ -46,11 +34,19 @@
             service[method] = service.factory(method);
         }
 
+        // Create an async script element for widgets.js
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+        script.src = config.widgetsUrl;
+
         // Find the first script element on the page and insert our script next to it.
         var firstScript = document.getElementsByTagName('script')[0];
         firstScript.parentNode.insertBefore(script, firstScript);
 
+        // Expose configuration
+        service.config = config;
+
         window['@@name'] = service;
-        window['@@name'].baseUrl = baseUrl;
     }
-})();
+}).bind(window)(window);

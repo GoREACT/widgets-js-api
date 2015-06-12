@@ -9,11 +9,16 @@ var utils = (function() {
     exports.isFunction = isFunction;
     exports.isObject = isObject;
     exports.isArray = isArray;
+    exports.isArrayLike = isArrayLike;
     exports.isString = isString;
+    exports.isDefined = isDefined;
+    exports.isWindow = isWindow;
+    exports.int = int;
     exports.lowercase = lowercase;
     exports.isElement = isElement;
     exports.serialize = serialize;
-    exports.createHttpBackend = createHttpBackend;
+    exports.styleToString = styleToString;
+    exports.sendRequest = createHttpBackend;
 
     function clone (obj) {
         return JSON.parse(JSON.stringify(obj));
@@ -67,7 +72,7 @@ var utils = (function() {
     }
 
     function isArrayLike(obj) {
-        if (obj == null || isWindow(obj)) {
+        if (obj === null || isWindow(obj)) {
             return false;
         }
 
@@ -86,7 +91,7 @@ var utils = (function() {
     }
 
     function isObject(value){
-        return value != null && typeof value === 'object';
+        return value !== null && typeof value === 'object';
     }
 
     function isDefined(value) {
@@ -112,6 +117,13 @@ var utils = (function() {
         );
     }
 
+    /**
+     * Serialize object
+     *
+     * @param obj
+     * @param prefix
+     * @returns {string}
+     */
     function serialize(obj, prefix) {
         var str = [];
         for(var p in obj) {
@@ -123,6 +135,22 @@ var utils = (function() {
             }
         }
         return str.join("&").replace(/%20/g, "+");
+    }
+
+    /**
+     * Style to string
+     *
+     * @param obj
+     * @returns {string}
+     */
+    function styleToString(obj) {
+        var str = '';
+        for (var e in obj) {
+            if (obj.hasOwnProperty(e)) {
+                str += e + ':' + obj[e] + ';';
+            }
+        }
+        return str;
     }
 
     /**
@@ -225,9 +253,7 @@ var utils = (function() {
             hash: urlParsingNode.hash ? urlParsingNode.hash.replace(/^#/, '') : '',
             hostname: urlParsingNode.hostname,
             port: urlParsingNode.port,
-            pathname: (urlParsingNode.pathname.charAt(0) === '/')
-                ? urlParsingNode.pathname
-                : '/' + urlParsingNode.pathname
+            pathname: (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname : '/' + urlParsingNode.pathname
         };
     }
 

@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "homepage": "https://github.com/GoREACT/widgets-client-api",
   "authors": [
-    "Rob Taylor <roboncode@gmail.com>"
+    "Rob Taylor <roboncode@gmail.com>",
+    "Dallin Scherbel <scherpa.bball@gmail.com>"
   ],
   "description": "A JavaScript loader and API for interfacing with GoREACT widgets in a website or web application.",
   "main": "widgets.js",
