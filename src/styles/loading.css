@@ -20,15 +20,16 @@
     height:36px;
     opacity:0;
     font-family:Helvetica, Arial, sans-serif;
-    animation:move 2s linear infinite;
-    -o-animation:move 2s linear infinite;
-    -moz-animation:move 2s linear infinite;
-    -webkit-animation:move 2s linear infinite;
+    animation:move 2.5s linear infinite;
+    -o-animation:move 2.5s linear infinite;
+    -moz-animation:move 2.5s linear infinite;
+    -webkit-animation:move 2.5s linear infinite;
     transform:rotate(180deg);
     -o-transform:rotate(180deg);
     -moz-transform:rotate(180deg);
     -webkit-transform:rotate(180deg);
-    color: #aaaaaa;
+    font-size: 14pt;
+    color: #333333;
 }
 
 .widget-container .load div:nth-child(2) {
