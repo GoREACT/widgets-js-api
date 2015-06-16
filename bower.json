@@ -23,6 +23,6 @@
     "tests"
   ],
   "dependencies": {
-    "pym.js": "~0.3.1"
+
   }
 }

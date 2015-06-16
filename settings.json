@@ -1,0 +1,17 @@
+{
+    "widgetsUrl" : "https://d3gw3t0696ua5r.cloudfront.net/widgets/v2/widgets.min.js",
+    "environments" : {
+      "dev" : "https://dev.goreact.com",
+      "sb" : "https://sandbox.goreact.com",
+      "prod" : "https://goreact.com"
+    },
+    "api" : {
+      "authorize": "/v2/widgets/auth",
+      "record": "/v2/widgets/record",
+      "upload": "/v2/widgets/upload",
+      "list": "/v2/widgets/list",
+      "playback": "/v2/widgets/playback",
+      "review": "/v2/widgets/session",
+      "umc": ""
+    }
+}

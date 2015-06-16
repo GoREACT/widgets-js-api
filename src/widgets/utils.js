@@ -10,6 +10,7 @@ var utils = (function() {
     exports.isObject = isObject;
     exports.isArray = isArray;
     exports.isArrayLike = isArrayLike;
+    exports.isEmptyObject = isEmptyObject;
     exports.isString = isString;
     exports.isDefined = isDefined;
     exports.isWindow = isWindow;
@@ -84,6 +85,14 @@ var utils = (function() {
 
         return isString(obj) || isArray(obj) || length === 0 ||
             typeof length === 'number' && length > 0 && (length - 1) in obj;
+    }
+
+    function isEmptyObject( obj ) {
+        var name;
+        for ( name in obj ) {
+            return false;
+        }
+        return true;
     }
 
     function isFunction(value) {

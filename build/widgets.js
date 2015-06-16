@@ -1,5 +1,25 @@
-(function(window, undefined) {
-    var exports = window["goreact"];
+(function(global, undefined) {
+    var settings = settings || {};
+    settings["config"] = {
+        widgetsUrl: "https://d3gw3t0696ua5r.cloudfront.net/widgets/v2/widgets.min.js",
+        environments: {
+            dev: "https://dev.goreact.com",
+            sb: "https://sandbox.goreact.com",
+            prod: "https://goreact.com"
+        },
+        api: {
+            authorize: "/v2/widgets/auth",
+            record: "/v2/widgets/record",
+            upload: "/v2/widgets/upload",
+            list: "/v2/widgets/list",
+            playback: "/v2/widgets/playback",
+            review: "/v2/widgets/session",
+            umc: ""
+        }
+    };
+    var exports = {};
+    var config = typeof global.goreactConfig === "object" ? global.goreactConfig : {};
+    config.baseUrl = config.baseUrl ? config.baseUrl : "";
     var utils = function() {
         var exports = {};
         var toString = Object.prototype.toString;
@@ -11,6 +31,7 @@
         exports.isObject = isObject;
         exports.isArray = isArray;
         exports.isArrayLike = isArrayLike;
+        exports.isEmptyObject = isEmptyObject;
         exports.isString = isString;
         exports.isDefined = isDefined;
         exports.isWindow = isWindow;
@@ -71,6 +92,13 @@
                 return true;
             }
             return isString(obj) || isArray(obj) || length === 0 || typeof length === "number" && length > 0 && length - 1 in obj;
+        }
+        function isEmptyObject(obj) {
+            var name;
+            for (name in obj) {
+                return false;
+            }
+            return true;
         }
         function isFunction(value) {
             return typeof value === "function";
@@ -190,15 +218,6 @@
         }
         return exports;
     }();
-    var transient = {};
-    if (!String.prototype.supplant) {
-        String.prototype.supplant = function(o) {
-            return this.replace(/\{([^{}]*)\}/g, function(a, b) {
-                var r = o[b];
-                return typeof r === "string" || typeof r === "number" ? r : a;
-            });
-        };
-    }
     var dispatcher = function(target, scope, map) {
         var listeners = {};
         function off(event, callback) {
@@ -261,25 +280,14 @@
         var prefix = "widget_";
         var className = "widget-container";
         var count = 0;
-        exports.load = function(payload) {
-            var widget = document.createElement("div"), params = payload.params || {}, url = payload.url + (payload.url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params), display = "";
+        exports.create = function(options) {
+            var widget = document.createElement("div"), display = "";
             widget.id = prefix + (count += 1);
             widget.className = className;
             widget.style.position = "relative";
             widget.style.width = "100%";
             widget.style.height = "100%";
-            var loadingStyle = document.createElement("style");
-            loadingStyle.type = "text/css";
-            loadingStyle.innerHTML = ".widget-container .load{position:absolute;width:600px;height:36px;left:50%;top:40%;margin-left:-300px;overflow:visible;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:default;z-index:9999}.widget-container .load div{position:absolute;width:20px;height:36px;opacity:0;font-family:Helvetica,Arial,sans-serif;animation:move 2s linear infinite;-o-animation:move 2s linear infinite;-moz-animation:move 2s linear infinite;-webkit-animation:move 2s linear infinite;transform:rotate(180deg);-o-transform:rotate(180deg);-moz-transform:rotate(180deg);-webkit-transform:rotate(180deg);color:#aaa}.widget-container .load div:nth-child(2){animation-delay:.2s;-o-animation-delay:.2s;-moz-animation-delay:.2s;-webkit-animation-delay:.2s}.widget-container .load div:nth-child(3){animation-delay:.4s;-o-animation-delay:.4s;-webkit-animation-delay:.4s}.widget-container .load div:nth-child(4){animation-delay:.6s;-o-animation-delay:.6s;-moz-animation-delay:.6s;-webkit-animation-delay:.6s}.widget-container .load div:nth-child(5){animation-delay:.8s;-o-animation-delay:.8s;-moz-animation-delay:.8s;-webkit-animation-delay:.8s}.widget-container .load div:nth-child(6){animation-delay:1s;-o-animation-delay:1s;-moz-animation-delay:1s;-webkit-animation-delay:1s}.widget-container .load div:nth-child(7){animation-delay:1.2s;-o-animation-delay:1.2s;-moz-animation-delay:1.2s;-webkit-animation-delay:1.2s}@keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);-webkit-transform:rotate(-180deg);-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-moz-keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-webkit-keyframes move{0%{left:0;opacity:0}35%{left:41%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-o-keyframes move{0%{left:0;opacity:0}35%{left:41%;-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}";
-            widget.appendChild(loadingStyle);
-            var loadingDiv = document.createElement("div");
-            loadingDiv.className = "load";
-            utils.forEach([ "G", "N", "I", "D", "A", "O", "L" ], function(letter) {
-                var letterDiv = document.createElement("div");
-                letterDiv.innerText = letter;
-                loadingDiv.appendChild(letterDiv);
-            });
-            widget.appendChild(loadingDiv);
+            dispatcher(widget);
             widget.show = function() {
                 if (widget.parentNode.style.display === "none") {
                     widget.parentNode.style.display = display;
@@ -293,11 +301,38 @@
                 }
                 widget.fire("hidden");
             };
+            var loadingDiv, loadingStyle;
+            widget.showLoading = function(value) {
+                if (value) {
+                    loadingStyle = document.createElement("style");
+                    loadingStyle.type = "text/css";
+                    loadingStyle.innerHTML = ".widget-container .load{position:absolute;width:600px;height:36px;left:50%;top:40%;margin-left:-300px;overflow:visible;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:default;z-index:9999}.widget-container .load div{position:absolute;width:20px;height:36px;opacity:0;font-family:Helvetica,Arial,sans-serif;animation:move 2.5s linear infinite;-o-animation:move 2.5s linear infinite;-moz-animation:move 2.5s linear infinite;-webkit-animation:move 2.5s linear infinite;transform:rotate(180deg);-o-transform:rotate(180deg);-moz-transform:rotate(180deg);-webkit-transform:rotate(180deg);font-size:14pt;color:#333}.widget-container .load div:nth-child(2){animation-delay:.2s;-o-animation-delay:.2s;-moz-animation-delay:.2s;-webkit-animation-delay:.2s}.widget-container .load div:nth-child(3){animation-delay:.4s;-o-animation-delay:.4s;-webkit-animation-delay:.4s}.widget-container .load div:nth-child(4){animation-delay:.6s;-o-animation-delay:.6s;-moz-animation-delay:.6s;-webkit-animation-delay:.6s}.widget-container .load div:nth-child(5){animation-delay:.8s;-o-animation-delay:.8s;-moz-animation-delay:.8s;-webkit-animation-delay:.8s}.widget-container .load div:nth-child(6){animation-delay:1s;-o-animation-delay:1s;-moz-animation-delay:1s;-webkit-animation-delay:1s}.widget-container .load div:nth-child(7){animation-delay:1.2s;-o-animation-delay:1.2s;-moz-animation-delay:1.2s;-webkit-animation-delay:1.2s}@keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);-webkit-transform:rotate(-180deg);-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-moz-keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-webkit-keyframes move{0%{left:0;opacity:0}35%{left:41%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-o-keyframes move{0%{left:0;opacity:0}35%{left:41%;-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}";
+                    widget.appendChild(loadingStyle);
+                    loadingDiv = document.createElement("div");
+                    loadingDiv.className = "load";
+                    utils.forEach([ "G", "N", "I", "D", "A", "O", "L" ], function(letter) {
+                        var letterDiv = document.createElement("div");
+                        letterDiv.innerText = letter;
+                        loadingDiv.appendChild(letterDiv);
+                    });
+                    widget.appendChild(loadingDiv);
+                } else {
+                    if (loadingDiv) {
+                        loadingDiv.parentElement.removeChild(loadingDiv);
+                    }
+                    if (loadingStyle) {
+                        loadingStyle.parentElement.removeChild(loadingStyle);
+                    }
+                }
+            };
             widget.destroy = function() {
                 widget.parentNode.removeChild(widget);
                 widget.fire("destroyed");
             };
-            var container = payload.container;
+            widget.on("destroyed", function() {
+                widget.off();
+            });
+            var container = options.container;
             if (!utils.isElement(container)) {
                 if (!container) {
                     container = document.createElement("div");
@@ -307,7 +342,7 @@
                 } else if (typeof container === "object") {
                     container = document.createElement("div");
                     container.setAttribute("data-widget", "container-" + widget.id);
-                    container.setAttribute("style", utils.styleToString(payload.container));
+                    container.setAttribute("style", utils.styleToString(options.container));
                     document.body.appendChild(container);
                 }
             }
@@ -316,13 +351,13 @@
                 w.destroy();
             }
             container.appendChild(widget);
-            dispatcher(widget);
-            widget.on("ready", function() {
-                loadingDiv.style.display = "none";
-            });
-            widget.on("destroyed", function() {
-                widget.off();
-            });
+            return widget;
+        };
+        exports.getContent = function(widget, url, params) {
+            params = params || {};
+            if (!utils.isEmptyObject(params)) {
+                url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
+            }
             utils.sendRequest("GET", url, {}, function(status, html) {
                 var tElement = document.createElement("div");
                 tElement.innerHTML = html;
@@ -349,70 +384,62 @@
                 }
                 widget.fire("loaded");
             });
-            return widget;
         };
         dispatcher(exports);
         return exports;
     }();
-    var queue = exports.q || exports;
-    if (exports.hasOwnProperty("q")) {
-        exports = window["goreact"] = function() {
-            var args = Array.prototype.slice.call(arguments);
-            var method = args.shift();
-            if (exports.hasOwnProperty(method)) {
-                exports[method].apply(exports, args);
+    var auth = false;
+    var transient = {};
+    exports.authorize = function(data, signature) {
+        var params = utils.clone(data);
+        params.signature = signature;
+        var STATUS = {
+            PENDING: "pending",
+            SUCCESS: "success",
+            ERROR: "error"
+        };
+        var status = STATUS.PENDING;
+        auth = {
+            isPending: function() {
+                return status === STATUS.PENDING;
+            },
+            isSuccess: function() {
+                return status === STATUS.SUCCESS;
+            },
+            isError: function() {
+                return status === STATUS.ERROR;
+            },
+            getStatus: function() {
+                return status;
             }
         };
-    }
-    dispatcher(exports);
-    function setup() {
-        var i = queue.length;
-        queue.reverse();
-        while (i--) {
-            var args = Array.prototype.slice.call(queue[i]);
-            var method = args.shift();
-            if (method === "authorize" || method === "on" || method === "off") {
-                if (exports.hasOwnProperty(method)) {
-                    queue.splice(i, 1);
-                    exports[method].apply(exports, args);
-                }
+        dispatcher(auth);
+        if (!config.baseUrl) {
+            if (!data.api_key) {
+                throw new Error('Parameter "api_key" is a required');
+            }
+            var baseUrl = settings.config.environments[data.api_key];
+            if (baseUrl) {
+                config.baseUrl = baseUrl;
             }
         }
-    }
-    exports.on("authorize::success", function() {
-        var len = queue.length;
-        for (var i = 0; i < len; i += 1) {
-            var args = Array.prototype.slice.call(queue[i]);
-            var method = args.shift();
-            if (exports.hasOwnProperty(method)) {
-                try {
-                    exports[method].apply(exports, args);
-                } catch (e) {}
-            }
+        var url = config.baseUrl + settings.config.api.authorize;
+        if (!utils.isEmptyObject(params)) {
+            url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
         }
-        queue.length = 0;
-    });
-    setTimeout(setup);
-    exports.authorize = function(settings, signature) {
-        var params = utils.clone(settings);
-        params.signature = signature;
-        if (settings.api_key && settings.api_key.indexOf("sb") === 0) {
-            exports.config.baseUrl = "https://sandbox.goreact.com";
-        } else if (settings.api_key && settings.api_key.indexOf("dev") === 0) {
-            exports.config.baseUrl = "https://dev.goreact.com";
-        }
-        var url = exports.config.baseUrl + "/v2/widgets/auth";
-        url = url + (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
-        utils.sendRequest("GET", url + "?", {}, function(status, response) {
+        utils.sendRequest("GET", url, {}, function(httpStatus, response) {
             if (response) {
-                setTransientData(response);
-                if (status === 200) {
-                    exports.fire("authorize::success", this, response.message);
+                if (httpStatus === 200) {
+                    setTransientData(response);
+                    status = STATUS.SUCCESS;
+                    auth.fire(status, response.message);
                 } else {
-                    exports.fire("authorize::error", this, response.message);
+                    status = STATUS.ERROR;
+                    auth.fire(status, response.message);
                 }
             } else {
-                exports.fire("authorize::error", this, "");
+                status = STATUS.ERROR;
+                auth.fire(status, "An unknown error occurred");
             }
         }, {}, false, "json");
         function setTransientData(data) {
@@ -423,32 +450,22 @@
                 delete data.transient;
             }
         }
-    };
-    exports.destroy = function(widgetId) {
-        var widget = document.getElementById(widgetId);
-        if (widget) {
-            widget.destroy();
-        }
+        return auth;
     };
     (function() {
-        "use strict";
-        var api = {
-            upload: "/v2/widgets/upload",
-            record: "/v2/widgets/record",
-            list: "@@listUri",
-            playback: "/v2/widgets/playback",
-            review: ""
-        };
-        utils.forEach(api, function(uri, method) {
+        utils.forEach(settings.config.api, function(uri, method) {
+            if (method === "authorize") {
+                return;
+            }
             exports[method] = function(options) {
-                options = options || {};
-                var params = utils.clone(options);
-                utils.extend(params, transient);
-                params.mode = "collaborate";
-                var widget = factory.load({
-                    container: options.container,
-                    url: exports.config.baseUrl + uri,
-                    params: params
+                if (!utils.isObject(auth)) {
+                    throw new Error('The "authorize" method must be called first');
+                }
+                var url = config.baseUrl + uri, container = options.container;
+                options = utils.clone(options) || {};
+                delete options.container;
+                var widget = factory.create({
+                    container: container
                 });
                 widget.type = method;
                 widget.on("hide", function() {
@@ -457,11 +474,28 @@
                 widget.on("show", function() {
                     widget.show();
                 });
+                widget.on("ready", function() {
+                    widget.showLoading(false);
+                });
                 widget.on("destroy", function() {
                     widget.destroy();
                 });
-                return widget.id;
+                widget.showLoading(true);
+                if (auth.isPending()) {
+                    auth.once("success", function success() {
+                        factory.getContent(widget, url, utils.extend(options, transient));
+                    });
+                    auth.once("error", function() {
+                        widget.showLoading(false);
+                    });
+                } else if (auth.isSuccess()) {
+                    factory.getContent(widget, url, utils.extend(options, transient));
+                } else {
+                    widget.showLoading(false);
+                }
+                return widget;
             };
         });
     })();
-}).bind(window)(window);
+    global["goreact"] = exports;
+})(this);

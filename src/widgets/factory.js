@@ -6,15 +6,13 @@ var factory = (function () {
     var count = 0;
 
     /**
-     * Load widget
+     * Create widget
      *
-     * @param payload
+     * @param options
      * @returns {HTMLElement}
      */
-    exports.load = function (payload) {
+    exports.create = function (options) {
         var widget = document.createElement('div'),
-            params = payload.params || {},
-            url = payload.url + (payload.url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params),
             display = '';
 
         // widget id
@@ -23,24 +21,7 @@ var factory = (function () {
         widget.style.position = "relative";
         widget.style.width = '100%';
         widget.style.height = '100%';
-
-        // loading style
-        var loadingStyle = document.createElement('style');
-        loadingStyle.type = 'text/css';
-        loadingStyle.innerHTML = '@@loadingStyle';
-        widget.appendChild(loadingStyle);
-
-        // add loading dev
-        var loadingDiv = document.createElement('div');
-        loadingDiv.className = 'load';
-        utils.forEach([
-            'G', 'N', 'I', 'D', 'A', 'O', 'L'
-        ], function(letter) {
-            var letterDiv = document.createElement('div');
-            letterDiv.innerText = letter;
-            loadingDiv.appendChild(letterDiv);
-        });
-        widget.appendChild(loadingDiv);
+        dispatcher(widget);
 
         /**
          * Show the widget
@@ -64,6 +45,41 @@ var factory = (function () {
         };
 
         /**
+         * Show loading indicator
+         *
+         * @param value
+         */
+        var loadingDiv, loadingStyle;
+        widget.showLoading = function(value) {
+            if(value) {
+                // create loading style
+                loadingStyle = document.createElement('style');
+                loadingStyle.type = 'text/css';
+                loadingStyle.innerHTML = '@@loadingStyle';
+                widget.appendChild(loadingStyle);
+
+                // create loading dev
+                loadingDiv = document.createElement('div');
+                loadingDiv.className = 'load';
+                utils.forEach([
+                    'G', 'N', 'I', 'D', 'A', 'O', 'L'
+                ], function(letter) {
+                    var letterDiv = document.createElement('div');
+                    letterDiv.innerText = letter;
+                    loadingDiv.appendChild(letterDiv);
+                });
+                widget.appendChild(loadingDiv);
+            } else {
+                if(loadingDiv) {
+                    loadingDiv.parentElement.removeChild(loadingDiv);
+                }
+                if(loadingStyle) {
+                    loadingStyle.parentElement.removeChild(loadingStyle);
+                }
+            }
+        };
+
+        /**
          * Destroy the widget
          */
         widget.destroy = function () {
@@ -71,8 +87,15 @@ var factory = (function () {
             widget.fire('destroyed');
         };
 
+        /**
+         * Widget destroyed event listener
+         */
+        widget.on("destroyed", function() {
+            widget.off();
+        });
+
         // resolve container
-        var container = payload.container;
+        var container = options.container;
         if (!utils.isElement(container)) {
             if (!container) { // null or undefined
                 container = document.createElement('div');
@@ -82,7 +105,7 @@ var factory = (function () {
             } else if (typeof container === 'object') { // container is acting as a set of style options
                 container = document.createElement('div');
                 container.setAttribute('data-widget', 'container-' + widget.id);
-                container.setAttribute('style', utils.styleToString(payload.container));
+                container.setAttribute('style', utils.styleToString(options.container));
                 document.body.appendChild(container);
             }
         }
@@ -96,21 +119,19 @@ var factory = (function () {
         // add widget to container
         container.appendChild(widget);
 
-        dispatcher(widget);
+        return widget;
+    };
 
-        /**
-         * Widget ready event listener
-         */
-        widget.on("ready", function() {
-            loadingDiv.style.display = 'none';
-        });
+    /**
+     * Load widget
+     */
+    exports.getContent = function(widget, url, params) {
 
-        /**
-         * Widget destroyed event listener
-         */
-        widget.on("destroyed", function() {
-            widget.off();
-        });
+        params = params || {};
+
+        if(!utils.isEmptyObject(params)) {
+            url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
+        }
 
         // make request for view
         utils.sendRequest("GET", url, {}, function(status, html) {
@@ -151,8 +172,6 @@ var factory = (function () {
 
             widget.fire('loaded');
         });
-
-        return widget;
     };
 
     dispatcher(exports);

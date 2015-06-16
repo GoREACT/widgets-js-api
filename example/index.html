@@ -30,13 +30,12 @@
 
 <script>
     window.goreactConfig = {
-        baseUrl: "https://192.168.33.10",
-        widgetsUrl: "../build/widgets.js"
+        baseUrl: "https://192.168.33.10"
     };
 </script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<script src="../build/embed.js"></script>
+<script src="../build/widgets.js"></script>
 
 <script>
 
@@ -87,11 +86,14 @@
         $fullScreenBtn.addClass('active');
     });
 
+    console.log("goreact", goreact);
+
     // :: goreact setup ::
     var signature = '5eb63bbbe01eeed093cb22bb8f5acdc3';
     var expires = 1413496405;
     var settings = {
-        api_key: "690b717d-935a-40f2-afec-283752dddb33",
+//        api_key: "3d143dd5-1050-488c-80b7-e110dbb35d9fs",
+        api_key: "3d143dd5-1050-488c-80b7-e110dbb35d9f",
         user_id: "5432b03462ccc7ea7bcc2c41",
         first_name: "John",
         last_name: "Smith",
@@ -101,23 +103,32 @@
         context_role: "instructor",
         expires: expires
     };
-    goreact.authorize(settings, signature);
+    var auth = goreact.authorize(settings, signature);
 
+    auth.on('success', function(evt, message) {
+        console.log("auth success", message);
+    });
+
+    auth.on('error', function(evt, message) {
+        console.log("auth error", message);
+    });
+
+//    promise.then(function(response) {
+//        console.log("response", response);
+//    });
     var recordWidget = goreact.record({
         title: 'My Recording',
         container: $containerEl[0]
     });
 
-    recordWidget.on('success', function (evt, widget) {
-        console.log(evt, widget.id, widget.type);
+    console.log("recordWidget", recordWidget);
+
+    recordWidget.on('ready', function (evt) {
+        console.log("ready");
     });
 
-    recordWidget.on('ready', function (evt, widget) {
-        console.log(evt, widget.id, widget.type);
-    });
-
-    recordWidget.on('destroyed', function (evt, widget) {
-        console.log(evt, widget.id, widget.type);
+    recordWidget.on('destroyed', function (evt) {
+        console.log("destroyed");
     });
 
 </script>
