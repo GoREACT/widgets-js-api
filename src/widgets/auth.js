@@ -1,7 +1,5 @@
 // auth object
-var auth = false;
-// data that persists with each request
-var transient = {};
+var auth;
 
 var STATUS = {
     PENDING: 'pending',
@@ -23,7 +21,8 @@ exports.authorize = function(data, signature) {
     var status = STATUS.PENDING;
 
     auth = {
-        isPending: function() {
+	    data: {},
+	    isPending: function() {
             return status === STATUS.PENDING;
         },
         isSuccess: function() {
@@ -64,9 +63,12 @@ exports.authorize = function(data, signature) {
 
     // Make auth request
     utils.sendRequest("GET", url, {}, function(httpStatus, response) {
-        if(response) {
+        if(utils.isObject(response)) {
             if(httpStatus === 200) {
-                setTransientData(response);
+	            // add transient data to auth data
+	            utils.extend(auth.data, {
+		            transient: response.transient
+	            });
                 status = STATUS.SUCCESS;
                 auth.fire(status, response.message);
             } else {
@@ -79,20 +81,6 @@ exports.authorize = function(data, signature) {
         }
 
     }, {}, false, 'json');
-
-    /**
-     * Set transient data
-     *
-     * @param data
-     */
-    function setTransientData (data) {
-        if(utils.isObject(data) && data.transient) {
-            utils.extend(transient, {
-                transient: data.transient
-            });
-            delete data.transient;
-        }
-    }
 
     return auth;
 };

@@ -31,7 +31,6 @@ var factory = (function () {
 	    delete params.container;
 
 	    // element properties
-	    element.id = prefix + (count += 1);
 	    element.className = className;
 	    element.style.position = "relative";
 	    element.style.width = '100%';
@@ -47,13 +46,13 @@ var factory = (function () {
 	    // We can't load the content until authorization is successful
 	    if(auth.isPending()) {
 		    auth.once('success', function success() {
-			    loadContent(url, utils.extend(params, transient));
+			    loadContent(url, utils.extend(params, auth.data));
 		    });
 		    auth.once('error', function() {
 			    showLoadingIndicator(false);
 		    });
 	    } else if(auth.isSuccess()) {
-		    loadContent(url, utils.extend(params, transient));
+		    loadContent(url, utils.extend(params, auth.data));
 	    } else {
 		    showLoadingIndicator(false);
 	    }
@@ -107,12 +106,10 @@ var factory = (function () {
         if (!utils.isElement(container)) {
             if (!container) { // null or undefined
                 container = document.createElement('div');
-                container.setAttribute('data-widget', 'container-' + element.id);
                 container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
                 document.body.appendChild(container);
             } else if (typeof container === 'object') { // container is acting as a set of style options
                 container = document.createElement('div');
-                container.setAttribute('data-widget', 'container-' + element.id);
                 container.setAttribute('style', utils.styleToString(options.container));
                 document.body.appendChild(container);
             }

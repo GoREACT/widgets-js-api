@@ -289,7 +289,6 @@
             var loadingDiv, loadingStyle;
             var params = utils.clone(options) || {};
             delete params.container;
-            element.id = prefix + (count += 1);
             element.className = className;
             element.style.position = "relative";
             element.style.width = "100%";
@@ -298,13 +297,13 @@
             showLoadingIndicator(true);
             if (auth.isPending()) {
                 auth.once("success", function success() {
-                    loadContent(url, utils.extend(params, transient));
+                    loadContent(url, utils.extend(params, auth.data));
                 });
                 auth.once("error", function() {
                     showLoadingIndicator(false);
                 });
             } else if (auth.isSuccess()) {
-                loadContent(url, utils.extend(params, transient));
+                loadContent(url, utils.extend(params, auth.data));
             } else {
                 showLoadingIndicator(false);
             }
@@ -336,12 +335,10 @@
             if (!utils.isElement(container)) {
                 if (!container) {
                     container = document.createElement("div");
-                    container.setAttribute("data-widget", "container-" + element.id);
                     container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
                     document.body.appendChild(container);
                 } else if (typeof container === "object") {
                     container = document.createElement("div");
-                    container.setAttribute("data-widget", "container-" + element.id);
                     container.setAttribute("style", utils.styleToString(options.container));
                     document.body.appendChild(container);
                 }
@@ -415,8 +412,7 @@
         dispatcher(exports);
         return exports;
     }();
-    var auth = false;
-    var transient = {};
+    var auth;
     var STATUS = {
         PENDING: "pending",
         SUCCESS: "success",
@@ -427,6 +423,7 @@
         params.signature = signature;
         var status = STATUS.PENDING;
         auth = {
+            data: {},
             isPending: function() {
                 return status === STATUS.PENDING;
             },
@@ -457,9 +454,11 @@
             url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
         }
         utils.sendRequest("GET", url, {}, function(httpStatus, response) {
-            if (response) {
+            if (utils.isObject(response)) {
                 if (httpStatus === 200) {
-                    setTransientData(response);
+                    utils.extend(auth.data, {
+                        "transient": response.transient
+                    });
                     status = STATUS.SUCCESS;
                     auth.fire(status, response.message);
                 } else {
@@ -471,14 +470,6 @@
                 auth.fire(status, "An unknown error occurred");
             }
         }, {}, false, "json");
-        function setTransientData(data) {
-            if (utils.isObject(data) && data.transient) {
-                utils.extend(transient, {
-                    "transient": data.transient
-                });
-                delete data.transient;
-            }
-        }
         return auth;
     };
     (function() {
