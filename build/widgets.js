@@ -3,6 +3,7 @@
     settings["config"] = {
         widgetsUrl: "https://d3gw3t0696ua5r.cloudfront.net/widgets/v2/widgets.min.js",
         environments: {
+            local: "https://192.168.33.10",
             dev: "https://dev.goreact.com",
             sb: "https://sandbox.goreact.com",
             prod: "https://goreact.com"
@@ -421,6 +422,8 @@
             var baseUrl = settings.config.environments[data.api_key];
             if (baseUrl) {
                 config.baseUrl = baseUrl;
+            } else {
+                config.baseUrl = settings.config.environments.local;
             }
         }
         var url = config.baseUrl + settings.config.api.authorize;

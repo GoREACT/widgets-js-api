@@ -41,14 +41,17 @@ exports.authorize = function(data, signature) {
 
     if(!config.baseUrl) {
 
-        // Determine environment using api key
+        // API Key is required
         if(!data.api_key) {
             throw new Error('Parameter "api_key" is a required');
         }
 
+        // Determine environment using api key
         var baseUrl = settings.config.environments[data.api_key];
         if(baseUrl) {
             config.baseUrl = baseUrl;
+        } else {
+            config.baseUrl = settings.config.environments.local;
         }
     }
 
