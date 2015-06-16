@@ -11,7 +11,7 @@
       "upload": "/v2/widgets/upload",
       "list": "/v2/widgets/list",
       "playback": "/v2/widgets/playback",
-      "review": "/v2/widgets/session",
-      "umc": ""
+      "review": "/v2/widgets/review",
+      "umc": "/v2/widgets/umc"
     }
 }

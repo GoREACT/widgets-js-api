@@ -2,33 +2,68 @@ var factory = (function () {
 
     var exports = {};
     var prefix = 'widget_';
-    var className = 'widget-container';
+    var className = 'widget';
+    var loadIndicatorClassName = 'widget-load-indicator';
     var count = 0;
 
     /**
-     * Create widget
+     * Load widget
      *
+     * @param url
      * @param options
-     * @returns {HTMLElement}
+     * @returns {Object}
      */
-    exports.create = function (options) {
-        var widget = document.createElement('div'),
+    exports.load = function (url, options) {
+
+	    if(!utils.isObject(auth)) {
+		    throw new Error('The "authorize" method must be called first');
+	    }
+
+	    var widget = {},
+		    element = document.createElement('div'),
             display = '';
 
-        // widget id
-        widget.id = prefix + (count += 1);
-        widget.className = className;
-        widget.style.position = "relative";
-        widget.style.width = '100%';
-        widget.style.height = '100%';
-        dispatcher(widget);
+	    // Loading content
+	    var loadingDiv, loadingStyle;
+
+	    // Params to be passed along with view requests
+	    var params = utils.clone(options) || {};
+	    delete params.container;
+
+	    // element properties
+	    element.id = prefix + (count += 1);
+	    element.className = className;
+	    element.style.position = "relative";
+	    element.style.width = '100%';
+	    element.style.height = '100%';
+
+	    // add event dispatcher behavior to widget
+	    dispatcher(widget);
+
+		// Initially show loading indicator
+	    showLoadingIndicator(true);
+
+	    // Load widget content.
+	    // We can't load the content until authorization is successful
+	    if(auth.isPending()) {
+		    auth.once('success', function success() {
+			    loadContent(url, utils.extend(params, transient));
+		    });
+		    auth.once('error', function() {
+			    showLoadingIndicator(false);
+		    });
+	    } else if(auth.isSuccess()) {
+		    loadContent(url, utils.extend(params, transient));
+	    } else {
+		    showLoadingIndicator(false);
+	    }
 
         /**
          * Show the widget
          */
         widget.show = function () {
-            if (widget.parentNode.style.display === 'none') {
-                widget.parentNode.style.display = display;
+            if (widget.element.parentNode.style.display === 'none') {
+	            widget.element.parentNode.style.display = display;
             }
             widget.fire('shown');
         };
@@ -38,59 +73,32 @@ var factory = (function () {
          */
         widget.hide = function () {
             if (!display) {
-                display = widget.parentNode.style.display;
-                widget.parentNode.style.display = 'none';
+                display = widget.element.parentNode.style.display;
+	            widget.element.parentNode.style.display = 'none';
             }
             widget.fire('hidden');
-        };
-
-        /**
-         * Show loading indicator
-         *
-         * @param value
-         */
-        var loadingDiv, loadingStyle;
-        widget.showLoading = function(value) {
-            if(value) {
-                // create loading style
-                loadingStyle = document.createElement('style');
-                loadingStyle.type = 'text/css';
-                loadingStyle.innerHTML = '@@loadingStyle';
-                widget.appendChild(loadingStyle);
-
-                // create loading dev
-                loadingDiv = document.createElement('div');
-                loadingDiv.className = 'load';
-                utils.forEach([
-                    'G', 'N', 'I', 'D', 'A', 'O', 'L'
-                ], function(letter) {
-                    var letterDiv = document.createElement('div');
-                    letterDiv.innerText = letter;
-                    loadingDiv.appendChild(letterDiv);
-                });
-                widget.appendChild(loadingDiv);
-            } else {
-                if(loadingDiv) {
-                    loadingDiv.parentElement.removeChild(loadingDiv);
-                }
-                if(loadingStyle) {
-                    loadingStyle.parentElement.removeChild(loadingStyle);
-                }
-            }
         };
 
         /**
          * Destroy the widget
          */
         widget.destroy = function () {
-            widget.parentNode.removeChild(widget);
+	        widget.element.parentNode.removeChild(element);
             widget.fire('destroyed');
         };
 
+	    /**
+	     * Widget ready event handler
+	     */
+	    widget.on("ready", function() {
+		    showLoadingIndicator(false);
+	    });
+
         /**
-         * Widget destroyed event listener
+         * Widget destroyed event handler
          */
         widget.on("destroyed", function() {
+	        showLoadingIndicator(false);
             widget.off();
         });
 
@@ -99,12 +107,12 @@ var factory = (function () {
         if (!utils.isElement(container)) {
             if (!container) { // null or undefined
                 container = document.createElement('div');
-                container.setAttribute('data-widget', 'container-' + widget.id);
+                container.setAttribute('data-widget', 'container-' + element.id);
                 container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
                 document.body.appendChild(container);
             } else if (typeof container === 'object') { // container is acting as a set of style options
                 container = document.createElement('div');
-                container.setAttribute('data-widget', 'container-' + widget.id);
+                container.setAttribute('data-widget', 'container-' + element.id);
                 container.setAttribute('style', utils.styleToString(options.container));
                 document.body.appendChild(container);
             }
@@ -112,66 +120,111 @@ var factory = (function () {
 
         // clear container content
         while (container.firstChild) {
-            var w = container.firstChild;
-            w.destroy();
+            var el = container.firstChild;
+	        el.widget.destroy();
         }
 
-        // add widget to container
-        container.appendChild(widget);
+        // add element to container
+        container.appendChild(element);
+
+	    // expose element on widget
+	    widget.element = element;
+
+	    // add a reference from the element back to the widget
+	    widget.element.widget = widget;
+
+	    /**
+	     * Load widget content
+	     *
+	     * @param url
+	     * @param params
+	     */
+	    function loadContent(url, params) {
+
+		    params = params || {};
+
+		    if(!utils.isEmptyObject(params)) {
+			    url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
+		    }
+
+		    // make request for view
+		    utils.sendRequest("GET", url, {}, function(status, html) {
+
+			    var tElement = document.createElement('div');
+			    tElement.innerHTML = html;
+
+			    // clone and remove scripts for later insert
+			    // so that they will get executed by the browser
+			    var clonedScripts = [];
+			    var scripts = tElement.getElementsByTagName('script');
+			    var i = scripts.length;
+
+			    while (i--) {
+				    var script = document.createElement("script");
+				    var props = ['type', 'src', 'text'];
+				    for(var k = 0; k < props.length; k++) {
+					    var prop = props[k];
+					    if(scripts[i][prop]) {
+						    script[prop] = scripts[i][prop];
+					    }
+				    }
+				    clonedScripts.push(script);
+
+				    // remove script
+				    scripts[i].parentNode.removeChild(scripts[i]);
+			    }
+
+			    // Insert template element children
+			    for(i = 0 ; i < tElement.children.length ; i++) {
+				    element.appendChild(tElement.children[i]);
+			    }
+
+			    // insert scripts
+			    for(i = 0; i < clonedScripts.length; i++) {
+				    element.lastChild.appendChild(clonedScripts[i]);
+			    }
+
+			    widget.fire('loaded');
+		    });
+	    }
+
+	    /**
+	     * Show loading indicator
+	     *
+	     * @param value
+	     */
+	    function showLoadingIndicator(value) {
+		    if(value) {
+			    // create loading style
+			    loadingStyle = document.createElement('style');
+			    loadingStyle.type = 'text/css';
+			    loadingStyle.innerHTML = '@@loadingStyle';
+			    element.appendChild(loadingStyle);
+
+			    // create loading dev
+			    loadingDiv = document.createElement('div');
+			    loadingDiv.className = loadIndicatorClassName;
+			    utils.forEach([
+				    'G', 'N', 'I', 'D', 'A', 'O', 'L'
+			    ], function(letter) {
+				    var letterDiv = document.createElement('div');
+				    letterDiv.innerText = letter;
+				    loadingDiv.appendChild(letterDiv);
+			    });
+			    element.appendChild(loadingDiv);
+		    } else {
+			    if(loadingDiv) {
+				    loadingDiv.parentElement.removeChild(loadingDiv);
+			    }
+			    if(loadingStyle) {
+				    loadingStyle.parentElement.removeChild(loadingStyle);
+			    }
+			    loadingDiv = false;
+			    loadingStyle = false;
+		    }
+	    }
 
         return widget;
-    };
-
-    /**
-     * Load widget
-     */
-    exports.getContent = function(widget, url, params) {
-
-        params = params || {};
-
-        if(!utils.isEmptyObject(params)) {
-            url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
-        }
-
-        // make request for view
-        utils.sendRequest("GET", url, {}, function(status, html) {
-
-            var tElement = document.createElement('div');
-            tElement.innerHTML = html;
-
-            // clone and remove scripts for later insert
-            // so that they will get executed by the browser
-            var clonedScripts = [];
-            var scripts = tElement.getElementsByTagName('script');
-            var i = scripts.length;
-
-            while (i--) {
-                var script = document.createElement("script");
-                var props = ['type', 'src', 'text'];
-                for(var k = 0; k < props.length; k++) {
-                    var prop = props[k];
-                    if(scripts[i][prop]) {
-                        script[prop] = scripts[i][prop];
-                    }
-                }
-                clonedScripts.push(script);
-
-                // remove script
-                scripts[i].parentNode.removeChild(scripts[i]);
-            }
-
-            // Insert template element children
-            for(i = 0 ; i < tElement.children.length ; i++) {
-                widget.appendChild(tElement.children[i]);
-            }
-
-            // insert scripts
-            for(i = 0; i < clonedScripts.length; i++) {
-                widget.lastChild.appendChild(clonedScripts[i]);
-            }
-
-            widget.fire('loaded');
-        });
     };
 
     dispatcher(exports);

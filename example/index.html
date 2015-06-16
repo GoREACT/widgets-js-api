@@ -18,7 +18,7 @@
     <div id="upload_btn" class="btn btn-primary">Upload</div>
     <!--<div id="list_btn" class="btn btn-primary">List</div>-->
     <div id="playback_btn" class="btn btn-primary">Playback</div>
-    <div id="collaborate_btn" class="btn btn-primary">Collaborate</div>
+    <div id="review_btn" class="btn btn-primary">Review</div>
 
     <div class="btn-group">
         <button id="container_btn" type="button" class="btn btn-default active">Container</button>
@@ -46,7 +46,7 @@
     var $uploadBtn = $('#upload_btn');
     var $listBtn = $('#list_btn');
     var $playbackBtn = $('#playback_btn');
-    var $collaborateBtn = $('#collaborate_btn');
+    var $reviewBtn = $('#review_btn');
     var $containerEl = $('#containerEl');
 
     var activeContainer = $containerEl[0];
@@ -67,8 +67,8 @@
         goreact.playback({container: activeContainer});
     });
 
-    $collaborateBtn.click(function () {
-        goreact.collaborate({
+    $reviewBtn.click(function () {
+        goreact.review({
             goreact_id: 4824,
             container: activeContainer
         });
@@ -104,6 +104,8 @@
         expires: expires
     };
     var auth = goreact.authorize(settings, signature);
+
+    console.log("auth", auth);
 
     auth.on('success', function(evt, message) {
         console.log("auth success", message);

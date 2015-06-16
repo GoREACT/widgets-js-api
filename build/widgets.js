@@ -1,7 +1,6 @@
 (function(global, undefined) {
     var settings = settings || {};
     settings["config"] = {
-        widgetsUrl: "https://d3gw3t0696ua5r.cloudfront.net/widgets/v2/widgets.min.js",
         environments: {
             local: "https://192.168.33.10",
             dev: "https://dev.goreact.com",
@@ -14,8 +13,8 @@
             upload: "/v2/widgets/upload",
             list: "/v2/widgets/list",
             playback: "/v2/widgets/playback",
-            review: "/v2/widgets/session",
-            umc: ""
+            review: "/v2/widgets/review",
+            umc: "/v2/widgets/umc"
         }
     };
     var exports = {};
@@ -279,44 +278,127 @@
     var factory = function() {
         var exports = {};
         var prefix = "widget_";
-        var className = "widget-container";
+        var className = "widget";
+        var loadIndicatorClassName = "widget-load-indicator";
         var count = 0;
-        exports.create = function(options) {
-            var widget = document.createElement("div"), display = "";
-            widget.id = prefix + (count += 1);
-            widget.className = className;
-            widget.style.position = "relative";
-            widget.style.width = "100%";
-            widget.style.height = "100%";
+        exports.load = function(url, options) {
+            if (!utils.isObject(auth)) {
+                throw new Error('The "authorize" method must be called first');
+            }
+            var widget = {}, element = document.createElement("div"), display = "";
+            var loadingDiv, loadingStyle;
+            var params = utils.clone(options) || {};
+            delete params.container;
+            element.id = prefix + (count += 1);
+            element.className = className;
+            element.style.position = "relative";
+            element.style.width = "100%";
+            element.style.height = "100%";
             dispatcher(widget);
+            showLoadingIndicator(true);
+            if (auth.isPending()) {
+                auth.once("success", function success() {
+                    loadContent(url, utils.extend(params, transient));
+                });
+                auth.once("error", function() {
+                    showLoadingIndicator(false);
+                });
+            } else if (auth.isSuccess()) {
+                loadContent(url, utils.extend(params, transient));
+            } else {
+                showLoadingIndicator(false);
+            }
             widget.show = function() {
-                if (widget.parentNode.style.display === "none") {
-                    widget.parentNode.style.display = display;
+                if (widget.element.parentNode.style.display === "none") {
+                    widget.element.parentNode.style.display = display;
                 }
                 widget.fire("shown");
             };
             widget.hide = function() {
                 if (!display) {
-                    display = widget.parentNode.style.display;
-                    widget.parentNode.style.display = "none";
+                    display = widget.element.parentNode.style.display;
+                    widget.element.parentNode.style.display = "none";
                 }
                 widget.fire("hidden");
             };
-            var loadingDiv, loadingStyle;
-            widget.showLoading = function(value) {
+            widget.destroy = function() {
+                widget.element.parentNode.removeChild(element);
+                widget.fire("destroyed");
+            };
+            widget.on("ready", function() {
+                showLoadingIndicator(false);
+            });
+            widget.on("destroyed", function() {
+                showLoadingIndicator(false);
+                widget.off();
+            });
+            var container = options.container;
+            if (!utils.isElement(container)) {
+                if (!container) {
+                    container = document.createElement("div");
+                    container.setAttribute("data-widget", "container-" + element.id);
+                    container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
+                    document.body.appendChild(container);
+                } else if (typeof container === "object") {
+                    container = document.createElement("div");
+                    container.setAttribute("data-widget", "container-" + element.id);
+                    container.setAttribute("style", utils.styleToString(options.container));
+                    document.body.appendChild(container);
+                }
+            }
+            while (container.firstChild) {
+                var el = container.firstChild;
+                el.widget.destroy();
+            }
+            container.appendChild(element);
+            widget.element = element;
+            widget.element.widget = widget;
+            function loadContent(url, params) {
+                params = params || {};
+                if (!utils.isEmptyObject(params)) {
+                    url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
+                }
+                utils.sendRequest("GET", url, {}, function(status, html) {
+                    var tElement = document.createElement("div");
+                    tElement.innerHTML = html;
+                    var clonedScripts = [];
+                    var scripts = tElement.getElementsByTagName("script");
+                    var i = scripts.length;
+                    while (i--) {
+                        var script = document.createElement("script");
+                        var props = [ "type", "src", "text" ];
+                        for (var k = 0; k < props.length; k++) {
+                            var prop = props[k];
+                            if (scripts[i][prop]) {
+                                script[prop] = scripts[i][prop];
+                            }
+                        }
+                        clonedScripts.push(script);
+                        scripts[i].parentNode.removeChild(scripts[i]);
+                    }
+                    for (i = 0; i < tElement.children.length; i++) {
+                        element.appendChild(tElement.children[i]);
+                    }
+                    for (i = 0; i < clonedScripts.length; i++) {
+                        element.lastChild.appendChild(clonedScripts[i]);
+                    }
+                    widget.fire("loaded");
+                });
+            }
+            function showLoadingIndicator(value) {
                 if (value) {
                     loadingStyle = document.createElement("style");
                     loadingStyle.type = "text/css";
-                    loadingStyle.innerHTML = ".widget-container .load{position:absolute;width:600px;height:36px;left:50%;top:40%;margin-left:-300px;overflow:visible;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:default;z-index:9999}.widget-container .load div{position:absolute;width:20px;height:36px;opacity:0;font-family:Helvetica,Arial,sans-serif;animation:move 2.5s linear infinite;-o-animation:move 2.5s linear infinite;-moz-animation:move 2.5s linear infinite;-webkit-animation:move 2.5s linear infinite;transform:rotate(180deg);-o-transform:rotate(180deg);-moz-transform:rotate(180deg);-webkit-transform:rotate(180deg);font-size:14pt;color:#333}.widget-container .load div:nth-child(2){animation-delay:.2s;-o-animation-delay:.2s;-moz-animation-delay:.2s;-webkit-animation-delay:.2s}.widget-container .load div:nth-child(3){animation-delay:.4s;-o-animation-delay:.4s;-webkit-animation-delay:.4s}.widget-container .load div:nth-child(4){animation-delay:.6s;-o-animation-delay:.6s;-moz-animation-delay:.6s;-webkit-animation-delay:.6s}.widget-container .load div:nth-child(5){animation-delay:.8s;-o-animation-delay:.8s;-moz-animation-delay:.8s;-webkit-animation-delay:.8s}.widget-container .load div:nth-child(6){animation-delay:1s;-o-animation-delay:1s;-moz-animation-delay:1s;-webkit-animation-delay:1s}.widget-container .load div:nth-child(7){animation-delay:1.2s;-o-animation-delay:1.2s;-moz-animation-delay:1.2s;-webkit-animation-delay:1.2s}@keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);-webkit-transform:rotate(-180deg);-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-moz-keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-webkit-keyframes move{0%{left:0;opacity:0}35%{left:41%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-o-keyframes move{0%{left:0;opacity:0}35%{left:41%;-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}";
-                    widget.appendChild(loadingStyle);
+                    loadingStyle.innerHTML = ".widget>.widget-load-indicator{position:absolute;width:600px;height:36px;left:50%;top:40%;margin-left:-300px;overflow:visible;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;cursor:default;z-index:9999}.widget>.widget-load-indicator div{position:absolute;width:20px;height:36px;opacity:0;font-family:Helvetica,Arial,sans-serif;animation:move 2.5s linear infinite;-o-animation:move 2.5s linear infinite;-moz-animation:move 2.5s linear infinite;-webkit-animation:move 2.5s linear infinite;transform:rotate(180deg);-o-transform:rotate(180deg);-moz-transform:rotate(180deg);-webkit-transform:rotate(180deg);font-size:14pt;color:#333}.widget>.widget-load-indicator div:nth-child(2){animation-delay:.2s;-o-animation-delay:.2s;-moz-animation-delay:.2s;-webkit-animation-delay:.2s}.widget>.widget-load-indicator div:nth-child(3){animation-delay:.4s;-o-animation-delay:.4s;-webkit-animation-delay:.4s}.widget>.widget-load-indicator div:nth-child(4){animation-delay:.6s;-o-animation-delay:.6s;-moz-animation-delay:.6s;-webkit-animation-delay:.6s}.widget>.widget-load-indicator div:nth-child(5){animation-delay:.8s;-o-animation-delay:.8s;-moz-animation-delay:.8s;-webkit-animation-delay:.8s}.widget>.widget-load-indicator div:nth-child(6){animation-delay:1s;-o-animation-delay:1s;-moz-animation-delay:1s;-webkit-animation-delay:1s}.widget>.widget-load-indicator div:nth-child(7){animation-delay:1.2s;-o-animation-delay:1.2s;-moz-animation-delay:1.2s;-webkit-animation-delay:1.2s}@keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);-webkit-transform:rotate(0);-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);-webkit-transform:rotate(-180deg);-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-moz-keyframes move{0%{left:0;opacity:0}35%{left:41%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-moz-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-moz-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-webkit-keyframes move{0%{left:0;opacity:0}35%{left:41%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-webkit-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}@-o-keyframes move{0%{left:0;opacity:0}35%{left:41%;-o-transform:rotate(0);transform:rotate(0);opacity:1}65%{left:59%;-o-transform:rotate(0);transform:rotate(0);opacity:1}100%{left:100%;-o-transform:rotate(-180deg);transform:rotate(-180deg);opacity:0}}";
+                    element.appendChild(loadingStyle);
                     loadingDiv = document.createElement("div");
-                    loadingDiv.className = "load";
+                    loadingDiv.className = loadIndicatorClassName;
                     utils.forEach([ "G", "N", "I", "D", "A", "O", "L" ], function(letter) {
                         var letterDiv = document.createElement("div");
                         letterDiv.innerText = letter;
                         loadingDiv.appendChild(letterDiv);
                     });
-                    widget.appendChild(loadingDiv);
+                    element.appendChild(loadingDiv);
                 } else {
                     if (loadingDiv) {
                         loadingDiv.parentElement.removeChild(loadingDiv);
@@ -324,81 +406,25 @@
                     if (loadingStyle) {
                         loadingStyle.parentElement.removeChild(loadingStyle);
                     }
-                }
-            };
-            widget.destroy = function() {
-                widget.parentNode.removeChild(widget);
-                widget.fire("destroyed");
-            };
-            widget.on("destroyed", function() {
-                widget.off();
-            });
-            var container = options.container;
-            if (!utils.isElement(container)) {
-                if (!container) {
-                    container = document.createElement("div");
-                    container.setAttribute("data-widget", "container-" + widget.id);
-                    container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
-                    document.body.appendChild(container);
-                } else if (typeof container === "object") {
-                    container = document.createElement("div");
-                    container.setAttribute("data-widget", "container-" + widget.id);
-                    container.setAttribute("style", utils.styleToString(options.container));
-                    document.body.appendChild(container);
+                    loadingDiv = false;
+                    loadingStyle = false;
                 }
             }
-            while (container.firstChild) {
-                var w = container.firstChild;
-                w.destroy();
-            }
-            container.appendChild(widget);
             return widget;
-        };
-        exports.getContent = function(widget, url, params) {
-            params = params || {};
-            if (!utils.isEmptyObject(params)) {
-                url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
-            }
-            utils.sendRequest("GET", url, {}, function(status, html) {
-                var tElement = document.createElement("div");
-                tElement.innerHTML = html;
-                var clonedScripts = [];
-                var scripts = tElement.getElementsByTagName("script");
-                var i = scripts.length;
-                while (i--) {
-                    var script = document.createElement("script");
-                    var props = [ "type", "src", "text" ];
-                    for (var k = 0; k < props.length; k++) {
-                        var prop = props[k];
-                        if (scripts[i][prop]) {
-                            script[prop] = scripts[i][prop];
-                        }
-                    }
-                    clonedScripts.push(script);
-                    scripts[i].parentNode.removeChild(scripts[i]);
-                }
-                for (i = 0; i < tElement.children.length; i++) {
-                    widget.appendChild(tElement.children[i]);
-                }
-                for (i = 0; i < clonedScripts.length; i++) {
-                    widget.lastChild.appendChild(clonedScripts[i]);
-                }
-                widget.fire("loaded");
-            });
         };
         dispatcher(exports);
         return exports;
     }();
     var auth = false;
     var transient = {};
+    var STATUS = {
+        PENDING: "pending",
+        SUCCESS: "success",
+        ERROR: "error"
+    };
     exports.authorize = function(data, signature) {
         var params = utils.clone(data);
         params.signature = signature;
-        var STATUS = {
-            PENDING: "pending",
-            SUCCESS: "success",
-            ERROR: "error"
-        };
         var status = STATUS.PENDING;
         auth = {
             isPending: function() {
@@ -457,46 +483,11 @@
     };
     (function() {
         utils.forEach(settings.config.api, function(uri, method) {
-            if (method === "authorize") {
+            if (utils.isFunction(exports[method])) {
                 return;
             }
             exports[method] = function(options) {
-                if (!utils.isObject(auth)) {
-                    throw new Error('The "authorize" method must be called first');
-                }
-                var url = config.baseUrl + uri, container = options.container;
-                options = utils.clone(options) || {};
-                delete options.container;
-                var widget = factory.create({
-                    container: container
-                });
-                widget.type = method;
-                widget.on("hide", function() {
-                    widget.hide();
-                });
-                widget.on("show", function() {
-                    widget.show();
-                });
-                widget.on("ready", function() {
-                    widget.showLoading(false);
-                });
-                widget.on("destroy", function() {
-                    widget.destroy();
-                });
-                widget.showLoading(true);
-                if (auth.isPending()) {
-                    auth.once("success", function success() {
-                        factory.getContent(widget, url, utils.extend(options, transient));
-                    });
-                    auth.once("error", function() {
-                        widget.showLoading(false);
-                    });
-                } else if (auth.isSuccess()) {
-                    factory.getContent(widget, url, utils.extend(options, transient));
-                } else {
-                    widget.showLoading(false);
-                }
-                return widget;
+                return factory.load(config.baseUrl + uri, options);
             };
         });
     })();

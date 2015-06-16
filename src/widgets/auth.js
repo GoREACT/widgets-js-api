@@ -3,6 +3,12 @@ var auth = false;
 // data that persists with each request
 var transient = {};
 
+var STATUS = {
+    PENDING: 'pending',
+    SUCCESS: 'success',
+    ERROR: 'error'
+};
+
 /**
  * Widgets authorization request
  *
@@ -13,12 +19,6 @@ exports.authorize = function(data, signature) {
 
     var params = utils.clone(data);
     params.signature = signature;
-
-    var STATUS = {
-        PENDING: 'pending',
-        SUCCESS: 'success',
-        ERROR: 'error'
-    };
 
     var status = STATUS.PENDING;
 
@@ -39,6 +39,7 @@ exports.authorize = function(data, signature) {
 
     dispatcher(auth);
 
+    // Determine base url
     if(!config.baseUrl) {
 
         // API Key is required
