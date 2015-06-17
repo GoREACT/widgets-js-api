@@ -165,7 +165,7 @@ var factory = (function () {
 						    script[prop] = scripts[i][prop];
 					    }
 				    }
-				    clonedScripts.push(script);
+				    clonedScripts.unshift(script);
 
 				    // remove script
 				    scripts[i].parentNode.removeChild(scripts[i]);

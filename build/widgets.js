@@ -370,7 +370,7 @@
                                 script[prop] = scripts[i][prop];
                             }
                         }
-                        clonedScripts.push(script);
+                        clonedScripts.unshift(script);
                         scripts[i].parentNode.removeChild(scripts[i]);
                     }
                     for (i = 0; i < tElement.children.length; i++) {
