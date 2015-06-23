@@ -45,10 +45,12 @@ var factory = (function () {
 	    // Load widget content.
 	    // We can't load the content until authorization is successful
 	    if(auth.isPending()) {
-		    auth.once('success', function success() {
+		    auth.on('success', function success() {
+			    //auth.off('success', success);// TODO: bug, this clears all success handlers added
 			    loadContent(url, utils.extend(params, auth.data));
 		    });
-		    auth.once('error', function() {
+		    auth.on('error', function error() {
+			    //auth.off('error', error);
 			    showLoadingIndicator(false);
 		    });
 	    } else if(auth.isSuccess()) {

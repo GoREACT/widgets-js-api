@@ -16,7 +16,7 @@
 <div style="padding: 15px;text-align: center">
     <div id="record_btn" class="btn btn-primary">Record</div>
     <div id="upload_btn" class="btn btn-primary">Upload</div>
-    <!--<div id="list_btn" class="btn btn-primary">List</div>-->
+    <div id="list_btn" class="btn btn-primary">List</div>
     <div id="playback_btn" class="btn btn-primary">Playback</div>
     <div id="review_btn" class="btn btn-primary">Review</div>
 
@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<div id="containerEl" style="width: 640px;height: 480px;margin: 0 auto"></div>
+<div id="containerEl" style="width: 90%;max-width: 1000px;height: 600px;margin: 0 auto"></div>
 
 <script>
 //    window.goreactConfig = {
@@ -64,12 +64,15 @@
     });
 
     $playbackBtn.click(function () {
-        goreact.playback({container: activeContainer});
+        goreact.playback({
+            goreact_id: "5584737ce76fed7f1bc8e28a",
+            container: activeContainer
+        });
     });
 
     $reviewBtn.click(function () {
         goreact.review({
-            goreact_id: 4824,
+            goreact_id: "5584737ce76fed7f1bc8e28a",
             container: activeContainer
         });
     });
@@ -118,18 +121,17 @@
 //    promise.then(function(response) {
 //        console.log("response", response);
 //    });
-    var recordWidget = goreact.record({
-        title: 'My Recording',
+    var listWidget = goreact.list({
         container: $containerEl[0]
     });
 
-    console.log("recordWidget", recordWidget);
+    console.log("listWidget", listWidget);
 
-    recordWidget.on('ready', function (evt) {
+    listWidget.on('ready', function (evt) {
         console.log("ready");
     });
 
-    recordWidget.on('destroyed', function (evt) {
+    listWidget.on('destroyed', function (evt) {
         console.log("destroyed");
     });
 

@@ -296,10 +296,10 @@
             dispatcher(widget);
             showLoadingIndicator(true);
             if (auth.isPending()) {
-                auth.once("success", function success() {
+                auth.on("success", function success() {
                     loadContent(url, utils.extend(params, auth.data));
                 });
-                auth.once("error", function() {
+                auth.on("error", function error() {
                     showLoadingIndicator(false);
                 });
             } else if (auth.isSuccess()) {
