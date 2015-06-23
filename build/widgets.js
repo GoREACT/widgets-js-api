@@ -439,10 +439,10 @@
         };
         dispatcher(auth);
         if (!config.baseUrl) {
-            if (!data.api_key) {
-                throw new Error('Parameter "api_key" is a required');
+            if (!data.apiKey) {
+                throw new Error('Parameter "apiKey" is a required');
             }
-            var baseUrl = settings.config.environments[data.api_key];
+            var baseUrl = settings.config.environments[data.apiKey];
             if (baseUrl) {
                 config.baseUrl = baseUrl;
             } else {
