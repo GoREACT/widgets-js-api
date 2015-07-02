@@ -63,29 +63,21 @@ var factory = (function () {
          * Show the widget
          */
         widget.show = function () {
-            if (widget.element.parentNode.style.display === 'none') {
-	            widget.element.parentNode.style.display = display;
-            }
-            widget.fire('shown');
+            widget.fire('show');
         };
 
         /**
          * Hide the widget
          */
         widget.hide = function () {
-            if (!display) {
-                display = widget.element.parentNode.style.display;
-	            widget.element.parentNode.style.display = 'none';
-            }
-            widget.fire('hidden');
+            widget.fire('hide');
         };
 
         /**
          * Destroy the widget
          */
         widget.destroy = function () {
-	        widget.element.parentNode.removeChild(element);
-            widget.fire('destroyed');
+	        widget.fire('destroy');
         };
 
 	    /**
@@ -93,6 +85,35 @@ var factory = (function () {
 	     */
 	    widget.on("ready", function() {
 		    showLoadingIndicator(false);
+	    });
+
+	    /**
+	     * Widget show event handler
+	     */
+	    widget.on("show", function() {
+		    if (widget.element.parentNode.style.display === 'none') {
+			    widget.element.parentNode.style.display = display;
+		    }
+		    widget.fire('shown');
+	    });
+
+	    /**
+	     * Widget hide event handler
+	     */
+	    widget.on('hide', function() {
+		    if (!display) {
+			    display = widget.element.parentNode.style.display;
+			    widget.element.parentNode.style.display = 'none';
+		    }
+		    widget.fire('hidden');
+	    });
+
+	    /**
+	     * Widget destroy event handler
+	     */
+	    widget.on('destroy', function() {
+		    widget.element.parentNode.removeChild(element);
+		    widget.fire('destroyed');
 	    });
 
         /**

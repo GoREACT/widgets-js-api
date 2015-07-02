@@ -308,24 +308,33 @@
                 showLoadingIndicator(false);
             }
             widget.show = function() {
+                widget.fire("show");
+            };
+            widget.hide = function() {
+                widget.fire("hide");
+            };
+            widget.destroy = function() {
+                widget.fire("destroy");
+            };
+            widget.on("ready", function() {
+                showLoadingIndicator(false);
+            });
+            widget.on("show", function() {
                 if (widget.element.parentNode.style.display === "none") {
                     widget.element.parentNode.style.display = display;
                 }
                 widget.fire("shown");
-            };
-            widget.hide = function() {
+            });
+            widget.on("hide", function() {
                 if (!display) {
                     display = widget.element.parentNode.style.display;
                     widget.element.parentNode.style.display = "none";
                 }
                 widget.fire("hidden");
-            };
-            widget.destroy = function() {
+            });
+            widget.on("destroy", function() {
                 widget.element.parentNode.removeChild(element);
                 widget.fire("destroyed");
-            };
-            widget.on("ready", function() {
-                showLoadingIndicator(false);
             });
             widget.on("destroyed", function() {
                 showLoadingIndicator(false);
