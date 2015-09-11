@@ -1,11 +1,33 @@
-// auth object
-var auth;
-
-var STATUS = {
-    PENDING: 'pending',
-    SUCCESS: 'success',
-    ERROR: 'error'
+var AuthStatus = {
+	IDLE: 'idle',
+	PENDING: 'pending',
+	SUCCESS: 'success',
+	ERROR: 'error'
 };
+
+var currentAuthStatus = AuthStatus.IDLE;
+
+// auth object
+var auth = {
+	data: {},
+	isIdle: function() {
+		return currentAuthStatus === AuthStatus.IDLE;
+	},
+	isPending: function() {
+		return currentAuthStatus === AuthStatus.PENDING;
+	},
+	isSuccess: function() {
+		return currentAuthStatus === AuthStatus.SUCCESS;
+	},
+	isError: function() {
+		return currentAuthStatus === AuthStatus.ERROR;
+	},
+	getStatus: function() {
+		return currentAuthStatus;
+	}
+};
+
+dispatcher(auth);
 
 /**
  * Widgets authorization request
@@ -14,42 +36,29 @@ var STATUS = {
  * @param signature
  */
 exports.authorize = function(data, signature) {
-
     var params = utils.clone(data);
     params.signature = signature;
 
-    var status = STATUS.PENDING;
-
-    auth = {
-	    data: {},
-	    isPending: function() {
-            return status === STATUS.PENDING;
-        },
-        isSuccess: function() {
-            return status === STATUS.SUCCESS;
-        },
-        isError: function() {
-            return status === STATUS.ERROR;
-        },
-        getStatus: function() {
-            return status;
-        }
-    };
-
-    dispatcher(auth);
+	// set pending auth status
+	currentAuthStatus = AuthStatus.PENDING;
+	auth.fire(currentAuthStatus);
 
     // Determine base url
     if(!config.baseUrl) {
+		var apiKey = data.apiKey || data.api_key;
 
         // API Key is required
-        if(!data.apiKey) {
-            throw new Error('Parameter "apiKey" is a required');
+        if(!utils.isString(apiKey)) {
+            throw new Error('Parameter "apiKey" is a required and must be a string.');
         }
 
-        // Determine environment using api key
-        var baseUrl = settings.config.environments[data.apiKey];
-        if(baseUrl) {
-            config.baseUrl = baseUrl;
+		// Determine environment using api key
+		var regExp = new RegExp(Object.keys(settings.config.environments).join('|')),
+			result = apiKey.match(regExp),
+			env = utils.isArray(result) ? result.shift() : false;
+
+        if(env && apiKey.indexOf(env) === 0) {
+            config.baseUrl = settings.config.environments[env];
         } else {
             config.baseUrl = settings.config.environments.local;
         }
@@ -69,15 +78,15 @@ exports.authorize = function(data, signature) {
 	            utils.extend(auth.data, {
 		            transient: response.transient
 	            });
-                status = STATUS.SUCCESS;
-                auth.fire(status, response.message);
+				currentAuthStatus = AuthStatus.SUCCESS;
+                auth.fire(currentAuthStatus, response.message);
             } else {
-                status = STATUS.ERROR;
-                auth.fire(status, response.message);
+				currentAuthStatus = AuthStatus.ERROR;
+                auth.fire(currentAuthStatus, response.message);
             }
         } else {
-            status = STATUS.ERROR;
-            auth.fire(status, "An unknown error occurred");
+			currentAuthStatus = AuthStatus.ERROR;
+            auth.fire(currentAuthStatus, "An unknown error occurred");
         }
 
     }, {}, false, 'json');

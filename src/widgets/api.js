@@ -11,7 +11,7 @@
         }
 
         exports[method] = function(options) {
-            return factory.load(config.baseUrl + uri, options);
+            return factory.load(uri, options);
         };
     });
 

@@ -1,25 +1,18 @@
 var factory = (function () {
 
     var exports = {};
-    var prefix = 'widget_';
     var className = 'widget';
     var loadIndicatorClassName = 'widget-load-indicator';
-    var count = 0;
 
     /**
      * Load widget
      *
-     * @param url
+     * @param uri
      * @param options
      * @returns {Object}
      */
-    exports.load = function (url, options) {
-
-	    if(!utils.isObject(auth)) {
-		    throw new Error('The "authorize" method must be called first');
-	    }
-
-	    var widget = {},
+    exports.load = function (uri, options) {
+		var widget = {},
 		    element = document.createElement('div'),
             display = '';
 
@@ -44,17 +37,17 @@ var factory = (function () {
 
 	    // Load widget content.
 	    // We can't load the content until authorization is successful
-	    if(auth.isPending()) {
+	    if(auth.isPending() || auth.isIdle()) {
 		    auth.on('success', function success() {
 			    //auth.off('success', success);// TODO: bug, this clears all success handlers added
-			    loadContent(url, utils.extend(params, auth.data));
+			    loadContent(config.baseUrl + uri, utils.extend(params, auth.data));
 		    });
 		    auth.on('error', function error() {
 			    //auth.off('error', error);
 			    showLoadingIndicator(false);
 		    });
 	    } else if(auth.isSuccess()) {
-		    loadContent(url, utils.extend(params, auth.data));
+		    loadContent(config.baseUrl + uri, utils.extend(params, auth.data));
 	    } else {
 		    showLoadingIndicator(false);
 	    }

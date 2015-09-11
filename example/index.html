@@ -91,32 +91,20 @@
 
     console.log("goreact", goreact);
 
-    // :: goreact setup ::
-    var signature = '5eb63bbbe01eeed093cb22bb8f5acdc3';
-    var expires = 1413496405;
-    var settings = {
-//        api_key: "3d143dd5-1050-488c-80b7-e110dbb35d9fs",
-        api_key: "3d143dd5-1050-488c-80b7-e110dbb35d9f",
-        user_id: "5432b03462ccc7ea7bcc2c41",
-        first_name: "John",
-        last_name: "Smith",
-        email: "john.smith@myexample.com",
-        context_id: "5432b0923ea55a487d96b076",
-        context_name: "Business Ed",
-        context_role: "instructor",
-        expires: expires
+    var payload = {
+        "settings": {
+            "apiKey":"343c0789-b4f2-42de-8e81-c2b645653685",
+            "expires":1442016000,
+            "user_id":"208d362b-11b4-4db5-8ea1-df4edca7e2b2",
+            "user_firstName":"Peter",
+            "user_lastName":"Smith",
+            "user_email":"john.smith@myexample.com",
+            "group_id":"5432b0923ea55a487d96b076",
+            "group_name":"Business Ed",
+            "role":"instructor"
+        },
+        "signature":"068ERf8kg0iJlr1pp3PDq4gRkW8="
     };
-    var auth = goreact.authorize(settings, signature);
-
-    console.log("auth", auth);
-
-    auth.on('success', function(evt, message) {
-        console.log("auth success", message);
-    });
-
-    auth.on('error', function(evt, message) {
-        console.log("auth error", message);
-    });
 
 //    promise.then(function(response) {
 //        console.log("response", response);
@@ -133,6 +121,18 @@
 
     listWidget.on('destroyed', function (evt) {
         console.log("destroyed");
+    });
+
+    var auth = goreact.authorize(payload.settings, payload.signature);
+
+    console.log("auth", auth);
+
+    auth.on('success', function(evt, message) {
+        console.log("auth success", message);
+    });
+
+    auth.on('error', function(evt, message) {
+        console.log("auth error", message);
     });
 
 </script>

@@ -11,10 +11,14 @@
             authorize: "/v2/widgets/auth",
             record: "/v2/widgets/record",
             upload: "/v2/widgets/upload",
+            umc: "/v2/widgets/umc",
             list: "/v2/widgets/list",
             playback: "/v2/widgets/playback",
             review: "/v2/widgets/review",
-            umc: "/v2/widgets/umc"
+            pay: "/v2/widgets/pay",
+            editGroup: "/v2/widgets/group",
+            editActivity: "/v2/widgets/activity",
+            listActivities: "/v2/widgets/activity-list"
         }
     };
     var exports = {};
@@ -277,14 +281,9 @@
     };
     var factory = function() {
         var exports = {};
-        var prefix = "widget_";
         var className = "widget";
         var loadIndicatorClassName = "widget-load-indicator";
-        var count = 0;
-        exports.load = function(url, options) {
-            if (!utils.isObject(auth)) {
-                throw new Error('The "authorize" method must be called first');
-            }
+        exports.load = function(uri, options) {
             var widget = {}, element = document.createElement("div"), display = "";
             var loadingDiv, loadingStyle;
             var params = utils.clone(options) || {};
@@ -295,15 +294,15 @@
             element.style.height = "100%";
             dispatcher(widget);
             showLoadingIndicator(true);
-            if (auth.isPending()) {
+            if (auth.isPending() || auth.isIdle()) {
                 auth.on("success", function success() {
-                    loadContent(url, utils.extend(params, auth.data));
+                    loadContent(config.baseUrl + uri, utils.extend(params, auth.data));
                 });
                 auth.on("error", function error() {
                     showLoadingIndicator(false);
                 });
             } else if (auth.isSuccess()) {
-                loadContent(url, utils.extend(params, auth.data));
+                loadContent(config.baseUrl + uri, utils.extend(params, auth.data));
             } else {
                 showLoadingIndicator(false);
             }
@@ -421,39 +420,45 @@
         dispatcher(exports);
         return exports;
     }();
-    var auth;
-    var STATUS = {
+    var AuthStatus = {
+        IDLE: "idle",
         PENDING: "pending",
         SUCCESS: "success",
         ERROR: "error"
     };
+    var currentAuthStatus = AuthStatus.IDLE;
+    var auth = {
+        data: {},
+        isIdle: function() {
+            return currentAuthStatus === AuthStatus.IDLE;
+        },
+        isPending: function() {
+            return currentAuthStatus === AuthStatus.PENDING;
+        },
+        isSuccess: function() {
+            return currentAuthStatus === AuthStatus.SUCCESS;
+        },
+        isError: function() {
+            return currentAuthStatus === AuthStatus.ERROR;
+        },
+        getStatus: function() {
+            return currentAuthStatus;
+        }
+    };
+    dispatcher(auth);
     exports.authorize = function(data, signature) {
         var params = utils.clone(data);
         params.signature = signature;
-        var status = STATUS.PENDING;
-        auth = {
-            data: {},
-            isPending: function() {
-                return status === STATUS.PENDING;
-            },
-            isSuccess: function() {
-                return status === STATUS.SUCCESS;
-            },
-            isError: function() {
-                return status === STATUS.ERROR;
-            },
-            getStatus: function() {
-                return status;
-            }
-        };
-        dispatcher(auth);
+        currentAuthStatus = AuthStatus.PENDING;
+        auth.fire(currentAuthStatus);
         if (!config.baseUrl) {
-            if (!data.apiKey) {
-                throw new Error('Parameter "apiKey" is a required');
+            var apiKey = data.apiKey || data.api_key;
+            if (!utils.isString(apiKey)) {
+                throw new Error('Parameter "apiKey" is a required and must be a string.');
             }
-            var baseUrl = settings.config.environments[data.apiKey];
-            if (baseUrl) {
-                config.baseUrl = baseUrl;
+            var regExp = new RegExp(Object.keys(settings.config.environments).join("|")), result = apiKey.match(regExp), env = utils.isArray(result) ? result.shift() : false;
+            if (env && apiKey.indexOf(env) === 0) {
+                config.baseUrl = settings.config.environments[env];
             } else {
                 config.baseUrl = settings.config.environments.local;
             }
@@ -468,15 +473,15 @@
                     utils.extend(auth.data, {
                         "transient": response.transient
                     });
-                    status = STATUS.SUCCESS;
-                    auth.fire(status, response.message);
+                    currentAuthStatus = AuthStatus.SUCCESS;
+                    auth.fire(currentAuthStatus, response.message);
                 } else {
-                    status = STATUS.ERROR;
-                    auth.fire(status, response.message);
+                    currentAuthStatus = AuthStatus.ERROR;
+                    auth.fire(currentAuthStatus, response.message);
                 }
             } else {
-                status = STATUS.ERROR;
-                auth.fire(status, "An unknown error occurred");
+                currentAuthStatus = AuthStatus.ERROR;
+                auth.fire(currentAuthStatus, "An unknown error occurred");
             }
         }, {}, false, "json");
         return auth;
@@ -487,7 +492,7 @@
                 return;
             }
             exports[method] = function(options) {
-                return factory.load(config.baseUrl + uri, options);
+                return factory.load(uri, options);
             };
         });
     })();
