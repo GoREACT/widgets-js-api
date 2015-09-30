@@ -11,7 +11,12 @@
         }
 
         exports[method] = function(options) {
-            return factory.load(uri, options);
+			var widget = factory.load(uri, options);
+
+			// add widget method name as a class
+			widget.element.className += ' ' + utils.snakecase(widget.element.className + '-' + method, '-');
+
+			return widget;
         };
     });
 

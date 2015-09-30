@@ -19,6 +19,9 @@ var factory = (function () {
 	    // Loading content
 	    var loadingDiv, loadingStyle;
 
+		// ensure options is an object
+		options = options || {};
+
 	    // Params to be passed along with view requests
 	    var params = utils.clone(options) || {};
 	    delete params.container;
@@ -33,7 +36,9 @@ var factory = (function () {
 	    dispatcher(widget);
 
 		// Initially show loading indicator
-	    showLoadingIndicator(true);
+		if (!options.hideLoadingIndicator) {
+			showLoadingIndicator(true);
+		}
 
 	    // Load widget content.
 	    // We can't load the content until authorization is successful

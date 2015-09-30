@@ -11,14 +11,15 @@
             authorize: "/v2/widgets/auth",
             record: "/v2/widgets/record",
             upload: "/v2/widgets/upload",
-            umc: "/v2/widgets/umc",
-            list: "/v2/widgets/list",
             playback: "/v2/widgets/playback",
             review: "/v2/widgets/review",
+            umc: "/v2/widgets/umc",
+            list: "/v2/widgets/list",
             pay: "/v2/widgets/pay",
             editGroup: "/v2/widgets/group",
-            editActivity: "/v2/widgets/activity",
-            listActivities: "/v2/widgets/activity-list"
+            editActivity: "/v2/widgets/edit-activity",
+            viewActivity: "/v2/widgets/view-activity",
+            listActivities: "/v2/widgets/list-activities"
         }
     };
     var exports = {};
@@ -41,6 +42,8 @@
         exports.isWindow = isWindow;
         exports.int = int;
         exports.lowercase = lowercase;
+        exports.camelcase = camelcase;
+        exports.snakecase = snakecase;
         exports.isElement = isElement;
         exports.serialize = serialize;
         exports.styleToString = styleToString;
@@ -158,6 +161,20 @@
                 return new window.XMLHttpRequest();
             }
             throw new Error("noxhr", "This browser does not support XMLHttpRequest.");
+        }
+        var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+        var MOZ_HACK_REGEXP = /^moz([A-Z])/;
+        function camelcase(name) {
+            return name.replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+                return offset ? letter.toUpperCase() : letter;
+            }).replace(MOZ_HACK_REGEXP, "Moz$1");
+        }
+        var SNAKE_CASE_REGEXP = /[A-Z]/g;
+        function snakecase(name, separator) {
+            separator = separator || "_";
+            return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
+                return (pos ? separator : "") + letter.toLowerCase();
+            });
         }
         function urlResolve(url, base) {
             var href = url;
@@ -286,6 +303,7 @@
         exports.load = function(uri, options) {
             var widget = {}, element = document.createElement("div"), display = "";
             var loadingDiv, loadingStyle;
+            options = options || {};
             var params = utils.clone(options) || {};
             delete params.container;
             element.className = className;
@@ -293,7 +311,9 @@
             element.style.width = "100%";
             element.style.height = "100%";
             dispatcher(widget);
-            showLoadingIndicator(true);
+            if (!options.hideLoadingIndicator) {
+                showLoadingIndicator(true);
+            }
             if (auth.isPending() || auth.isIdle()) {
                 auth.on("success", function success() {
                     loadContent(config.baseUrl + uri, utils.extend(params, auth.data));
@@ -446,16 +466,20 @@
         }
     };
     dispatcher(auth);
-    exports.authorize = function(data, signature) {
-        var params = utils.clone(data);
-        params.signature = signature;
+    exports.authorize = function(apiKey, jwt) {
+        if (!apiKey) {
+            throw new Error('Parameter "apiKey" is required');
+        } else if (!utils.isString(apiKey)) {
+            throw new Error('Parameter "apiKey" must be a string.');
+        }
+        if (!jwt) {
+            throw new Error('Parameter "jwt" is required');
+        } else if (!utils.isString(jwt)) {
+            throw new Error('Parameter "jwt" must be a string.');
+        }
         currentAuthStatus = AuthStatus.PENDING;
         auth.fire(currentAuthStatus);
         if (!config.baseUrl) {
-            var apiKey = data.apiKey || data.api_key;
-            if (!utils.isString(apiKey)) {
-                throw new Error('Parameter "apiKey" is a required and must be a string.');
-            }
             var regExp = new RegExp(Object.keys(settings.config.environments).join("|")), result = apiKey.match(regExp), env = utils.isArray(result) ? result.shift() : false;
             if (env && apiKey.indexOf(env) === 0) {
                 config.baseUrl = settings.config.environments[env];
@@ -464,9 +488,6 @@
             }
         }
         var url = config.baseUrl + settings.config.api.authorize;
-        if (!utils.isEmptyObject(params)) {
-            url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
-        }
         utils.sendRequest("GET", url, {}, function(httpStatus, response) {
             if (utils.isObject(response)) {
                 if (httpStatus === 200) {
@@ -483,7 +504,9 @@
                 currentAuthStatus = AuthStatus.ERROR;
                 auth.fire(currentAuthStatus, "An unknown error occurred");
             }
-        }, {}, false, "json");
+        }, {
+            Authorization: "Bearer " + [ 'apiKey="' + apiKey + '"', 'jwt="' + jwt + '"' ].join(", ")
+        }, false, "json");
         return auth;
     };
     (function() {
@@ -492,7 +515,9 @@
                 return;
             }
             exports[method] = function(options) {
-                return factory.load(uri, options);
+                var widget = factory.load(uri, options);
+                widget.element.className += " " + utils.snakecase(widget.element.className + "-" + method, "-");
+                return widget;
             };
         });
     })();

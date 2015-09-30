@@ -9,13 +9,14 @@
       "authorize": "/v2/widgets/auth",
       "record": "/v2/widgets/record",
       "upload": "/v2/widgets/upload",
-      "umc": "/v2/widgets/umc",
-      "list": "/v2/widgets/list",
       "playback": "/v2/widgets/playback",
       "review": "/v2/widgets/review",
+      "umc": "/v2/widgets/umc",
+      "list": "/v2/widgets/list",
       "pay": "/v2/widgets/pay",
       "editGroup": "/v2/widgets/group",
-      "editActivity": "/v2/widgets/activity",
-      "listActivities": "/v2/widgets/activity-list"
+      "editActivity": "/v2/widgets/edit-activity",
+      "viewActivity": "/v2/widgets/view-activity",
+      "listActivities": "/v2/widgets/list-activities"
     }
 }

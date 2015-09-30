@@ -91,25 +91,13 @@
 
     console.log("goreact", goreact);
 
-    var payload = {
-        "settings": {
-            "apiKey":"343c0789-b4f2-42de-8e81-c2b645653685",
-            "expires":1442016000,
-            "user_id":"208d362b-11b4-4db5-8ea1-df4edca7e2b2",
-            "user_firstName":"Peter",
-            "user_lastName":"Smith",
-            "user_email":"john.smith@myexample.com",
-            "group_id":"5432b0923ea55a487d96b076",
-            "group_name":"Business Ed",
-            "role":"instructor"
-        },
-        "signature":"068ERf8kg0iJlr1pp3PDq4gRkW8="
-    };
+    var apiKey = '95fdc863-0c2b-4cc0-aba8-fd00efc524d2';
+    var jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcGlLZXkiOiI5NWZkYzg2My0wYzJiLTRjYzAtYWJhOC1mZDAwZWZjNTI0ZDIiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImV4cGlyZXMiOjE0NDM1NzEyMDAsInVzZXIiOnsiaWQiOjEsImZpcnN0TmFtZSI6ImRhbGxpbiIsImxhc3ROYW1lIjoic2NoZXJiZWwiLCJlbWFpbCI6InNjaGVycGEuYmJhbGxAZ21haWwuY29tIn0sImdyb3VwIjp7ImlkIjoxLCJuYW1lIjoibXkgZ3JvdXAifSwiYWN0aXZpdHkiOnsiaWQiOjEsIm5hbWUiOiJteSBhY3Rpdml0eSIsInRvdGFsUG9pbnRzIjoxMH19.cZZyAAINqvAfZVONenvHb3GmDX4duam_C-9FJFAwJIA';
 
 //    promise.then(function(response) {
 //        console.log("response", response);
 //    });
-    var listWidget = goreact.list({
+    var listWidget = goreact.viewActivity({
         container: $containerEl[0]
     });
 
@@ -123,7 +111,7 @@
         console.log("destroyed");
     });
 
-    var auth = goreact.authorize(payload.settings, payload.signature);
+    var auth = goreact.authorize(apiKey, jwt);
 
     console.log("auth", auth);
 

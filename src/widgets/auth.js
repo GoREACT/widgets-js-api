@@ -30,14 +30,27 @@ var auth = {
 dispatcher(auth);
 
 /**
- * Widgets authorization request
+ * Authorization request
  *
- * @param data
- * @param signature
+ * @param apiKey API Key
+ * @param jwt Json Web Token
+ * @returns Object
  */
-exports.authorize = function(data, signature) {
-    var params = utils.clone(data);
-    params.signature = signature;
+exports.authorize = function(apiKey, jwt) {
+
+	// API Key validation
+	if(!apiKey) {
+		throw new Error('Parameter "apiKey" is required');
+	} else if(!utils.isString(apiKey)) {
+		throw new Error('Parameter "apiKey" must be a string.');
+	}
+
+	// JWT validation
+	if(!jwt) {
+		throw new Error('Parameter "jwt" is required');
+	} else if(!utils.isString(jwt)) {
+		throw new Error('Parameter "jwt" must be a string.');
+	}
 
 	// set pending auth status
 	currentAuthStatus = AuthStatus.PENDING;
@@ -45,12 +58,6 @@ exports.authorize = function(data, signature) {
 
     // Determine base url
     if(!config.baseUrl) {
-		var apiKey = data.apiKey || data.api_key;
-
-        // API Key is required
-        if(!utils.isString(apiKey)) {
-            throw new Error('Parameter "apiKey" is a required and must be a string.');
-        }
 
 		// Determine environment using api key
 		var regExp = new RegExp(Object.keys(settings.config.environments).join('|')),
@@ -66,9 +73,6 @@ exports.authorize = function(data, signature) {
 
     // Assemble auth url
     var url = config.baseUrl + settings.config.api.authorize;
-    if(!utils.isEmptyObject(params)) {
-        url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
-    }
 
     // Make auth request
     utils.sendRequest("GET", url, {}, function(httpStatus, response) {
@@ -89,7 +93,9 @@ exports.authorize = function(data, signature) {
             auth.fire(currentAuthStatus, "An unknown error occurred");
         }
 
-    }, {}, false, 'json');
+    }, {
+		Authorization: 'Bearer ' + ['apiKey="' + apiKey + '"', 'jwt="' + jwt + '"'].join(', ')
+	}, false, 'json');
 
     return auth;
 };
