@@ -301,9 +301,6 @@
         var className = "widget";
         var loadIndicatorClassName = "widget-load-indicator";
         exports.load = function(uri, containerEl, options) {
-            if (!utils.isElement(containerEl)) {
-                throw new Error("Container must be a valid dom element");
-            }
             var widget = {}, element = document.createElement("div"), display = "";
             var loadingDiv, loadingStyle;
             options = options || {};
@@ -361,6 +358,17 @@
                 showLoadingIndicator(false);
                 widget.off();
             });
+            if (!utils.isElement(containerEl)) {
+                if (!containerEl) {
+                    containerEl = document.createElement("div");
+                    containerEl.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
+                    document.body.appendChild(containerEl);
+                } else if (typeof containerEl === "object") {
+                    containerEl = document.createElement("div");
+                    containerEl.setAttribute("style", utils.styleToString(containerEl));
+                    document.body.appendChild(containerEl);
+                }
+            }
             while (containerEl.firstChild) {
                 var el = containerEl.firstChild;
                 el.widget.destroy();
