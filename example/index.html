@@ -52,21 +52,20 @@
     var activeContainer = $containerEl[0];
 
     $recordBtn.click(function () {
-        goreact.record({container: activeContainer});
+        goreact.record(activeContainer);
     });
 
     $uploadBtn.click(function () {
-        goreact.upload({container: activeContainer});
+        goreact.upload(activeContainer);
     });
 
     $listBtn.click(function () {
-        goreact.list({container: activeContainer});
+        goreact.list(activeContainer);
     });
 
     $playbackBtn.click(function () {
-        goreact.playback({
-            goreact_id: "5584737ce76fed7f1bc8e28a",
-            container: activeContainer
+        goreact.playback(activeContainer, {
+            goreact_id: "5584737ce76fed7f1bc8e28a"
         });
     });
 
@@ -97,9 +96,7 @@
 //    promise.then(function(response) {
 //        console.log("response", response);
 //    });
-    var listWidget = goreact.viewActivity({
-        container: $containerEl[0]
-    });
+    var listWidget = goreact.viewActivity($containerEl[0]);
 
     console.log("listWidget", listWidget);
 

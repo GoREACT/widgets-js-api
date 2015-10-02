@@ -13,12 +13,6 @@ var factory = (function () {
      * @returns {Object}
      */
     exports.load = function (uri, containerEl, options) {
-
-		// resolve container
-		if (!utils.isElement(containerEl)) {
-			throw new Error('Container must be a valid dom element');
-		}
-
 		var widget = {},
 		    element = document.createElement('div'),
             display = '';
@@ -127,6 +121,19 @@ var factory = (function () {
 	        showLoadingIndicator(false);
             widget.off();
         });
+
+		// resolve container
+		if (!utils.isElement(containerEl)) {
+			if (!containerEl) { // null or undefined
+				containerEl = document.createElement('div');
+				containerEl.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
+				document.body.appendChild(containerEl);
+			} else if (typeof containerEl === 'object') { // container is acting as a set of style options
+				containerEl = document.createElement('div');
+				containerEl.setAttribute('style', utils.styleToString(containerEl));
+				document.body.appendChild(containerEl);
+			}
+		}
 
         // clear container content
         while (containerEl.firstChild) {
