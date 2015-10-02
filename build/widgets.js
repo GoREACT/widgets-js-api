@@ -300,12 +300,14 @@
         var exports = {};
         var className = "widget";
         var loadIndicatorClassName = "widget-load-indicator";
-        exports.load = function(uri, options) {
+        exports.load = function(uri, containerEl, options) {
+            if (!utils.isElement(containerEl)) {
+                throw new Error("Container must be a valid dom element");
+            }
             var widget = {}, element = document.createElement("div"), display = "";
             var loadingDiv, loadingStyle;
             options = options || {};
             var params = utils.clone(options) || {};
-            delete params.container;
             element.className = className;
             element.style.position = "relative";
             element.style.width = "100%";
@@ -359,23 +361,11 @@
                 showLoadingIndicator(false);
                 widget.off();
             });
-            var container = options.container;
-            if (!utils.isElement(container)) {
-                if (!container) {
-                    container = document.createElement("div");
-                    container.setAttribute("style", "position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999");
-                    document.body.appendChild(container);
-                } else if (typeof container === "object") {
-                    container = document.createElement("div");
-                    container.setAttribute("style", utils.styleToString(options.container));
-                    document.body.appendChild(container);
-                }
-            }
-            while (container.firstChild) {
-                var el = container.firstChild;
+            while (containerEl.firstChild) {
+                var el = containerEl.firstChild;
                 el.widget.destroy();
             }
-            container.appendChild(element);
+            containerEl.appendChild(element);
             widget.element = element;
             widget.element.widget = widget;
             function loadContent(url, params) {
@@ -514,8 +504,8 @@
             if (utils.isFunction(exports[method])) {
                 return;
             }
-            exports[method] = function(options) {
-                var widget = factory.load(uri, options);
+            exports[method] = function(element, options) {
+                var widget = factory.load(uri, element, options);
                 widget.element.className += " " + utils.snakecase(widget.element.className + "-" + method, "-");
                 return widget;
             };

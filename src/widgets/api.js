@@ -10,8 +10,8 @@
             return;
         }
 
-        exports[method] = function(options) {
-			var widget = factory.load(uri, options);
+        exports[method] = function(element, options) {
+			var widget = factory.load(uri, element, options);
 
 			// add widget method name as a class
 			widget.element.className += ' ' + utils.snakecase(widget.element.className + '-' + method, '-');

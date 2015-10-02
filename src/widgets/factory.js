@@ -8,10 +8,17 @@ var factory = (function () {
      * Load widget
      *
      * @param uri
+     * @param containerEl
      * @param options
      * @returns {Object}
      */
-    exports.load = function (uri, options) {
+    exports.load = function (uri, containerEl, options) {
+
+		// resolve container
+		if (!utils.isElement(containerEl)) {
+			throw new Error('Container must be a valid dom element');
+		}
+
 		var widget = {},
 		    element = document.createElement('div'),
             display = '';
@@ -24,7 +31,6 @@ var factory = (function () {
 
 	    // Params to be passed along with view requests
 	    var params = utils.clone(options) || {};
-	    delete params.container;
 
 	    // element properties
 	    element.className = className;
@@ -122,28 +128,14 @@ var factory = (function () {
             widget.off();
         });
 
-        // resolve container
-        var container = options.container;
-        if (!utils.isElement(container)) {
-            if (!container) { // null or undefined
-                container = document.createElement('div');
-                container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
-                document.body.appendChild(container);
-            } else if (typeof container === 'object') { // container is acting as a set of style options
-                container = document.createElement('div');
-                container.setAttribute('style', utils.styleToString(options.container));
-                document.body.appendChild(container);
-            }
-        }
-
         // clear container content
-        while (container.firstChild) {
-            var el = container.firstChild;
+        while (containerEl.firstChild) {
+            var el = containerEl.firstChild;
 	        el.widget.destroy();
         }
 
         // add element to container
-        container.appendChild(element);
+		containerEl.appendChild(element);
 
 	    // expose element on widget
 	    widget.element = element;
