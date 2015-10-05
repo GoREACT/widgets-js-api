@@ -146,6 +146,7 @@ var factory = (function () {
 
 	    // expose element on widget
 	    widget.element = element;
+	    widget.options = options;
 
 	    // add a reference from the element back to the widget
 	    widget.element.widget = widget;
