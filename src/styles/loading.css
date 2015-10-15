@@ -1,176 +1,74 @@
 .widget > .widget-load-indicator {
-    position:absolute;
-    width:600px;
-    height:36px;
-    left:50%;
-    top:40%;
-    margin-left:-300px;
-    overflow:visible;
-    -webkit-user-select:none;
-    -moz-user-select:none;
-    -ms-user-select:none;
-    user-select:none;
-    cursor:default;
-    z-index: 9999;
+    position: absolute;
+    top: 50%;
+    margin-top: -20px;
+    margin-left: -20px;
+    left: 50%;
+
+    font-size: 20px;
+    width: 1em;
+    height: 1em;
+    border-radius: 50%;
+    text-indent: -9999em;
+    -webkit-animation: load4 1.3s infinite linear;
+    animation: load4 1.3s infinite linear;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
 }
 
-.widget > .widget-load-indicator div {
-    position:absolute;
-    width:20px;
-    height:36px;
-    opacity:0;
-    font-family:Helvetica, Arial, sans-serif;
-    animation:move 2.5s linear infinite;
-    -o-animation:move 2.5s linear infinite;
-    -moz-animation:move 2.5s linear infinite;
-    -webkit-animation:move 2.5s linear infinite;
-    transform:rotate(180deg);
-    -o-transform:rotate(180deg);
-    -moz-transform:rotate(180deg);
-    -webkit-transform:rotate(180deg);
-    font-size: 14pt;
-    color: #333333;
-}
-
-.widget > .widget-load-indicator div:nth-child(2) {
-    animation-delay:0.2s;
-    -o-animation-delay:0.2s;
-    -moz-animation-delay:0.2s;
-    -webkit-animation-delay:0.2s;
-}
-.widget > .widget-load-indicator div:nth-child(3) {
-    animation-delay:0.4s;
-    -o-animation-delay:0.4s;
-    -webkit-animation-delay:0.4s;
-    -webkit-animation-delay:0.4s;
-}
-.widget > .widget-load-indicator div:nth-child(4) {
-    animation-delay:0.6s;
-    -o-animation-delay:0.6s;
-    -moz-animation-delay:0.6s;
-    -webkit-animation-delay:0.6s;
-}
-.widget > .widget-load-indicator div:nth-child(5) {
-    animation-delay:0.8s;
-    -o-animation-delay:0.8s;
-    -moz-animation-delay:0.8s;
-    -webkit-animation-delay:0.8s;
-}
-.widget > .widget-load-indicator div:nth-child(6) {
-    animation-delay:1s;
-    -o-animation-delay:1s;
-    -moz-animation-delay:1s;
-    -webkit-animation-delay:1s;
-}
-.widget > .widget-load-indicator div:nth-child(7) {
-    animation-delay:1.2s;
-    -o-animation-delay:1.2s;
-    -moz-animation-delay:1.2s;
-    -webkit-animation-delay:1.2s;
-}
-
-@keyframes move {
-    0% {
-        left:0;
-        opacity:0;
-    }
-    35% {
-        left: 41%;
-        -moz-transform:rotate(0deg);
-        -webkit-transform:rotate(0deg);
-        -o-transform:rotate(0deg);
-        transform:rotate(0deg);
-        opacity:1;
-    }
-    65% {
-        left:59%;
-        -moz-transform:rotate(0deg);
-        -webkit-transform:rotate(0deg);
-        -o-transform:rotate(0deg);
-        transform:rotate(0deg);
-        opacity:1;
-    }
+@-webkit-keyframes load4 {
+    0%,
     100% {
-        left:100%;
-        -moz-transform:rotate(-180deg);
-        -webkit-transform:rotate(-180deg);
-        -o-transform:rotate(-180deg);
-        transform:rotate(-180deg);
-        opacity:0;
+        box-shadow: 0 -3em 0 0.2em #000000, 2em -2em 0 0em #000000, 3em 0 0 -1em #000000, 2em 2em 0 -1em #000000, 0 3em 0 -1em #000000, -2em 2em 0 -1em #000000, -3em 0 0 -1em #000000, -2em -2em 0 0 #000000;
+    }
+    12.5% {
+        box-shadow: 0 -3em 0 0 #000000, 2em -2em 0 0.2em #000000, 3em 0 0 0 #000000, 2em 2em 0 -1em #000000, 0 3em 0 -1em #000000, -2em 2em 0 -1em #000000, -3em 0 0 -1em #000000, -2em -2em 0 -1em #000000;
+    }
+    25% {
+        box-shadow: 0 -3em 0 -0.5em #000000, 2em -2em 0 0 #000000, 3em 0 0 0.2em #000000, 2em 2em 0 0 #000000, 0 3em 0 -1em #000000, -2em 2em 0 -1em #000000, -3em 0 0 -1em #000000, -2em -2em 0 -1em #000000;
+    }
+    37.5% {
+        box-shadow: 0 -3em 0 -1em #000000, 2em -2em 0 -1em #000000, 3em 0em 0 0 #000000, 2em 2em 0 0.2em #000000, 0 3em 0 0em #000000, -2em 2em 0 -1em #000000, -3em 0em 0 -1em #000000, -2em -2em 0 -1em #000000;
+    }
+    50% {
+        box-shadow: 0 -3em 0 -1em #000000, 2em -2em 0 -1em #000000, 3em 0 0 -1em #000000, 2em 2em 0 0em #000000, 0 3em 0 0.2em #000000, -2em 2em 0 0 #000000, -3em 0em 0 -1em #000000, -2em -2em 0 -1em #000000;
+    }
+    62.5% {
+        box-shadow: 0 -3em 0 -1em #000000, 2em -2em 0 -1em #000000, 3em 0 0 -1em #000000, 2em 2em 0 -1em #000000, 0 3em 0 0 #000000, -2em 2em 0 0.2em #000000, -3em 0 0 0 #000000, -2em -2em 0 -1em #000000;
+    }
+    75% {
+        box-shadow: 0em -3em 0 -1em #000000, 2em -2em 0 -1em #000000, 3em 0em 0 -1em #000000, 2em 2em 0 -1em #000000, 0 3em 0 -1em #000000, -2em 2em 0 0 #000000, -3em 0em 0 0.2em #000000, -2em -2em 0 0 #000000;
+    }
+    87.5% {
+        box-shadow: 0em -3em 0 0 #000000, 2em -2em 0 -1em #000000, 3em 0 0 -1em #000000, 2em 2em 0 -1em #000000, 0 3em 0 -1em #000000, -2em 2em 0 0 #000000, -3em 0em 0 0 #000000, -2em -2em 0 0.2em #000000;
     }
 }
 
-@-moz-keyframes move {
-    0% {
-        left:0;
-        opacity:0;
-    }
-    35% {
-        left:41%;
-        -moz-transform:rotate(0deg);
-        transform:rotate(0deg);
-        opacity:1;
-    }
-    65% {
-        left:59%;
-        -moz-transform:rotate(0deg);
-        transform:rotate(0deg);
-        opacity:1;
-    }
+@keyframes load4 {
+    0%,
     100% {
-        left:100%;
-        -moz-transform:rotate(-180deg);
-        transform:rotate(-180deg);
-        opacity:0;
+        box-shadow: 0 -3em 0 0.2em #000000, 2em -2em 0 0em #000000, 3em 0 0 -1em #000000, 2em 2em 0 -1em #000000, 0 3em 0 -1em #000000, -2em 2em 0 -1em #000000, -3em 0 0 -1em #000000, -2em -2em 0 0 #000000;
     }
-}
-
-@-webkit-keyframes move {
-    0% {
-        left:0;
-        opacity:0;
+    12.5% {
+        box-shadow: 0 -3em 0 0 #000000, 2em -2em 0 0.2em #000000, 3em 0 0 0 #000000, 2em 2em 0 -1em #000000, 0 3em 0 -1em #000000, -2em 2em 0 -1em #000000, -3em 0 0 -1em #000000, -2em -2em 0 -1em #000000;
     }
-    35% {
-        left:41%;
-        -webkit-transform:rotate(0deg);
-        transform:rotate(0deg);
-        opacity:1;
+    25% {
+        box-shadow: 0 -3em 0 -0.5em #000000, 2em -2em 0 0 #000000, 3em 0 0 0.2em #000000, 2em 2em 0 0 #000000, 0 3em 0 -1em #000000, -2em 2em 0 -1em #000000, -3em 0 0 -1em #000000, -2em -2em 0 -1em #000000;
     }
-    65% {
-        left:59%;
-        -webkit-transform:rotate(0deg);
-        transform:rotate(0deg);
-        opacity:1;
+    37.5% {
+        box-shadow: 0 -3em 0 -1em #000000, 2em -2em 0 -1em #000000, 3em 0em 0 0 #000000, 2em 2em 0 0.2em #000000, 0 3em 0 0em #000000, -2em 2em 0 -1em #000000, -3em 0em 0 -1em #000000, -2em -2em 0 -1em #000000;
     }
-    100% {
-        left:100%;
-        -webkit-transform:rotate(-180deg);
-        transform:rotate(-180deg);
-        opacity:0;
+    50% {
+        box-shadow: 0 -3em 0 -1em #000000, 2em -2em 0 -1em #000000, 3em 0 0 -1em #000000, 2em 2em 0 0em #000000, 0 3em 0 0.2em #000000, -2em 2em 0 0 #000000, -3em 0em 0 -1em #000000, -2em -2em 0 -1em #000000;
     }
-}
-
-@-o-keyframes move {
-    0% {
-        left:0;
-        opacity:0;
+    62.5% {
+        box-shadow: 0 -3em 0 -1em #000000, 2em -2em 0 -1em #000000, 3em 0 0 -1em #000000, 2em 2em 0 -1em #000000, 0 3em 0 0 #000000, -2em 2em 0 0.2em #000000, -3em 0 0 0 #000000, -2em -2em 0 -1em #000000;
     }
-    35% {
-        left:41%;
-        -o-transform:rotate(0deg);
-        transform:rotate(0deg);
-        opacity:1;
+    75% {
+        box-shadow: 0em -3em 0 -1em #000000, 2em -2em 0 -1em #000000, 3em 0em 0 -1em #000000, 2em 2em 0 -1em #000000, 0 3em 0 -1em #000000, -2em 2em 0 0 #000000, -3em 0em 0 0.2em #000000, -2em -2em 0 0 #000000;
     }
-    65% {
-        left:59%;
-        -o-transform:rotate(0deg);
-        transform:rotate(0deg);
-        opacity:1;
-    }
-    100% {
-        left:100%;
-        -o-transform:rotate(-180deg);
-        transform:rotate(-180deg);
-        opacity:0;
+    87.5% {
+        box-shadow: 0em -3em 0 0 #000000, 2em -2em 0 -1em #000000, 3em 0 0 -1em #000000, 2em 2em 0 -1em #000000, 0 3em 0 -1em #000000, -2em 2em 0 0 #000000, -3em 0em 0 0 #000000, -2em -2em 0 0.2em #000000;
     }
 }

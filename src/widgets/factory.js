@@ -222,13 +222,13 @@ var factory = (function () {
 			    // create loading dev
 			    loadingDiv = document.createElement('div');
 			    loadingDiv.className = loadIndicatorClassName;
-			    utils.forEach([
-				    'G', 'N', 'I', 'D', 'A', 'O', 'L'
-			    ], function(letter) {
-				    var letterDiv = document.createElement('div');
-				    letterDiv.innerText = letter;
-				    loadingDiv.appendChild(letterDiv);
-			    });
+			    //utils.forEach([
+				 //   'one', 'two', 'three'
+			    //], function(className) {
+				 //   var letterDiv = document.createElement('div');
+				 //   letterDiv.className = className;
+				 //   loadingDiv.appendChild(letterDiv);
+			    //});
 			    element.appendChild(loadingDiv);
 		    } else {
 			    if(loadingDiv) {
