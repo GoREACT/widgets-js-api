@@ -166,43 +166,47 @@ var factory = (function () {
 		    }
 
 		    // make request for view
-		    utils.sendRequest("GET", url, {}, function(status, html) {
+		    utils.sendRequest("GET", url, {}, function(httpStatus, html) {
+				if(httpStatus === 200) {
+					var tElement = document.createElement('div');
+					tElement.innerHTML = html;
 
-			    var tElement = document.createElement('div');
-			    tElement.innerHTML = html;
+					// clone and remove scripts for later insert
+					// so that they will get executed by the browser
+					var clonedScripts = [];
+					var scripts = tElement.getElementsByTagName('script');
+					var i = scripts.length;
 
-			    // clone and remove scripts for later insert
-			    // so that they will get executed by the browser
-			    var clonedScripts = [];
-			    var scripts = tElement.getElementsByTagName('script');
-			    var i = scripts.length;
+					while (i--) {
+						var script = document.createElement("script");
+						var props = ['type', 'src', 'text'];
+						for(var k = 0; k < props.length; k++) {
+							var prop = props[k];
+							if(scripts[i][prop]) {
+								script[prop] = scripts[i][prop];
+							}
+						}
+						clonedScripts.unshift(script);
 
-			    while (i--) {
-				    var script = document.createElement("script");
-				    var props = ['type', 'src', 'text'];
-				    for(var k = 0; k < props.length; k++) {
-					    var prop = props[k];
-					    if(scripts[i][prop]) {
-						    script[prop] = scripts[i][prop];
-					    }
-				    }
-				    clonedScripts.unshift(script);
+						// remove script
+						scripts[i].parentNode.removeChild(scripts[i]);
+					}
 
-				    // remove script
-				    scripts[i].parentNode.removeChild(scripts[i]);
-			    }
+					// Insert template element children
+					for(i = 0 ; i < tElement.children.length ; i++) {
+						element.appendChild(tElement.children[i]);
+					}
 
-			    // Insert template element children
-			    for(i = 0 ; i < tElement.children.length ; i++) {
-				    element.appendChild(tElement.children[i]);
-			    }
+					// insert scripts
+					for(i = 0; i < clonedScripts.length; i++) {
+						element.lastChild.appendChild(clonedScripts[i]);
+					}
 
-			    // insert scripts
-			    for(i = 0; i < clonedScripts.length; i++) {
-				    element.lastChild.appendChild(clonedScripts[i]);
-			    }
-
-			    widget.fire('loaded');
+					widget.fire('loadSuccess');
+				} else {
+					showLoadingIndicator(false);
+					widget.fire('loadError');
+				}
 		    });
 	    }
 
@@ -222,13 +226,6 @@ var factory = (function () {
 			    // create loading dev
 			    loadingDiv = document.createElement('div');
 			    loadingDiv.className = loadIndicatorClassName;
-			    //utils.forEach([
-				 //   'one', 'two', 'three'
-			    //], function(className) {
-				 //   var letterDiv = document.createElement('div');
-				 //   letterDiv.className = className;
-				 //   loadingDiv.appendChild(letterDiv);
-			    //});
 			    element.appendChild(loadingDiv);
 		    } else {
 			    if(loadingDiv) {

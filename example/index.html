@@ -65,13 +65,13 @@
 
     $playbackBtn.click(function () {
         goreact.playback(activeContainer, {
-            goreact_id: "5584737ce76fed7f1bc8e28a"
+            goreactId: "5584737ce76fed7f1bc8e28a"
         });
     });
 
     $reviewBtn.click(function () {
         goreact.review({
-            goreact_id: "5584737ce76fed7f1bc8e28a",
+            goreactId: "5584737ce76fed7f1bc8e28a",
             container: activeContainer
         });
     });
@@ -106,6 +106,14 @@
 
     listWidget.on('destroyed', function (evt) {
         console.log("destroyed");
+    });
+
+    listWidget.on('loadSuccess', function (evt) {
+        console.log("loadSuccess");
+    });
+
+    listWidget.on('loadError', function (evt) {
+        console.log("loadError");
     });
 
     var auth = goreact.authorize(apiKey, jwt);

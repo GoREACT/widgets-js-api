@@ -6,17 +6,18 @@
       "prod" : "https://goreact.com"
     },
     "api" : {
-      "authorize": "/v2/widgets/auth",
-      "record": "/v2/widgets/record",
-      "upload": "/v2/widgets/upload",
-      "playback": "/v2/widgets/playback",
-      "review": "/v2/widgets/review",
-      "umc": "/v2/widgets/umc",
-      "list": "/v2/widgets/list",
-      "pay": "/v2/widgets/pay",
-      "editGroup": "/v2/widgets/group",
-      "editActivity": "/v2/widgets/edit-activity",
-      "viewActivity": "/v2/widgets/view-activity",
-      "listActivities": "/v2/widgets/list-activities"
+      "authorize": "/api/widgets/v2/auth",
+      "record": "/api/widgets/v2/record",
+      "upload": "/api/widgets/v2/upload",
+      "playback": "/api/widgets/v2/playback",
+      "review": "/api/widgets/v2/review",
+      "umc": "/api/widgets/v2/umc",
+      "list": "/api/widgets/v2/list",
+      "pay": "/api/widgets/v2/pay",
+      "editAccount": "/api/widgets/v2/edit-account",
+      "editGroup": "/api/widgets/v2/edit-group",
+      "editActivity": "/api/widgets/v2/edit-activity",
+      "viewActivity": "/api/widgets/v2/view-activity",
+      "listActivities": "/api/widgets/v2/list-activities"
     }
 }
