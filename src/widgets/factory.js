@@ -136,12 +136,14 @@ var factory = (function () {
 		}
 
         // clear container content
-        while (containerEl.firstChild) {
-            var el = containerEl.firstChild;
-	        if (el.widget) {
+		while (containerEl.firstChild) {
+			var el = containerEl.firstChild;
+			if (el.widget) {
 				el.widget.destroy();
+			} else {
+				containerEl.removeChild(el);
 			}
-        }
+		}
 
         // add element to container
 		containerEl.appendChild(element);
