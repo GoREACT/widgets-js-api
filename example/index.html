@@ -100,8 +100,8 @@
 
     console.log("listWidget", listWidget);
 
-    listWidget.on('ready', function (evt) {
-        console.log("ready");
+    listWidget.on('contentLoaded', function (evt) {
+        console.log("contentLoaded");
     });
 
     listWidget.on('destroyed', function (evt) {

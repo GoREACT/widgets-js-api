@@ -81,7 +81,7 @@ var factory = (function () {
 	    /**
 	     * Widget ready event handler
 	     */
-	    widget.on("ready", function() {
+	    widget.on("contentLoaded", function() {
 		    showLoadingIndicator(false);
 	    });
 
