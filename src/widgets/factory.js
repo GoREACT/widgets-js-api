@@ -138,7 +138,9 @@ var factory = (function () {
         // clear container content
         while (containerEl.firstChild) {
             var el = containerEl.firstChild;
-	        el.widget.destroy();
+	        if (el.widget) {
+				el.widget.destroy();
+			}
         }
 
         // add element to container
