@@ -72,7 +72,7 @@ exports.authorize = function(apiKey, jwt) {
     }
 
     // Assemble auth url
-    var url = config.baseUrl + settings.config.api.authorize;
+    var url = config.baseUrl + settings.config.authEndpoint;
 
     // Make auth request
     utils.sendRequest("GET", url, {}, function(httpStatus, response) {
