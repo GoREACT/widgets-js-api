@@ -383,6 +383,11 @@ var utils = (function() {
             status = status === 1223 ? 204 : status;
             statusText = statusText || '';
 
+			// parse json response for ie
+			if (isMSIE() && isString(response) && responseType === 'json') {
+				response = JSON.parse(response);
+			}
+
             callback(status, response, headersString, statusText);
         }
     }
