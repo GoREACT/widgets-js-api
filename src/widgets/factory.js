@@ -4,6 +4,16 @@ var factory = (function () {
     var className = 'widget';
     var loadIndicatorClassName = 'widget-load-indicator';
 
+	function Widget () {}
+
+	Widget.prototype.getBaseUrl = function () {
+		return config.baseUrl;
+	};
+
+	Widget.prototype.getAuth = function () {
+		return auth;
+	};
+
     /**
      * Load widget
      *
@@ -13,7 +23,7 @@ var factory = (function () {
      * @returns {Object}
      */
     exports.load = function (uri, containerEl, options) {
-		var widget = {},
+		var widget = new Widget(),
 		    element = document.createElement('div'),
             display = '';
 
@@ -22,9 +32,6 @@ var factory = (function () {
 
 		// ensure options is an object
 		options = options || {};
-
-	    // Params to be passed along with view requests
-	    var params = utils.clone(options) || {};
 
 	    // element properties
 	    element.className = className;
@@ -45,14 +52,14 @@ var factory = (function () {
 	    if(auth.isPending() || auth.isIdle()) {
 		    auth.on('success', function success() {
 			    //auth.off('success', success);// TODO: bug, this clears all success handlers added
-			    loadContent(config.baseUrl + uri, utils.extend(params, auth.data));
+			    loadContent(config.baseUrl + uri, utils.extend({}, auth.data));
 		    });
 		    auth.on('error', function error() {
 			    //auth.off('error', error);
 			    showLoadingIndicator(false);
 		    });
 	    } else if(auth.isSuccess()) {
-		    loadContent(config.baseUrl + uri, utils.extend(params, auth.data));
+		    loadContent(config.baseUrl + uri, utils.extend({}, auth.data));
 	    } else {
 		    showLoadingIndicator(false);
 	    }
