@@ -1,7 +1,6 @@
 {
     "authEndpoint": "/widgets/v2/auth",
     "environments" : {
-      "local" : "https://192.168.33.10",
       "dev" : "https://dev.goreact.com",
       "sb" : "https://sandbox.goreact.com",
       "prod" : "https://goreact.com"

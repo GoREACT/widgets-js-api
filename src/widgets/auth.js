@@ -67,7 +67,7 @@ exports.authorize = function(apiKey, jwt) {
         if(env && apiKey.indexOf(env) === 0) {
             config.baseUrl = settings.config.environments[env];
         } else {
-            config.baseUrl = settings.config.environments.local;
+            config.baseUrl = window.location.protocol + "//" + window.location.host;
         }
     }
 
