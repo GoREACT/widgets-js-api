@@ -16,6 +16,8 @@ var utils = (function() {
     exports.isWindow = isWindow;
     exports.int = int;
     exports.lowercase = lowercase;
+    exports.camelcase = camelcase;
+    exports.snakecase = snakecase;
     exports.isElement = isElement;
     exports.serialize = serialize;
     exports.styleToString = styleToString;
@@ -188,6 +190,30 @@ var utils = (function() {
         throw new Error('noxhr', "This browser does not support XMLHttpRequest.");
     }
 
+	var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+	var MOZ_HACK_REGEXP = /^moz([A-Z])/;
+
+	/**
+	 * Converts snake_case to camelCase.
+	 * Also there is special case for Moz prefix starting with upper case letter.
+	 * @param name Name to normalize
+	 */
+	function camelcase(name) {
+		return name.
+			replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+				return offset ? letter.toUpperCase() : letter;
+			}).
+			replace(MOZ_HACK_REGEXP, 'Moz$1');
+	}
+
+	var SNAKE_CASE_REGEXP = /[A-Z]/g;
+	function snakecase(name, separator){
+		separator = separator || '_';
+		return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
+			return (pos ? separator : '') + letter.toLowerCase();
+		});
+	}
+
     /**
      *
      * Implementation Notes for non-IE browsers
@@ -356,6 +382,11 @@ var utils = (function() {
             // normalize IE bug (http://bugs.jquery.com/ticket/1450)
             status = status === 1223 ? 204 : status;
             statusText = statusText || '';
+
+			// parse json response for ie
+			if (isMSIE() && isString(response) && responseType === 'json') {
+				response = JSON.parse(response);
+			}
 
             callback(status, response, headersString, statusText);
         }

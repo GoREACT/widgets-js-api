@@ -1,65 +1,78 @@
-// auth object
-var auth;
-
-var STATUS = {
-    PENDING: 'pending',
-    SUCCESS: 'success',
-    ERROR: 'error'
+var AuthStatus = {
+	IDLE: 'idle',
+	PENDING: 'pending',
+	SUCCESS: 'success',
+	ERROR: 'error'
 };
 
+var currentAuthStatus = AuthStatus.IDLE;
+
+// auth object
+var auth = {
+	data: {},
+	isIdle: function() {
+		return currentAuthStatus === AuthStatus.IDLE;
+	},
+	isPending: function() {
+		return currentAuthStatus === AuthStatus.PENDING;
+	},
+	isSuccess: function() {
+		return currentAuthStatus === AuthStatus.SUCCESS;
+	},
+	isError: function() {
+		return currentAuthStatus === AuthStatus.ERROR;
+	},
+	getStatus: function() {
+		return currentAuthStatus;
+	}
+};
+
+dispatcher(auth);
+
 /**
- * Widgets authorization request
+ * Authorization request
  *
- * @param data
- * @param signature
+ * @param apiKey API Key
+ * @param jwt Json Web Token
+ * @returns Object
  */
-exports.authorize = function(data, signature) {
+exports.authorize = function(apiKey, jwt) {
 
-    var params = utils.clone(data);
-    params.signature = signature;
+	// API Key validation
+	if(!apiKey) {
+		throw new Error('Parameter "apiKey" is required');
+	} else if(!utils.isString(apiKey)) {
+		throw new Error('Parameter "apiKey" must be a string.');
+	}
 
-    var status = STATUS.PENDING;
+	// JWT validation
+	if(!jwt) {
+		throw new Error('Parameter "jwt" is required');
+	} else if(!utils.isString(jwt)) {
+		throw new Error('Parameter "jwt" must be a string.');
+	}
 
-    auth = {
-	    data: {},
-	    isPending: function() {
-            return status === STATUS.PENDING;
-        },
-        isSuccess: function() {
-            return status === STATUS.SUCCESS;
-        },
-        isError: function() {
-            return status === STATUS.ERROR;
-        },
-        getStatus: function() {
-            return status;
-        }
-    };
-
-    dispatcher(auth);
+	// set pending auth status
+	currentAuthStatus = AuthStatus.PENDING;
+	auth.fire(currentAuthStatus);
 
     // Determine base url
     if(!config.baseUrl) {
 
-        // API Key is required
-        if(!data.apiKey) {
-            throw new Error('Parameter "apiKey" is a required');
-        }
+		// Determine environment using api key
+		var regExp = new RegExp(Object.keys(settings.config.environments).join('|')),
+			result = apiKey.match(regExp),
+			env = utils.isArray(result) ? result.shift() : false;
 
-        // Determine environment using api key
-        var baseUrl = settings.config.environments[data.apiKey];
-        if(baseUrl) {
-            config.baseUrl = baseUrl;
+        if(env && apiKey.indexOf(env) === 0) {
+            config.baseUrl = settings.config.environments[env];
         } else {
-            config.baseUrl = settings.config.environments.local;
+            config.baseUrl = window.location.protocol + "//" + window.location.host;
         }
     }
 
     // Assemble auth url
-    var url = config.baseUrl + settings.config.api.authorize;
-    if(!utils.isEmptyObject(params)) {
-        url += (url.indexOf("?") === -1 ? "?" : "&") + utils.serialize(params);
-    }
+    var url = config.baseUrl + settings.config.authEndpoint;
 
     // Make auth request
     utils.sendRequest("GET", url, {}, function(httpStatus, response) {
@@ -69,18 +82,20 @@ exports.authorize = function(data, signature) {
 	            utils.extend(auth.data, {
 		            transient: response.transient
 	            });
-                status = STATUS.SUCCESS;
-                auth.fire(status, response.message);
+				currentAuthStatus = AuthStatus.SUCCESS;
+                auth.fire(currentAuthStatus, response.message);
             } else {
-                status = STATUS.ERROR;
-                auth.fire(status, response.message);
+				currentAuthStatus = AuthStatus.ERROR;
+                auth.fire(currentAuthStatus, response.message);
             }
         } else {
-            status = STATUS.ERROR;
-            auth.fire(status, "An unknown error occurred");
+			currentAuthStatus = AuthStatus.ERROR;
+            auth.fire(currentAuthStatus, "An unknown error occurred");
         }
 
-    }, {}, false, 'json');
+    }, {
+		Authorization: 'Bearer ' + ['apiKey="' + apiKey + '"', 'jwt="' + jwt + '"'].join(', ')
+	}, false, 'json');
 
     return auth;
 };

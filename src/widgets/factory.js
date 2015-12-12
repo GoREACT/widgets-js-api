@@ -1,34 +1,37 @@
 var factory = (function () {
 
     var exports = {};
-    var prefix = 'widget_';
     var className = 'widget';
     var loadIndicatorClassName = 'widget-load-indicator';
-    var count = 0;
+
+	function Widget () {}
+
+	Widget.prototype.getBaseUrl = function () {
+		return config.baseUrl;
+	};
+
+	Widget.prototype.getAuth = function () {
+		return auth;
+	};
 
     /**
      * Load widget
      *
-     * @param url
+     * @param uri
+     * @param containerEl
      * @param options
      * @returns {Object}
      */
-    exports.load = function (url, options) {
-
-	    if(!utils.isObject(auth)) {
-		    throw new Error('The "authorize" method must be called first');
-	    }
-
-	    var widget = {},
+    exports.load = function (uri, containerEl, options) {
+		var widget = new Widget(),
 		    element = document.createElement('div'),
             display = '';
 
 	    // Loading content
 	    var loadingDiv, loadingStyle;
 
-	    // Params to be passed along with view requests
-	    var params = utils.clone(options) || {};
-	    delete params.container;
+		// ensure options is an object
+		options = options || {};
 
 	    // element properties
 	    element.className = className;
@@ -40,21 +43,23 @@ var factory = (function () {
 	    dispatcher(widget);
 
 		// Initially show loading indicator
-	    showLoadingIndicator(true);
+		if (!options.hideLoadingIndicator) {
+			showLoadingIndicator(true);
+		}
 
 	    // Load widget content.
 	    // We can't load the content until authorization is successful
-	    if(auth.isPending()) {
+	    if(auth.isPending() || auth.isIdle()) {
 		    auth.on('success', function success() {
 			    //auth.off('success', success);// TODO: bug, this clears all success handlers added
-			    loadContent(url, utils.extend(params, auth.data));
+			    loadContent(config.baseUrl + uri, utils.extend({}, auth.data));
 		    });
 		    auth.on('error', function error() {
 			    //auth.off('error', error);
 			    showLoadingIndicator(false);
 		    });
 	    } else if(auth.isSuccess()) {
-		    loadContent(url, utils.extend(params, auth.data));
+		    loadContent(config.baseUrl + uri, utils.extend({}, auth.data));
 	    } else {
 		    showLoadingIndicator(false);
 	    }
@@ -83,7 +88,7 @@ var factory = (function () {
 	    /**
 	     * Widget ready event handler
 	     */
-	    widget.on("ready", function() {
+	    widget.on("contentLoaded", function() {
 		    showLoadingIndicator(false);
 	    });
 
@@ -124,31 +129,35 @@ var factory = (function () {
             widget.off();
         });
 
-        // resolve container
-        var container = options.container;
-        if (!utils.isElement(container)) {
-            if (!container) { // null or undefined
-                container = document.createElement('div');
-                container.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
-                document.body.appendChild(container);
-            } else if (typeof container === 'object') { // container is acting as a set of style options
-                container = document.createElement('div');
-                container.setAttribute('style', utils.styleToString(options.container));
-                document.body.appendChild(container);
-            }
-        }
+		// resolve container
+		if (!utils.isElement(containerEl)) {
+			if (!containerEl) { // null or undefined
+				containerEl = document.createElement('div');
+				containerEl.setAttribute('style', 'position:absolute;top:0;left:0;width:100%;height:100%;z-index:99999');
+				document.body.appendChild(containerEl);
+			} else if (typeof containerEl === 'object') { // container is acting as a set of style options
+				containerEl = document.createElement('div');
+				containerEl.setAttribute('style', utils.styleToString(containerEl));
+				document.body.appendChild(containerEl);
+			}
+		}
 
         // clear container content
-        while (container.firstChild) {
-            var el = container.firstChild;
-	        el.widget.destroy();
-        }
+		while (containerEl.firstChild) {
+			var el = containerEl.firstChild;
+			if (el.widget) {
+				el.widget.destroy();
+			} else {
+				containerEl.removeChild(el);
+			}
+		}
 
         // add element to container
-        container.appendChild(element);
+		containerEl.appendChild(element);
 
 	    // expose element on widget
 	    widget.element = element;
+	    widget.options = options;
 
 	    // add a reference from the element back to the widget
 	    widget.element.widget = widget;
@@ -168,43 +177,47 @@ var factory = (function () {
 		    }
 
 		    // make request for view
-		    utils.sendRequest("GET", url, {}, function(status, html) {
+		    utils.sendRequest("GET", url, {}, function(httpStatus, html) {
+				if(httpStatus === 200) {
+					var tElement = document.createElement('div');
+					tElement.innerHTML = html;
 
-			    var tElement = document.createElement('div');
-			    tElement.innerHTML = html;
+					// clone and remove scripts for later insert
+					// so that they will get executed by the browser
+					var clonedScripts = [];
+					var scripts = tElement.getElementsByTagName('script');
+					var i = scripts.length;
 
-			    // clone and remove scripts for later insert
-			    // so that they will get executed by the browser
-			    var clonedScripts = [];
-			    var scripts = tElement.getElementsByTagName('script');
-			    var i = scripts.length;
+					while (i--) {
+						var script = document.createElement("script");
+						var props = ['type', 'src', 'text'];
+						for(var k = 0; k < props.length; k++) {
+							var prop = props[k];
+							if(scripts[i][prop]) {
+								script[prop] = scripts[i][prop];
+							}
+						}
+						clonedScripts.unshift(script);
 
-			    while (i--) {
-				    var script = document.createElement("script");
-				    var props = ['type', 'src', 'text'];
-				    for(var k = 0; k < props.length; k++) {
-					    var prop = props[k];
-					    if(scripts[i][prop]) {
-						    script[prop] = scripts[i][prop];
-					    }
-				    }
-				    clonedScripts.unshift(script);
+						// remove script
+						scripts[i].parentNode.removeChild(scripts[i]);
+					}
 
-				    // remove script
-				    scripts[i].parentNode.removeChild(scripts[i]);
-			    }
+					// Insert template element children
+					for(i = 0 ; i < tElement.children.length ; i++) {
+						element.appendChild(tElement.children[i]);
+					}
 
-			    // Insert template element children
-			    for(i = 0 ; i < tElement.children.length ; i++) {
-				    element.appendChild(tElement.children[i]);
-			    }
+					// insert scripts
+					for(i = 0; i < clonedScripts.length; i++) {
+						element.lastChild.appendChild(clonedScripts[i]);
+					}
 
-			    // insert scripts
-			    for(i = 0; i < clonedScripts.length; i++) {
-				    element.lastChild.appendChild(clonedScripts[i]);
-			    }
-
-			    widget.fire('loaded');
+					widget.fire('loadSuccess');
+				} else {
+					showLoadingIndicator(false);
+					widget.fire('loadError');
+				}
 		    });
 	    }
 
@@ -224,13 +237,6 @@ var factory = (function () {
 			    // create loading dev
 			    loadingDiv = document.createElement('div');
 			    loadingDiv.className = loadIndicatorClassName;
-			    utils.forEach([
-				    'G', 'N', 'I', 'D', 'A', 'O', 'L'
-			    ], function(letter) {
-				    var letterDiv = document.createElement('div');
-				    letterDiv.innerText = letter;
-				    loadingDiv.appendChild(letterDiv);
-			    });
 			    element.appendChild(loadingDiv);
 		    } else {
 			    if(loadingDiv) {

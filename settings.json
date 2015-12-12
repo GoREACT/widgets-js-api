@@ -1,17 +1,22 @@
 {
+    "authEndpoint": "/widgets/v2/auth",
     "environments" : {
-      "local" : "https://192.168.33.10",
       "dev" : "https://dev.goreact.com",
       "sb" : "https://sandbox.goreact.com",
       "prod" : "https://goreact.com"
     },
     "api" : {
-      "authorize": "/v2/widgets/auth",
-      "record": "/v2/widgets/record",
-      "upload": "/v2/widgets/upload",
-      "list": "/v2/widgets/list",
-      "playback": "/v2/widgets/playback",
-      "review": "/v2/widgets/review",
-      "umc": "/v2/widgets/umc"
+      "record": "/widgets/v2/templates/record",
+      "upload": "/widgets/v2/templates/upload",
+      "playback": "/widgets/v2/templates/playback",
+      "review": "/widgets/v2/templates/review",
+      "umc": "/widgets/v2/templates/umc",
+      "list": "/widgets/v2/templates/list",
+      "pay": "/widgets/v2/templates/pay",
+      "editAccount": "/widgets/v2/templates/edit-account",
+      "editGroup": "/widgets/v2/templates/edit-group",
+      "editActivity": "/widgets/v2/templates/edit-activity",
+      "viewActivity": "/widgets/v2/templates/view-activity",
+      "listActivities": "/widgets/v2/templates/list-activities"
     }
 }

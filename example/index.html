@@ -52,27 +52,26 @@
     var activeContainer = $containerEl[0];
 
     $recordBtn.click(function () {
-        goreact.record({container: activeContainer});
+        goreact.record(activeContainer);
     });
 
     $uploadBtn.click(function () {
-        goreact.upload({container: activeContainer});
+        goreact.upload(activeContainer);
     });
 
     $listBtn.click(function () {
-        goreact.list({container: activeContainer});
+        goreact.list(activeContainer);
     });
 
     $playbackBtn.click(function () {
-        goreact.playback({
-            goreact_id: "5584737ce76fed7f1bc8e28a",
-            container: activeContainer
+        goreact.playback(activeContainer, {
+            goreactId: "5584737ce76fed7f1bc8e28a"
         });
     });
 
     $reviewBtn.click(function () {
         goreact.review({
-            goreact_id: "5584737ce76fed7f1bc8e28a",
+            goreactId: "5584737ce76fed7f1bc8e28a",
             container: activeContainer
         });
     });
@@ -91,22 +90,33 @@
 
     console.log("goreact", goreact);
 
-    // :: goreact setup ::
-    var signature = '5eb63bbbe01eeed093cb22bb8f5acdc3';
-    var expires = 1413496405;
-    var settings = {
-//        api_key: "3d143dd5-1050-488c-80b7-e110dbb35d9fs",
-        api_key: "3d143dd5-1050-488c-80b7-e110dbb35d9f",
-        user_id: "5432b03462ccc7ea7bcc2c41",
-        first_name: "John",
-        last_name: "Smith",
-        email: "john.smith@myexample.com",
-        context_id: "5432b0923ea55a487d96b076",
-        context_name: "Business Ed",
-        context_role: "instructor",
-        expires: expires
-    };
-    var auth = goreact.authorize(settings, signature);
+    var apiKey = '95fdc863-0c2b-4cc0-aba8-fd00efc524d2';
+    var jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcGlLZXkiOiI5NWZkYzg2My0wYzJiLTRjYzAtYWJhOC1mZDAwZWZjNTI0ZDIiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImV4cGlyZXMiOjE0NDM1NzEyMDAsInVzZXIiOnsiaWQiOjEsImZpcnN0TmFtZSI6ImRhbGxpbiIsImxhc3ROYW1lIjoic2NoZXJiZWwiLCJlbWFpbCI6InNjaGVycGEuYmJhbGxAZ21haWwuY29tIn0sImdyb3VwIjp7ImlkIjoxLCJuYW1lIjoibXkgZ3JvdXAifSwiYWN0aXZpdHkiOnsiaWQiOjEsIm5hbWUiOiJteSBhY3Rpdml0eSIsInRvdGFsUG9pbnRzIjoxMH19.cZZyAAINqvAfZVONenvHb3GmDX4duam_C-9FJFAwJIA';
+
+//    promise.then(function(response) {
+//        console.log("response", response);
+//    });
+    var listWidget = goreact.viewActivity($containerEl[0]);
+
+    console.log("listWidget", listWidget);
+
+    listWidget.on('contentLoaded', function (evt) {
+        console.log("contentLoaded");
+    });
+
+    listWidget.on('destroyed', function (evt) {
+        console.log("destroyed");
+    });
+
+    listWidget.on('loadSuccess', function (evt) {
+        console.log("loadSuccess");
+    });
+
+    listWidget.on('loadError', function (evt) {
+        console.log("loadError");
+    });
+
+    var auth = goreact.authorize(apiKey, jwt);
 
     console.log("auth", auth);
 
@@ -116,23 +126,6 @@
 
     auth.on('error', function(evt, message) {
         console.log("auth error", message);
-    });
-
-//    promise.then(function(response) {
-//        console.log("response", response);
-//    });
-    var listWidget = goreact.list({
-        container: $containerEl[0]
-    });
-
-    console.log("listWidget", listWidget);
-
-    listWidget.on('ready', function (evt) {
-        console.log("ready");
-    });
-
-    listWidget.on('destroyed', function (evt) {
-        console.log("destroyed");
     });
 
 </script>
