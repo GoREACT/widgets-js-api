@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"/>
+    <style>
+        body {
+            margin: 0;
+            background-color: #ffffff;
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body>
+<div style="padding: 15px;text-align: center">
+    <div id="record_btn" class="btn btn-primary">Record</div>
+    <div id="upload_btn" class="btn btn-primary">Upload</div>
+    <div id="list_btn" class="btn btn-primary">List</div>
+    <div id="playback_btn" class="btn btn-primary">Playback</div>
+    <div id="review_btn" class="btn btn-primary">Review</div>
+
+    <div class="btn-group">
+        <button id="container_btn" type="button" class="btn btn-default active">Container</button>
+        <button id="fs_btn" type="button" class="btn btn-default">Full Screen</button>
+    </div>
+</div>
+
+<div id="containerEl" style="width: 90%;max-width: 1000px;height: 600px;margin: 0 auto"></div>
+
+<script>
+//    window.goreactConfig = {
+//        baseUrl: "https://192.168.33.10"
+//    };
+</script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="../build/widgets.js"></script>
+
+<script>
+
+    // references to DOM elements
+    var $containerBtn = $('#container_btn');
+    var $fullScreenBtn = $('#fs_btn');
+    var $recordBtn = $('#record_btn');
+    var $uploadBtn = $('#upload_btn');
+    var $listBtn = $('#list_btn');
+    var $playbackBtn = $('#playback_btn');
+    var $reviewBtn = $('#review_btn');
+    var $containerEl = $('#containerEl');
+
+    var activeContainer = $containerEl[0];
+
+    $recordBtn.click(function () {
+        goreact.record(activeContainer);
+    });
+
+    $uploadBtn.click(function () {
+        goreact.upload(activeContainer);
+    });
+
+    $listBtn.click(function () {
+        goreact.list(activeContainer);
+    });
+
+    $playbackBtn.click(function () {
+        goreact.playback(activeContainer, {
+            goreactId: "5584737ce76fed7f1bc8e28a"
+        });
+    });
+
+    $reviewBtn.click(function () {
+        goreact.review({
+            goreactId: "5584737ce76fed7f1bc8e28a",
+            container: activeContainer
+        });
+    });
+
+    $containerBtn.click(function () {
+        activeContainer = $containerEl[0];
+        $containerBtn.addClass('active');
+        $fullScreenBtn.removeClass('active');
+    });
+
+    $fullScreenBtn.click(function () {
+        activeContainer = null;
+        $containerBtn.removeClass('active');
+        $fullScreenBtn.addClass('active');
+    });
+
+    console.log("goreact", goreact);
+
+    var apiKey = '95fdc863-0c2b-4cc0-aba8-fd00efc524d2';
+    var jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhcGlLZXkiOiI5NWZkYzg2My0wYzJiLTRjYzAtYWJhOC1mZDAwZWZjNTI0ZDIiLCJyb2xlIjoiaW5zdHJ1Y3RvciIsImV4cGlyZXMiOjE0NDM1NzEyMDAsInVzZXIiOnsiaWQiOjEsImZpcnN0TmFtZSI6ImRhbGxpbiIsImxhc3ROYW1lIjoic2NoZXJiZWwiLCJlbWFpbCI6InNjaGVycGEuYmJhbGxAZ21haWwuY29tIn0sImdyb3VwIjp7ImlkIjoxLCJuYW1lIjoibXkgZ3JvdXAifSwiYWN0aXZpdHkiOnsiaWQiOjEsIm5hbWUiOiJteSBhY3Rpdml0eSIsInRvdGFsUG9pbnRzIjoxMH19.cZZyAAINqvAfZVONenvHb3GmDX4duam_C-9FJFAwJIA';
+
+//    promise.then(function(response) {
+//        console.log("response", response);
+//    });
+    var listWidget = goreact.viewActivity($containerEl[0]);
+
+    console.log("listWidget", listWidget);
+
+    listWidget.on('contentLoaded', function (evt) {
+        console.log("contentLoaded");
+    });
+
+    listWidget.on('destroyed', function (evt) {
+        console.log("destroyed");
+    });
+
+    listWidget.on('loadSuccess', function (evt) {
+        console.log("loadSuccess");
+    });
+
+    listWidget.on('loadError', function (evt) {
+        console.log("loadError");
+    });
+
+    var auth = goreact.authorize(apiKey, jwt);
+
+    console.log("auth", auth);
+
+    auth.on('success', function(evt, message) {
+        console.log("auth success", message);
+    });
+
+    auth.on('error', function(evt, message) {
+        console.log("auth error", message);
+    });
+
+</script>
+</body>
+</html>
