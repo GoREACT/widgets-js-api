@@ -1,4 +1,4 @@
-###Hello!
+### Hello!
 
 If you want to integrate with GoReact we no longer support this widget method. Instead you can integrate with us using one of our supported LMS's 
 
